@@ -26,6 +26,9 @@ class SimplePixelCharacterManager {
 
         // 성능 최적화를 위한 프레임 제어
         this.lastFrameTime = 0;
+
+        // IMG 태그 기반 애니메이션 시스템
+        this.frameImages = new Map(); // 애니메이션별 IMG 태그들 저장
     }
 
     // 모바일 디바이스 감지
@@ -57,7 +60,7 @@ class SimplePixelCharacterManager {
         document.body.appendChild(this.container);
     }
 
-    // 통합 캐릭터 시스템 설정
+    // 통합 캐릭터 시스템 설정 (IMG 태그 방식)
     async setupUnifiedCharacter() {
         // 메인 캐릭터 컨테이너 생성
         this.mainCharacter = {
@@ -68,7 +71,7 @@ class SimplePixelCharacterManager {
             isActive: false
         };
 
-        // 스타일 설정
+        // 컨테이너 스타일 설정 (이미지 원본 크기 + scale(4))
         this.mainCharacter.element.style.cssText = `
             position: absolute;
             left: 50%;
@@ -77,75 +80,127 @@ class SimplePixelCharacterManager {
             z-index: 10;
             opacity: 0;
             pointer-events: none;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
         `;
 
         // 컨테이너에 추가
         this.container.appendChild(this.mainCharacter.element);
 
-        // 프리로드된 이미지 저장소
+        // 프리로드된 이미지 저장소 (호환성 유지)
         this.preloadedImages = {};
 
-        // 애니메이션 상태들 정의
+        // 애니메이션 상태들 먼저 정의
         this.animationStates = {
             'idle': {
                 framePrefix: '/animation/idle1/idle',
                 frameCount: 2, // idle1.png, idle2.png
-                frameRate: 8,
+                frameRate: 15, // 8 → 15
                 loop: true
             },
             'run': {
                 framePrefix: '/animation/run1/run',
                 frameCount: 7, // run1.png ~ run7.png
-                frameRate: 12,
+                frameRate: 18, // 12 → 18
                 loop: true
             },
             'idle-flower': {
                 framePrefix: '/animation/idle-flower/idle',
                 frameCount: 2,
-                frameRate: 8,
+                frameRate: 15, // 8 → 15
                 loop: true
             },
             'run-flower1': {
                 framePrefix: '/animation/run-flower1/run-flower',
                 frameCount: 7,
-                frameRate: 12,
+                frameRate: 18, // 12 → 18
                 loop: true
             },
             'hit-idle': {
                 framePrefix: '/animation/hit-idle/hit-idle',
                 frameCount: 5,
-                frameRate: 8,
+                frameRate: 15, // 8 → 15
                 loop: true
             },
             'hit-slime': {
                 framePrefix: '/animation/hit-slime/hit-slime',
                 frameCount: 21,
-                frameRate: 12,
+                frameRate: 18, // 12 → 18
                 loop: false
             },
             'idle-leafs': {
                 framePrefix: '/animation/idle-leafs/idle',
                 frameCount: 2,
-                frameRate: 8,
+                frameRate: 15, // 8 → 15
                 loop: true
             },
             'run-leafsflower': {
                 framePrefix: '/animation/run-leafsflower/run-leafsflower',
                 frameCount: 7,
-                frameRate: 12,
+                frameRate: 18, // 12 → 18
                 loop: true
             }
         };
 
-        // 모든 애니메이션 이미지 프리로드 (백그라운드에서 실행)
+        // 각 애니메이션의 IMG 태그들 생성
+        await this.createFrameImages();
+
+        // 모든 애니메이션 이미지 프리로드 (백그라운드에서 실행, 호환성 유지)
         this.preloadAllAnimationImages().catch(err =>
             console.warn('⚠️ Image preloading failed:', err)
         );
 
-        console.log('🔧 Unified character system initialized');
+        console.log('🔧 Unified character system initialized (IMG tag method)');
+    }
+
+    // 각 애니메이션의 IMG 태그들 미리 생성 (깜빡임 방지)
+    async createFrameImages() {
+        console.log('🖼️ Creating IMG tags for all animations...');
+
+        for (const [animationName, config] of Object.entries(this.animationStates)) {
+            const frameImageArray = [];
+
+            // 각 프레임별로 IMG 태그 생성
+            for (let i = 1; i <= config.frameCount; i++) {
+                const img = document.createElement('img');
+                const imagePath = `${config.framePrefix}${i}.png`;
+
+                // IMG 태그 스타일 설정 (중앙정렬 + 원본 이미지 크기)
+                img.style.cssText = `
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    visibility: hidden;
+                    pointer-events: none;
+                    image-rendering: pixelated;
+                    image-rendering: -moz-crisp-edges;
+                    image-rendering: crisp-edges;
+                    transition: none;
+                `;
+
+                img.src = imagePath;
+                img.alt = `${animationName} frame ${i}`;
+
+                // 이미지 로딩 대기 (선택적)
+                await new Promise((resolve) => {
+                    img.onload = resolve;
+                    img.onerror = () => {
+                        console.warn(`⚠️ Failed to load: ${imagePath}`);
+                        resolve(); // 에러가 있어도 계속 진행
+                    };
+                });
+
+                // 캐릭터 컨테이너에 추가
+                this.mainCharacter.element.appendChild(img);
+                frameImageArray.push(img);
+
+                console.log(`📥 Loaded frame: ${imagePath} (${i}/${config.frameCount})`);
+            }
+
+            // 애니메이션별로 IMG 태그 배열 저장
+            this.frameImages.set(animationName, frameImageArray);
+        }
+
+        console.log('✅ All IMG tags created and loaded');
     }
 
     // 모든 애니메이션 이미지 프리로드
@@ -252,7 +307,7 @@ class SimplePixelCharacterManager {
             frameCount: 21, // hit-slime 파일 개수 확인 후 조정 필요
             frameRate: 12, // 적당한 속도
             framePadding: 0,
-            scale: 3.5, // 1.5배 크게 (4 * 1.5 = 6)
+            scale: 4, // 1.5배 크게 (4 * 1.5 = 6)
             x: '50%',
             y: '70%', // 70vh 위치에 고정
             visible: false,
@@ -346,6 +401,11 @@ class SimplePixelCharacterManager {
             cancelAnimationFrame(this.mainCharacter.animationTimer);
         }
 
+        // 모든 IMG 태그 숨기기 (중복 방지)
+        for (const frameImages of this.frameImages.values()) {
+            frameImages.forEach(img => img.style.visibility = 'hidden');
+        }
+
         // 새 애니메이션 설정
         this.mainCharacter.currentAnimation = animationName;
         this.mainCharacter.currentFrame = 0;
@@ -365,11 +425,18 @@ class SimplePixelCharacterManager {
         const animation = this.animationStates[this.mainCharacter.currentAnimation];
         if (!animation) return;
 
-        // 모바일에서 frameRate 절반으로 감소 (성능 최적화)
-        const effectiveFrameRate = this.isMobile ? Math.max(4, animation.frameRate / 2) : animation.frameRate;
+        // 모바일에서 frameRate 약간 감소 (성능 최적화하되 너무 느려지지 않게)
+        const effectiveFrameRate = this.isMobile ? Math.max(8, animation.frameRate * 0.75) : animation.frameRate;
         const frameDuration = 1000 / effectiveFrameRate;
 
         console.log(`🎬 Starting animation: ${this.mainCharacter.currentAnimation} at ${effectiveFrameRate}fps (${this.isMobile ? 'Mobile' : 'Desktop'})`);
+
+        // 시작 전에 모든 다른 애니메이션 숨기기
+        for (const [animationName, frameImages] of this.frameImages.entries()) {
+            if (animationName !== this.mainCharacter.currentAnimation) {
+                frameImages.forEach(img => img.style.visibility = 'hidden');
+            }
+        }
 
         const updateFrame = (currentTime) => {
             // 프레임 타이밍 제어 (requestAnimationFrame 기반)
@@ -380,28 +447,24 @@ class SimplePixelCharacterManager {
 
             this.lastFrameTime = currentTime;
 
-            // 프레임 이미지 업데이트 (프리로드된 이미지 사용)
-            const frameNumber = this.mainCharacter.currentFrame + 1;
-            const imageKey = `frame_${frameNumber}`;
-            const preloadedImg = this.preloadedImages[this.mainCharacter.currentAnimation]?.[imageKey];
+            // IMG 태그 기반 프레임 업데이트 (깜빡임 방지)
+            const frameImages = this.frameImages.get(this.mainCharacter.currentAnimation);
 
-            if (preloadedImg) {
-                // 프리로드된 이미지 사용
-                this.mainCharacter.element.style.backgroundImage = `url('${preloadedImg.src}')`;
+            if (frameImages) {
+                // 모든 애니메이션의 모든 프레임 숨기기 (확실한 중복 방지)
+                for (const allFrameImages of this.frameImages.values()) {
+                    allFrameImages.forEach(img => img.style.visibility = 'hidden');
+                }
+
+                // 현재 애니메이션의 현재 프레임만 보이기
+                const currentImg = frameImages[this.mainCharacter.currentFrame];
+                if (currentImg) {
+                    currentImg.style.visibility = 'visible';
+                    console.log(`🖼️ Frame updated: frame ${this.mainCharacter.currentFrame + 1}/${animation.frameCount} (IMG tag method)`);
+                }
             } else {
-                // 폴백: 기존 방식
-                const imagePath = `${animation.framePrefix}${frameNumber}.png`;
-                this.mainCharacter.element.style.backgroundImage = `url('${imagePath}')`;
-                console.warn(`⚠️ Using fallback for: ${imagePath}`);
+                console.warn(`⚠️ No frame images found for: ${this.mainCharacter.currentAnimation}`);
             }
-
-            this.mainCharacter.element.style.backgroundSize = 'contain';
-            this.mainCharacter.element.style.backgroundRepeat = 'no-repeat';
-            this.mainCharacter.element.style.backgroundPosition = 'center';
-            this.mainCharacter.element.style.width = '32px';
-            this.mainCharacter.element.style.height = '32px';
-
-            console.log(`🖼️ Frame updated: frame ${frameNumber}/${animation.frameCount} (preloaded: ${!!preloadedImg})`);
 
             this.mainCharacter.currentFrame++;
 
@@ -427,7 +490,7 @@ class SimplePixelCharacterManager {
         this.mainCharacter.animationTimer = requestAnimationFrame(updateFrame);
     }
 
-    // 통합 캐릭터 숨기기
+    // 통합 캐릭터 숨기기 (IMG 태그 방식)
     hideUnifiedCharacter() {
         console.log('👻 Hiding unified character');
         this.mainCharacter.element.style.opacity = '0';
@@ -435,10 +498,16 @@ class SimplePixelCharacterManager {
         if (this.mainCharacter.animationTimer) {
             cancelAnimationFrame(this.mainCharacter.animationTimer);
         }
+
+        // 모든 IMG 태그 숨기기
+        for (const frameImages of this.frameImages.values()) {
+            frameImages.forEach(img => img.style.visibility = 'hidden');
+        }
+
         console.log(`👻 Unified character hidden: opacity=${this.mainCharacter.element.style.opacity}, isActive=${this.mainCharacter.isActive}`);
     }
 
-    // 통합 캐릭터 보이기
+    // 통합 캐릭터 보이기 (IMG 태그 방식)
     showUnifiedCharacter() {
         console.log('👀 Showing unified character');
         this.mainCharacter.element.style.opacity = '1';

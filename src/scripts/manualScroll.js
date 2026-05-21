@@ -4,7 +4,7 @@
 class ManualScrollManager {
     constructor() {
         this.currentSection = 0; // 현재 섹션 인덱스 (0: hero, 1: section1 animation, 2: idle/run area)
-        this.maxSections = 8; // 총 섹션 수 (section-0 ~ section-8)
+        this.maxSections = 7; // 총 섹션 수 (section-0,1,2,3,5,6,7,8 - section-4 제외)
         this.isTransitioning = false; // 전환 중 여부
         this.isAnimationLocked = false; // 애니메이션 재생 중 잠금
         this.scrollSensitivity = 50; // 스크롤 감도
@@ -17,13 +17,12 @@ class ManualScrollManager {
         this.touchSpeed = 10; // 터치 속도 (절반으로 감소)
         this.keyboardSpeed = 12.5; // 키보드 속도 (기존 유지)
 
-        // 섹션 정보
+        // 섹션 정보 (Section-4 제거됨)
         this.sections = [
             { id: 'section-0', element: null, targetY: 0 },
             { id: 'section-1', element: null, targetY: 0 },
             { id: 'section-2', element: null, targetY: 0 },
             { id: 'section-3', element: null, targetY: 0 },
-            { id: 'section-4', element: null, targetY: 0 },
             { id: 'section-5', element: null, targetY: 0 },
             { id: 'section-6', element: null, targetY: 0 },
             { id: 'section-7', element: null, targetY: 0 },
@@ -51,8 +50,27 @@ class ManualScrollManager {
         this.setupSections();
         this.setupEventListeners();
         this.handleQueryString(); // 쿼리스트링 처리
+
+        // 섹션 4에 있다면 섹션 0으로 강제 이동 (URL 기능은 유지)
+        if (this.currentSection === 4) {
+            console.log('🚨 Detected section 4, moving to section 0');
+            this.currentSection = 0;
+            this.virtualScrollY = 0;
+            // URL에서 섹션 4 제거
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+
         this.updateSectionPositions();
-        console.log('🎮 Manual Scroll System initialized');
+
+        // 섹션 4일 때만 강제로 섹션 0으로 이동
+        setTimeout(() => {
+            if (this.currentSection === 4) {
+                console.log(`🔧 Force moving to section 0 from section 4`);
+                this.goToSection(0);
+            }
+        }, 100);
+
+        console.log(`🎮 Manual Scroll System initialized - Current section: ${this.currentSection}`);
     }
 
     // 모든 섹션 요소 가져오기
@@ -272,9 +290,18 @@ class ManualScrollManager {
 
         // 섹션별 특별 처리
         if (this.currentSection === 0) {
-            // Section-0 (Hero) → Section-1 트리거
+            // Section-0 (Hero): 아래로만 Section-1 애니메이션 트리거
             if (scrollDirection === 'down' && scrollMagnitude > 10) {
                 this.triggerSection1Transition();
+            }
+            // 위로는 스크롤 불가 (최상단)
+        } else if (this.currentSection === 1) {
+            // Section-1: 아래로만 캐릭터 이동, 위로는 직접 전환 (애니메이션 재실행 방지)
+            if (scrollDirection === 'down') {
+                this.handleCharacterMovement(normalizedDelta, this.currentSection);
+            } else {
+                // 위로는 바로 Section-0로 전환
+                this.goToSection(0);
             }
         } else if (this.currentSection === 5) {
             // Section-5: 슬라임 애니메이션 (idle/run 정책 적용)
@@ -283,7 +310,7 @@ class ManualScrollManager {
             // Section-2부터는 모든 섹션에서 캐릭터 Y축 이동 (Section-5 제외)
             this.handleCharacterMovement(normalizedDelta, this.currentSection);
         } else {
-            // Section-0, Section-1 외의 다른 섹션들은 일반적인 섹션 전환
+            // 기타 섹션들은 일반적인 섹션 전환
             const targetSection = scrollDirection === 'down' ?
                 this.currentSection + 1 : this.currentSection - 1;
 
@@ -329,18 +356,22 @@ class ManualScrollManager {
 
     // 모든 섹션의 Y축 위치 업데이트
     updateSectionPositions() {
+        // 현재 섹션의 배열 인덱스 찾기
+        const currentSectionIndex = this.sections.findIndex(section =>
+            section.id === `section-${this.currentSection}`);
+
         this.sections.forEach((section, index) => {
             if (!section.element) return;
 
-            // 현재 섹션을 기준으로 상대적 위치 계산
-            const relativePosition = index - this.currentSection;
+            // 현재 섹션을 기준으로 상대적 위치 계산 (배열 인덱스 기준)
+            const relativePosition = index - currentSectionIndex;
             const targetY = relativePosition * 100; // 100vh 단위
 
             // Y축 transform 적용
             section.element.style.transform = `translateY(${targetY}vh)`;
             section.targetY = targetY;
 
-            console.log(`📍 Section ${index}: translateY(${targetY}vh)`);
+            console.log(`📍 Section ${section.id} (index ${index}): translateY(${targetY}vh)`);
         });
     }
 
@@ -406,14 +437,25 @@ class ManualScrollManager {
 
         // 스크롤 방향에 따라 해당 섹션의 Y축 진행도 업데이트 (4배 더 느리게)
         this[sectionKey] += delta * 0.002; // 0.002 → 0.0005 (4배 감소)
-        this[sectionKey] = Math.max(0, Math.min(1.5, this[sectionKey])); // 0~1.5 범위
+        this[sectionKey] = Math.max(-0.3, Math.min(1.5, this[sectionKey])); // -0.3~1.5 범위 (위로도 이동 가능)
 
         console.log(`🏃 Section-${currentSectionIndex} Character Y progress: ${(this[sectionKey] * 100).toFixed(1)}%`);
 
-        // 포털 시스템: 1.2 이상이면 다음 섹션으로 전환
+        // 포털 시스템: 아래로 1.2 이상이면 다음 섹션으로, 위로 -0.2 이하면 이전 섹션으로
         if (this[sectionKey] >= 1.2) {
-            console.log(`🚪 Character reached portal (120%) - moving to Section-${currentSectionIndex + 1}`);
-            this.triggerPortalTransition(currentSectionIndex);
+            console.log(`🚪 Character reached bottom portal (120%) - moving to Section-${currentSectionIndex + 1}`);
+            this.triggerPortalTransition(currentSectionIndex, 'down');
+            return;
+        } else if (this[sectionKey] <= -0.2 && currentSectionIndex >= 1) {
+            console.log(`🚪 Character reached top portal (-20%) - moving to Section-${currentSectionIndex - 1}`);
+
+            // Section-1에서 위로 가는 경우 특별 처리 (Section-0로 바로 전환)
+            if (currentSectionIndex === 1) {
+                this.goToSection(0);
+                this[sectionKey] = 0; // 진행도 리셋
+            } else {
+                this.triggerPortalTransition(currentSectionIndex, 'up');
+            }
             return;
         }
 
@@ -424,17 +466,40 @@ class ManualScrollManager {
         }
     }
 
-    // 포털 전환 (섹션간 이동)
-    triggerPortalTransition(fromSection) {
+    // 포털 전환 (섹션간 이동) - 위/아래 방향 지원
+    triggerPortalTransition(fromSection, direction = 'down') {
         if (this.isTransitioning) return;
 
-        const nextSection = fromSection + 1;
-        if (nextSection > this.maxSections) {
-            console.log('🚫 Cannot move beyond last section');
+        // Section-3에서 Section-5로 직접 이동 (Section-4 스킵)
+        let targetSection;
+        if (direction === 'down') {
+            if (fromSection === 3) {
+                targetSection = 5; // Section-3 → Section-5 (Section-4 스킵)
+            } else {
+                targetSection = fromSection + 1;
+            }
+        } else {
+            if (fromSection === 5) {
+                targetSection = 3; // Section-5 → Section-3 (Section-4 스킵)
+            } else {
+                targetSection = fromSection - 1;
+            }
+        }
+
+        // 경계 체크 (실제 존재하는 섹션인지 확인)
+        const targetSectionExists = this.sections.some(section => section.id === `section-${targetSection}`);
+        if (!targetSectionExists) {
+            console.log(`🚫 Cannot move ${direction} from section ${fromSection} to non-existent section ${targetSection}`);
             return;
         }
 
-        console.log(`🌀 Portal transition triggered - Section-${fromSection} → Section-${nextSection}`);
+        // Section-1로 위로 가려고 하면 애니메이션 재실행 방지
+        if (targetSection === 1 && direction === 'up') {
+            console.log('🚫 Cannot move up to Section-1 (animation replay prevention)');
+            return;
+        }
+
+        console.log(`🌀 Portal transition triggered - Section-${fromSection} → Section-${targetSection} (${direction})`);
 
         // 캐릭터 숨기기
         if (window.pixelCharacterManager) {
@@ -445,14 +510,28 @@ class ManualScrollManager {
         const sectionKey = `section${fromSection}ScrollProgress`;
         this[sectionKey] = 0;
 
-        // 다음 섹션으로 이동
-        this.goToSection(nextSection);
+        // 목표 섹션으로 이동
+        this.goToSection(targetSection);
 
-        // 다음 섹션에서 캐릭터 시작 (섹션별 시작 위치 다르게)
+        // 목표 섹션에서 캐릭터 시작 (방향에 따라 시작 위치 다르게)
         setTimeout(() => {
-            if (window.pixelCharacterManager) {
-                const startHeight = nextSection === 2 ? 60 : -25; // Section-2는 60%, 나머지는 상단 바깥
-                window.pixelCharacterManager.switchToSectionState(nextSection, startHeight);
+            if (window.pixelCharacterManager && targetSection >= 2) {
+                let startHeight;
+                if (targetSection === 2) {
+                    startHeight = 60; // Section-2는 항상 60%에서 시작
+                } else if (direction === 'down') {
+                    startHeight = -25; // 아래로 이동시 상단에서 시작
+                } else {
+                    startHeight = 120; // 위로 이동시 하단에서 시작
+                }
+
+                // 위로 이동시 해당 섹션의 진행도를 120%로 설정 (하단에서 시작)
+                if (direction === 'up') {
+                    const targetSectionKey = `section${targetSection}ScrollProgress`;
+                    this[targetSectionKey] = 1.2;
+                }
+
+                window.pixelCharacterManager.switchToSectionState(targetSection, startHeight);
             }
         }, 100);
     }

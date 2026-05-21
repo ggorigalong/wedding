@@ -331,7 +331,7 @@ body {
 /* Location Section */
 .location {
     height: 100vh; /* 모든 섹션 100vh 통일 */
-    padding: 80px 0;
+    padding: 20px 0;
     position: fixed;
     top: 0;
     left: 0;
@@ -349,31 +349,61 @@ body {
 .venue-name {
     font-size: 1.5rem;
     font-weight: 500;
-    margin-bottom: 15px;
+    margin-bottom: 0;
     color: var(--text-dark);
+}
+
+.address-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: center;
 }
 
 .address {
     font-size: 1rem;
-    margin-bottom: 10px;
+    margin-bottom: 0;
     color: var(--text-light);
+    font-style: normal;
 }
 
-.phone {
-    font-size: 0.9rem;
-    margin-bottom: 30px;
-    color: var(--text-light);
+.copy-address-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-address-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--text-light);
+    transition: all 0.3s ease;
+}
+
+.copy-address-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.copy-address-btn:hover svg {
+    fill: var(--text-dark);
 }
 
 .map-container {
-    margin: 30px 0;
+    margin: 15px 0;
 }
 
 .map {
     width: 100%;
-    height: 300px;
+    height: 200px;
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
@@ -385,42 +415,88 @@ body {
 }
 
 .map-btn {
-    background: var(--secondary-green);
-    color: white;
+    background: white;
+    color: #1a1a1a;
     border: none;
-    padding: 12px 24px;
-    border-radius: 25px;
+    padding: 4px 20px;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background 0.3s ease;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'OmuDaye';
+    flex: 1;
+}
+
+.map-btn img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
 }
 
 .map-btn:hover {
-    background: #45a049;
+    background: #f5f5f5;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .transportation {
-    margin-top: 40px;
+    margin-top: 15px;
     text-align: left;
     background: white;
-    padding: 30px;
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .transportation h4 {
     color: var(--primary-orange);
-    margin-bottom: 15px;
-    font-size: 1.2rem;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    text-align: center;
 }
 
-.transportation p {
-    margin-bottom: 10px;
+.transport-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.transport-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.transport-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.transport-info {
+    flex: 1;
+}
+
+.transport-type {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 3px;
     color: var(--text-dark);
 }
 
-.transportation strong {
-    color: var(--secondary-green);
+.transport-details {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    line-height: 1.3;
 }
 
 /* Account Section */
@@ -568,6 +644,168 @@ body {
     z-index: 300; /* 갤러리(200)보다 높게 설정 */
 }
 
+/* Gallery Popup/Modal System */
+.gallery-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.gallery-wrapper {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-image-container {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Navigation buttons */
+.gallery-nav {
+    position: fixed !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: transparent !important;
+    border: none !important;
+    width: 50px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    z-index: 5001 !important;
+}
+
+.gallery-nav svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: all 0.3s ease;
+}
+
+.gallery-nav:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.gallery-nav:hover svg {
+    stroke: #fff;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.gallery-nav:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.gallery-prev {
+    left: 20px !important;
+}
+
+.gallery-next {
+    right: 20px !important;
+}
+
+/* Close button */
+.gallery-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    background: transparent !important;
+    border: none !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    z-index: 5001 !important;
+}
+
+.gallery-close svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: all 0.3s ease;
+}
+
+.gallery-close:hover {
+    transform: scale(1.1);
+}
+
+.gallery-close:hover svg {
+    stroke: #fff;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.gallery-close:active {
+    transform: scale(0.95);
+}
+
+/* Image counter */
+.gallery-counter {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    z-index: 5001 !important;
+}
+
+/* Loading state */
+.gallery-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 1.2rem;
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
     .container {
@@ -590,27 +828,7 @@ body {
         font-size: 1.5rem;
     }
 
-    .gallery-wrapper {
-        max-width: 320px;
-    }
-
-    .gallery-nav {
-        font-size: 1.5rem;
-        padding: 12px 16px;
-    }
-
-    .gallery-prev {
-        left: -45px;
-    }
-
-    .gallery-next {
-        right: -45px;
-    }
-
-    .gallery-close {
-        font-size: 2rem;
-        top: -40px;
-    }
+    /* Mobile gallery controls removed - using !important in base styles */
 }
 
 @media (max-width: 360px) {
@@ -622,22 +840,7 @@ body {
         padding: 15px;
     }
 
-    .gallery-wrapper {
-        max-width: 280px;
-    }
-
-    .gallery-nav {
-        font-size: 1.2rem;
-        padding: 10px 14px;
-    }
-
-    .gallery-prev {
-        left: -35px;
-    }
-
-    .gallery-next {
-        right: -35px;
-    }
+    /* Ultra small screen gallery controls removed - using !important in base styles */
 }
 
 /* Debug Section Labels */

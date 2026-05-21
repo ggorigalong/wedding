@@ -41,6 +41,20 @@ function toggleAudio() {
     }
 }
 
+// Copy address functionality
+function copyAddress(address) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(address).then(() => {
+            showCopyFeedback('주소가 복사되었습니다!');
+        }).catch(err => {
+            console.error('복사 실패:', err);
+            fallbackCopyTextToClipboard(address, '주소가 복사되었습니다!');
+        });
+    } else {
+        fallbackCopyTextToClipboard(address, '주소가 복사되었습니다!');
+    }
+}
+
 // Copy account number functionality
 function copyAccount(accountNumber) {
     if (navigator.clipboard && window.isSecureContext) {
@@ -55,7 +69,7 @@ function copyAccount(accountNumber) {
     }
 }
 
-function fallbackCopyTextToClipboard(text) {
+function fallbackCopyTextToClipboard(text, message = '계좌번호가 복사되었습니다!') {
     const textArea = document.createElement('textarea');
     textArea.value = text;
     textArea.style.position = 'fixed';
@@ -68,7 +82,7 @@ function fallbackCopyTextToClipboard(text) {
 
     try {
         document.execCommand('copy');
-        showCopyFeedback();
+        showCopyFeedback(message);
     } catch (err) {
         console.error('Copy failed:', err);
         showCopyError();
@@ -77,9 +91,9 @@ function fallbackCopyTextToClipboard(text) {
     document.body.removeChild(textArea);
 }
 
-function showCopyFeedback() {
+function showCopyFeedback(message = '계좌번호가 복사되었습니다!') {
     const feedback = document.createElement('div');
-    feedback.textContent = '계좌번호가 복사되었습니다!';
+    feedback.textContent = message;
     feedback.style.cssText = `
         position: fixed;
         top: 50%;
@@ -131,46 +145,63 @@ function showCopyError() {
     }, 3000);
 }
 
-// Map functionality
+// Map functionality - Kakao Map
 function initKakaoMap() {
-    // Check if Kakao Maps API is loaded
-    if (typeof kakao === 'undefined') {
-        console.log('카카오맵 API가 로드되지 않았습니다. 데모 지도를 표시합니다.');
-        showDemoMap();
-        return;
-    }
-
     const container = document.getElementById('map');
     if (!container) return;
 
-    const options = {
-        center: new kakao.maps.LatLng(weddingLocation.lat, weddingLocation.lng),
-        level: 3
-    };
+    // 카카오 지도 API 로딩 대기
+    if (typeof kakao === 'undefined' || !kakao.maps) {
+        setTimeout(() => initKakaoMap(), 100);
+        return;
+    }
 
-    map = new kakao.maps.Map(container, options);
+    try {
+        const options = {
+            center: new kakao.maps.LatLng(weddingLocation.lat, weddingLocation.lng),
+            level: 3
+        };
 
-    // Add marker
-    const markerPosition = new kakao.maps.LatLng(weddingLocation.lat, weddingLocation.lng);
-    const marker = new kakao.maps.Marker({
-        position: markerPosition
-    });
-    marker.setMap(map);
+        const map = new kakao.maps.Map(container, options);
 
-    // Add info window
-    const infowindow = new kakao.maps.InfoWindow({
-        content: `<div style="padding:10px;font-size:12px;width:200px;text-align:center;">
-                    <strong>${weddingLocation.name}</strong><br>
-                    ${weddingLocation.address}
-                  </div>`
-    });
+        // 마커 추가
+        const markerPosition = new kakao.maps.LatLng(weddingLocation.lat, weddingLocation.lng);
+        const marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+        marker.setMap(map);
 
-    kakao.maps.event.addListener(marker, 'click', function() {
+        // 정보창 추가
+        const infowindow = new kakao.maps.InfoWindow({
+            content: `
+                <div style="
+                    padding: 15px;
+                    text-align: center;
+                    font-family: 'Noto Sans KR', sans-serif;
+                    min-width: 200px;
+                ">
+                    <div style="font-weight: bold; font-size: 14px; color: #333; margin-bottom: 5px;">
+                        ${weddingLocation.name}
+                    </div>
+                    <div style="font-size: 12px; color: #666; line-height: 1.4;">
+                        ${weddingLocation.address}
+                    </div>
+                </div>
+            `
+        });
+
+        // 마커 클릭 시 정보창 열기
+        kakao.maps.event.addListener(marker, 'click', function() {
+            infowindow.open(map, marker);
+        });
+
+        // 기본적으로 정보창 열어놓기
         infowindow.open(map, marker);
-    });
 
-    // Show info window by default
-    infowindow.open(map, marker);
+    } catch (error) {
+        console.error('카카오맵 초기화 실패:', error);
+        showDemoMap();
+    }
 }
 
 function showDemoMap() {
@@ -300,6 +331,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('click', playAudio, { once: true });
     document.addEventListener('touchstart', playAudio, { once: true });
+
+    // Initialize gallery popup
+    galleryPopup = new GalleryPopup();
+    galleryPopup.init();
+    console.log('🖼️ Gallery popup system initialized');
 
     // 시스템 준비 확인
     setTimeout(() => {
@@ -433,7 +469,201 @@ function logGalleryImagePosition() {
 }
 
 
+// Gallery popup system
+class GalleryPopup {
+    constructor() {
+        this.overlay = null;
+        this.image = null;
+        this.loading = null;
+        this.prevBtn = null;
+        this.nextBtn = null;
+        this.closeBtn = null;
+        this.counter = null;
+        this.currentIndex = 0;
+        this.images = [];
+        this.isOpen = false;
+        this.isLoading = false;
+    }
+
+    init() {
+        this.overlay = document.getElementById('galleryOverlay');
+        this.image = document.getElementById('galleryImage');
+        this.loading = document.getElementById('galleryLoading');
+        this.prevBtn = document.getElementById('galleryPrev');
+        this.nextBtn = document.getElementById('galleryNext');
+        this.closeBtn = document.getElementById('galleryClose');
+        this.counter = document.getElementById('galleryCounter');
+
+        // Get all gallery images
+        this.images = Array.from(document.querySelectorAll('.gallery-item img'));
+
+        // Add click listeners to gallery items
+        this.images.forEach((img, index) => {
+            img.addEventListener('click', () => this.openGallery(index));
+            img.style.cursor = 'pointer';
+        });
+
+        // Add navigation listeners
+        this.prevBtn?.addEventListener('click', () => this.prevImage());
+        this.nextBtn?.addEventListener('click', () => this.nextImage());
+        this.closeBtn?.addEventListener('click', () => this.closeGallery());
+
+        // Click overlay to close
+        this.overlay?.addEventListener('click', (e) => {
+            if (e.target === this.overlay) {
+                this.closeGallery();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!this.isOpen) return;
+
+            switch(e.key) {
+                case 'Escape':
+                    this.closeGallery();
+                    break;
+                case 'ArrowLeft':
+                    this.prevImage();
+                    break;
+                case 'ArrowRight':
+                    this.nextImage();
+                    break;
+            }
+        });
+
+        // Touch/swipe navigation for mobile
+        this.initTouchNavigation();
+    }
+
+    initTouchNavigation() {
+        let startX = 0;
+        let endX = 0;
+        const minSwipeDistance = 50;
+
+        this.image?.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        }, { passive: true });
+
+        this.image?.addEventListener('touchmove', (e) => {
+            e.preventDefault(); // Prevent scrolling
+        });
+
+        this.image?.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].clientX;
+            const distance = startX - endX;
+
+            if (Math.abs(distance) > minSwipeDistance) {
+                if (distance > 0) {
+                    this.nextImage();
+                } else {
+                    this.prevImage();
+                }
+            }
+        }, { passive: true });
+
+        // Mouse wheel navigation
+        this.overlay?.addEventListener('wheel', (e) => {
+            if (!this.isOpen) return;
+            e.preventDefault();
+
+            if (e.deltaY > 0) {
+                this.nextImage();
+            } else {
+                this.prevImage();
+            }
+        }, { passive: false });
+    }
+
+    openGallery(index) {
+        this.currentIndex = index;
+        this.isOpen = true;
+        this.showImage();
+        this.overlay?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeGallery() {
+        this.isOpen = false;
+        this.overlay?.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    nextImage() {
+        if (this.isLoading) return;
+        this.currentIndex = (this.currentIndex + 1) % this.images.length;
+        this.showImage();
+    }
+
+    prevImage() {
+        if (this.isLoading) return;
+        this.currentIndex = this.currentIndex === 0 ? this.images.length - 1 : this.currentIndex - 1;
+        this.showImage();
+    }
+
+    showImage() {
+        if (!this.images[this.currentIndex]) return;
+
+        this.isLoading = true;
+        this.loading.style.display = 'block';
+        this.image.style.opacity = '0.5';
+
+        const currentImage = this.images[this.currentIndex];
+        const newSrc = currentImage.src;
+
+        // Preload image for smooth transition
+        const preloadImg = new Image();
+        preloadImg.onload = () => {
+            this.image.src = newSrc;
+            this.image.alt = currentImage.alt;
+            this.loading.style.display = 'none';
+            this.image.style.opacity = '1';
+            this.isLoading = false;
+            this.updateCounter();
+        };
+
+        preloadImg.onerror = () => {
+            console.error('Failed to load image:', newSrc);
+            this.loading.style.display = 'none';
+            this.image.style.opacity = '1';
+            this.isLoading = false;
+        };
+
+        preloadImg.src = newSrc;
+
+        // Preload next and previous images for performance
+        this.preloadAdjacentImages();
+    }
+
+    preloadAdjacentImages() {
+        const nextIndex = (this.currentIndex + 1) % this.images.length;
+        const prevIndex = this.currentIndex === 0 ? this.images.length - 1 : this.currentIndex - 1;
+
+        // Preload next image
+        if (this.images[nextIndex]) {
+            const nextPreload = new Image();
+            nextPreload.src = this.images[nextIndex].src;
+        }
+
+        // Preload previous image
+        if (this.images[prevIndex]) {
+            const prevPreload = new Image();
+            prevPreload.src = this.images[prevIndex].src;
+        }
+    }
+
+    updateCounter() {
+        if (this.counter) {
+            this.counter.textContent = `${this.currentIndex + 1} / ${this.images.length}`;
+        }
+    }
+}
+
+// Initialize gallery popup
+let galleryPopup = null;
+
 // Make functions globally available for onclick handlers
+window.copyAddress = copyAddress;
 window.copyAccount = copyAccount;
 window.openKakaoMap = openKakaoMap;
 window.openNaverMap = openNaverMap;

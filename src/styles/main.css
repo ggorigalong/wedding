@@ -1,0 +1,803 @@
+/* Custom Font */
+@font-face {
+    font-family: 'OmuDaye';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'OmuDaye', 'Noto Sans KR', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9fbec;
+    overflow: hidden; /* 네이티브 스크롤 완전 차단 */
+    height: 100vh;
+}
+
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Color Variables */
+:root {
+    --primary-orange: #FF6B35;
+    --secondary-green: #4CAF50;
+    --text-dark: #333;
+    --text-light: #666;
+    --bg-light: #f8f8f8;
+}
+
+/* Audio Control */
+.audio-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.audio-btn {
+    background: var(--primary-orange);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.audio-btn:hover {
+    transform: scale(1.1);
+}
+
+.audio-btn.muted {
+    background: #ccc;
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    opacity: 1;
+}
+
+.hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-content {
+    max-width: 90%;
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.couple-names {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.couple-names .divider {
+    color: var(--primary-orange);
+    margin: 0 20px;
+}
+
+.wedding-date {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 15px;
+}
+
+.greeting {
+    font-size: 1.3rem;
+    color: var(--secondary-green);
+    font-weight: 500;
+}
+
+/* Invitation Section */
+.invitation {
+    height: 100vh; /* 모든 섹션 100vh 통일 */
+    padding: 80px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 1;
+    background: rgba(248, 249, 250, 0.3); /* Light gray with transparency */
+    background-image: url('/images/gallery/hero-animation.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    transform: translateY(100vh); /* Y축 직접 제어로 초기에 화면 아래 숨김 */
+    /* transition 제거 - 즉시 이동 */
+}
+
+
+.message {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 50px;
+    color: var(--text-dark);
+}
+
+.parents {
+    margin-bottom: 40px;
+}
+
+.parent-info {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.parent-info span {
+    display: inline-block;
+    margin: 5px 8px;
+}
+
+.parent-label {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.parent-name, .child-name {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.child-label {
+    color: var(--primary-orange);
+    font-weight: 500;
+}
+
+.wedding-info {
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    text-align: left;
+}
+
+.wedding-info p {
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.wedding-info strong {
+    color: var(--primary-orange);
+    margin-right: 10px;
+}
+
+/* Gallery Section */
+.gallery {
+    height: 100vh; /* 모든 섹션 100vh 통일 */
+    padding: 80px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: transparent; /* 배경 투명하게 변경하여 픽셀아트 보이게 */
+    z-index: 200; /* 픽셀아트보다 높게 설정 (픽셀아트는 100, 갤러리는 200) */
+    transform: translateY(200vh); /* Y축 직접 제어로 초기에 더 아래 숨김 */
+    /* transition 제거 - 즉시 이동 */
+}
+
+.section-title {
+    text-align: left; /* Gallery 텍스트 왼쪽 정렬 (기존: center → left) */
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-dark);
+}
+
+.section-subtitle {
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: #999;
+    margin-bottom: 5px;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Gallery Grid Styles - Pinterest Masonry Layout with Overflow Fix */
+.gallery-grid {
+    column-count: 3;
+    column-gap: 10px;
+    max-width: 55vh;
+    height: 55vh;
+    margin: 0 auto;
+    background: #f9fbec;
+    border-radius: 20px;
+    position: relative;
+    /* 핵심: 마스크를 사용해서 컨테이너 영역만 보이게 */
+    -webkit-mask: linear-gradient(to bottom, black 0%, black 100%);
+    mask: linear-gradient(to bottom, black 0%, black 100%);
+    overflow: hidden; /* 컨테이너 바깥은 숨김 */
+}
+
+.gallery-item {
+    break-inside: avoid;
+    margin-bottom: 5px; /* 간격 더 줄임 */
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+    position: relative;
+}
+
+/* 마지막 행의 아이템들은 마진 제거 */
+.gallery-item:nth-last-child(-n+3) {
+    margin-bottom: 0;
+}
+
+.gallery-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Different heights for Pinterest effect - 54vh 기준으로 계산 (여유공간 고려) */
+.gallery-item:nth-child(1) {
+    height: calc(54vh * 1/3); /* 18vh */
+}
+
+.gallery-item:nth-child(2) {
+    height: calc(54vh * 2/3); /* 36vh */
+}
+
+.gallery-item:nth-child(3) {
+    height: calc(54vh * 1/4); /* 13.5vh */
+}
+
+.gallery-item:nth-child(4) {
+    height: calc(54vh * 3/4); /* 40.5vh */
+}
+
+.gallery-item:nth-child(5) {
+    height: calc(54vh * 4/4); /* 54vh */
+}
+
+.gallery-item:nth-child(6) {
+    height: calc(54vh * 1/3); /* 18vh */
+}
+
+.gallery-item:nth-child(7) {
+    height: calc(54vh * 2/3); /* 36vh */
+}
+
+.gallery-item:nth-child(8) {
+    height: calc(54vh * 1/4); /* 13.5vh */
+}
+
+.gallery-item:nth-child(9) {
+    height: calc(54vh * 3/4); /* 40.5vh */
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .gallery-grid {
+        column-count: 2;
+        max-width: 90vw;
+        height: 55vh;
+    }
+}
+
+/* Location Section */
+.location {
+    height: 100vh; /* 모든 섹션 100vh 통일 */
+    padding: 80px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(232, 245, 232, 0.3); /* Light green with transparency */
+    z-index: 1;
+    transform: translateY(300vh); /* Y축 직접 제어 */
+    /* transition 제거 - 즉시 이동 */
+}
+
+.location-info {
+    text-align: center;
+}
+
+.venue-name {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: var(--text-dark);
+}
+
+.address {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--text-light);
+}
+
+.phone {
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    color: var(--text-light);
+}
+
+.map-container {
+    margin: 30px 0;
+}
+
+.map {
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.map-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.map-btn {
+    background: var(--secondary-green);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.map-btn:hover {
+    background: #45a049;
+}
+
+.transportation {
+    margin-top: 40px;
+    text-align: left;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.transportation h4 {
+    color: var(--primary-orange);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.transportation p {
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.transportation strong {
+    color: var(--secondary-green);
+}
+
+/* Account Section */
+.account {
+    height: 100vh; /* 모든 섹션 100vh 통일 */
+    padding: 80px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(255, 243, 224, 0.3); /* Light orange with transparency */
+    z-index: 1;
+    transform: translateY(400vh); /* Y축 직접 제어 */
+    /* transition 제거 - 즉시 이동 */
+}
+
+.account-message {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+.account-list {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.account-item {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.account-item h4 {
+    color: var(--primary-orange);
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.account-details {
+    margin-bottom: 20px;
+}
+
+.account-details span {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.bank {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.number {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+.name {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.copy-btn {
+    background: var(--primary-orange);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: #e55a2b;
+    transform: translateY(-2px);
+}
+
+.copy-btn:active {
+    transform: translateY(0);
+}
+
+
+/* Pixel Character System */
+#pixel-character-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.pixel-character {
+    position: absolute;
+    pointer-events: none;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: -o-crisp-edges;
+
+    /* Prevent anti-aliasing for sharp pixels */
+    -ms-interpolation-mode: nearest-neighbor;
+
+    /* Hardware acceleration for smooth animations */
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+.pixel-character img {
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
+
+    /* Prevent dragging */
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+
+    /* Prevent selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Leafs animation - higher z-index than gallery */
+.pixel-character[data-character="leafs"] {
+    z-index: 300; /* 갤러리(200)보다 높게 설정 */
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    .couple-names {
+        font-size: 2rem;
+    }
+
+    .couple-names .divider {
+        margin: 0 10px;
+    }
+
+    .hero-content {
+        padding: 20px;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .gallery-wrapper {
+        max-width: 320px;
+    }
+
+    .gallery-nav {
+        font-size: 1.5rem;
+        padding: 12px 16px;
+    }
+
+    .gallery-prev {
+        left: -45px;
+    }
+
+    .gallery-next {
+        right: -45px;
+    }
+
+    .gallery-close {
+        font-size: 2rem;
+        top: -40px;
+    }
+}
+
+@media (max-width: 360px) {
+    .couple-names {
+        font-size: 1.8rem;
+    }
+
+    .hero-content {
+        padding: 15px;
+    }
+
+    .gallery-wrapper {
+        max-width: 280px;
+    }
+
+    .gallery-nav {
+        font-size: 1.2rem;
+        padding: 10px 14px;
+    }
+
+    .gallery-prev {
+        left: -35px;
+    }
+
+    .gallery-next {
+        right: -35px;
+    }
+}
+
+/* Debug Section Labels */
+.section-debug {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 107, 53, 0.9);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 1000;
+    font-family: monospace;
+}
+
+.introduction {
+    height: 100vh; /* 모든 섹션 100vh 통일 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    /* transition 제거 - 즉시 이동 */
+}
+
+/* Section 2 - 빈 섹션 (캐릭터 애니메이션만) */
+.empty-section {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-image: url('/images/gallery/hero-animation.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    /* 캐릭터 애니메이션이 표시될 투명한 섹션 */
+}
+
+/* Section 5 - Slime Animation */
+.slime-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url('/images/pixel/empty-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    z-index: 1;
+    transform: translateY(500vh); /* Y축 직접 제어 */
+    /* transition 제거 - 즉시 이동 */
+}
+
+/* Section 3 - 신랑 */
+#section-3.introduction {
+    background-image: url('/images/pixel/empty-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    transform: translateY(500vh); /* Y축 직접 제어 */
+}
+
+
+.intro-content {
+    height: 100vh; /* 전체 화면 높이 사용 */
+    position: relative;
+}
+
+.intro-text {
+    position: absolute; /* 섹션 기준으로 배치 */
+    width: 100vw; /* 전체 viewport width 사용 */
+    height: 100vh; /* 전체 화면 높이 */
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    top: 0;
+    z-index: 10;
+    /* 컨테이너 제약 벗어나기 */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.intro-text.left {
+    justify-content: flex-start; /* 좌측 정렬 */
+    padding-left: 16.67vw; /* 좌측 1/6 지점 (1/3의 중앙) */
+}
+
+.intro-text.right {
+    justify-content: flex-end; /* 우측 정렬 */
+    padding-right: 16.67vw; /* 우측 1/6 지점 (우측 1/3의 중앙) */
+}
+
+.intro-text.center {
+    justify-content: center; /* 중앙 정렬 */
+}
+
+/* 세로쓰기 애니메이션 스타일 */
+.intro-text.vertical {
+    align-items: center; /* X축 가운데 정렬 */
+    justify-content: flex-start; /* Y축은 상단 정렬 */
+    padding: 0; /* 패딩 제거 */
+    padding-top: 25vh; /* 1/4 높이 위치 */
+}
+
+/* Section-3 텍스트 블록 초기 숨김 */
+#groom-text > div {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+#groom-text > div.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.char-container {
+    display: flex;
+    flex-direction: column; /* 세로 방향으로 배치 */
+    align-items: center; /* X축 중앙 정렬 */
+    font-size: 44px;
+    font-weight: 300;
+    color: var(--text-dark);
+    gap: 0.2em; /* 글자 간 간격 */
+    position: absolute; /* 절대 위치 */
+    top: 10vh; /* Y축 10vh 위치 (첫글자 "신"이 10vh에) */
+    left: 50%; /* X축 중앙을 위한 기준점 */
+    transform: translateX(-50%); /* X축 완전 중앙 정렬 */
+}
+
+.char {
+    opacity: 0; /* 기본적으로 숨김 */
+    transform: translateY(10px); /* 살짝 아래에서 시작 */
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out; /* 짧고 자연스러운 애니메이션 */
+    display: block;
+    line-height: 1;
+}
+
+.char.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 일반 h2 스타일 (세로쓰기가 아닌 경우) */
+.intro-text:not(.vertical) h2 {
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--text-dark);
+    text-align: center;
+}

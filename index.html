@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이태인 ♥ 하송 - 결혼합니다</title>
+    <meta name="description" content="이태인과 하송의 결혼식에 초대합니다">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="이태인 ♥ 하송 - 결혼합니다">
+    <meta property="og:description" content="2024년 9월 16일, 저희 결혼합니다">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/public/images/gallery/IMG_5688.jpg">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/styles/main.css" as="style">
+    <link rel="preload" href="/public/sounds/song.mp3" as="audio">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+
+    <!-- Main styles -->
+    <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+    <!-- Background Audio -->
+    <audio muted id="bgm" loop>
+        <source src="/sounds/song.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Audio Control -->
+    <div class="audio-control" id="audioControl">
+        <button id="audioToggle" class="audio-btn" aria-label="음악 재생/정지">🎵</button>
+    </div>
+
+    <!-- Main Hero Section -->
+    <section id="section-0" class="hero">
+        <div class="hero-image">
+            <img src="/images/gallery/hero.png" alt="이태인과 하송의 웨딩 사진" loading="eager">
+        </div>
+    </section>
+
+
+    <!-- Invitation Message Section -->
+    <section id="section-1" class="invitation">
+        <div class="section-debug">Section 1</div>
+        <div class="container">
+            <!-- <div class="invitation-text">
+                <p class="message">
+                    평생을 함께 걸어갈 반려자를 만나<br>
+                    소중한 분들과 기쁨을 나누고자 합니다.<br>
+                    바쁘시더라도 참석하시어<br>
+                    저희의 새로운 시작을 축복해 주세요.
+                </p>
+
+                <div class="parents">
+                    <div class="parent-info">
+                        <span class="parent-label">아버지</span> <span class="parent-name">아버지 성명</span>
+                        <span class="parent-label">어머니</span> <span class="parent-name">어머니 성명</span>
+                        <span class="child-label">의 아들</span> <span class="child-name">이태인</span>
+                    </div>
+
+                    <div class="parent-info">
+                        <span class="parent-label">아버지</span> <span class="parent-name">아버지 성명</span>
+                        <span class="parent-label">어머니</span> <span class="parent-name">어머니 성명</span>
+                        <span class="child-label">의 딸</span> <span class="child-name">하송</span>
+                    </div>
+                </div>
+
+                <div class="wedding-info">
+                    <p><strong>일시</strong> 2024년 9월 16일 월요일 오전 11시</p>
+                    <p><strong>장소</strong> 웨딩홀 이름</p>
+                </div>
+            </div> -->
+        </div>
+    </section>
+
+    
+    <section id="section-2" class="empty-section">
+        <div class="section-debug">Section 2</div>
+        <!-- 빈 섹션 - 캐릭터 애니메이션만 표시 -->
+    </section>
+
+    <section id="section-3" class="introduction">
+        <div class="section-debug">Section 3</div>
+        <div class="container">
+            <div class="intro-content">
+                <div class="intro-text center vertical" id="groom-text" style="flex-direction: column;">
+                    <div></div>
+                    <div style="font-size: 36px; color: #ed931e;">결혼식 초대장</div>
+                    <div style="font-size: 24px; color: #f9fbec;">2026.09.16.</div>
+                    <div style="font-size: 24px; color: #f9fbec;">Sun, AM 11:00</div>
+                    <div style="font-size: 24px; color: #f9fbec;">신랑 이태인</div>
+                    <div style="font-size: 24px; color: #f9fbec;"><span style="color: #ffdf47;">♥</span></div>
+                    <div style="font-size: 24px; color: #f9fbec;">신부 하송이</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Slime Animation Section -->
+    <section id="section-5" class="slime-section">
+        <div class="section-debug">Section 5 - Slime</div>
+        <!-- 슬라임 애니메이션이 80vh 위치에 표시됨 -->
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="section-6" class="gallery">
+        <div class="section-debug">Section 6 - Gallery</div>
+        <div class="container">
+            <div class="section-subtitle">Gallery</div>
+            <h2 class="section-title">갤러리</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery1.jpg" alt="웨딩 사진 1" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery2.jpg" alt="웨딩 사진 2" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery3.jpg" alt="웨딩 사진 3" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery1.jpg" alt="웨딩 사진 4" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery2.jpg" alt="웨딩 사진 5" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery3.jpg" alt="웨딩 사진 6" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery1.jpg" alt="웨딩 사진 7" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery2.jpg" alt="웨딩 사진 8" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="/images/gallery/gallery3.jpg" alt="웨딩 사진 9" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location Section -->
+    <section id="section-7" class="location">
+        <div class="section-debug">Section 7 - Location</div>
+        <div class="container">
+            <h2 class="section-title">Location</h2>
+            <div class="location-info">
+                <h3 class="venue-name">웨딩홀 이름</h3>
+                <address class="address">서울 용산구 용산동6가 168-6</address>
+                <p class="phone">Tel. 02-1234-5678</p>
+
+                <div class="map-container">
+                    <div id="map" class="map" style="height: 300px;"></div>
+                    <div class="map-buttons">
+                        <button class="map-btn" onclick="openKakaoMap()" aria-label="카카오맵에서 보기">카카오맵</button>
+                        <button class="map-btn" onclick="openNaverMap()" aria-label="네이버지도에서 보기">네이버지도</button>
+                    </div>
+                </div>
+
+                <div class="transportation">
+                    <h4>교통편</h4>
+                    <p><strong>지하철</strong> 1호선 용산역 1번 출구 도보 5분</p>
+                    <p><strong>주차</strong> 건물 지하 주차장 이용 (3시간 무료)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Account Section -->
+    <section id="section-8" class="account">
+        <div class="section-debug">Section 8 - Account</div>
+        <div class="container">
+            <h2 class="section-title">축의금 안내</h2>
+            <div class="account-info">
+                <p class="account-message">참석이 어려우신 분들을 위해 계좌번호를 안내해 드립니다.</p>
+
+                <div class="account-list">
+                    <div class="account-item">
+                        <h4>신랑측</h4>
+                        <div class="account-details">
+                            <span class="bank">국민은행</span>
+                            <span class="number">123456-78-901234</span>
+                            <span class="name">이태인</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyAccount('123456-78-901234')" aria-label="신랑측 계좌번호 복사">복사</button>
+                    </div>
+
+                    <div class="account-item">
+                        <h4>신부측</h4>
+                        <div class="account-details">
+                            <span class="bank">신한은행</span>
+                            <span class="number">987654-32-109876</span>
+                            <span class="name">하송</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyAccount('987654-32-109876')" aria-label="신부측 계좌번호 복사">복사</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // Kakao Map API Key from environment
+        window.KAKAO_MAP_API_KEY = '6b28d3fe635cd8540e6b76f7ec8833fb';
+    </script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6b28d3fe635cd8540e6b76f7ec8833fb&libraries=services"></script>
+    <script type="module" src="/src/scripts/main.js"></script>
+</body>
+</html>

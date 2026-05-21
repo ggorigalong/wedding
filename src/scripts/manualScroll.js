@@ -1,0 +1,549 @@
+// 완전 수동 스크롤 시스템
+// 모든 섹션을 Y축 transform으로 직접 제어
+
+class ManualScrollManager {
+    constructor() {
+        this.currentSection = 0; // 현재 섹션 인덱스 (0: hero, 1: section1 animation, 2: idle/run area)
+        this.maxSections = 8; // 총 섹션 수 (section-0 ~ section-8)
+        this.isTransitioning = false; // 전환 중 여부
+        this.isAnimationLocked = false; // 애니메이션 재생 중 잠금
+        this.scrollSensitivity = 50; // 스크롤 감도
+        this.virtualScrollY = 0; // 가상 스크롤 위치 (0~100vh 단위)
+        this.characterScrollProgress = 0; // section-2에서 캐릭터 Y축 진행도
+        this.section3ScrollProgress = 0; // section-3에서 캐릭터 Y축 진행도
+
+        // 디바이스별 스크롤 속도 설정
+        this.trackpadSpeed = 6; // 트랙패드 속도 (더 느리게)
+        this.touchSpeed = 10; // 터치 속도 (절반으로 감소)
+        this.keyboardSpeed = 12.5; // 키보드 속도 (기존 유지)
+
+        // 섹션 정보
+        this.sections = [
+            { id: 'section-0', element: null, targetY: 0 },
+            { id: 'section-1', element: null, targetY: 0 },
+            { id: 'section-2', element: null, targetY: 0 },
+            { id: 'section-3', element: null, targetY: 0 },
+            { id: 'section-4', element: null, targetY: 0 },
+            { id: 'section-5', element: null, targetY: 0 },
+            { id: 'section-6', element: null, targetY: 0 },
+            { id: 'section-7', element: null, targetY: 0 },
+            { id: 'section-8', element: null, targetY: 0 }
+        ];
+
+        // 터치 관련 변수
+        this.touchStartY = 0;
+        this.touchEndY = 0;
+        this.touchLastY = 0; // 이전 터치 위치 (실시간 이동용)
+        this.isTouching = false; // 터치 중 여부
+        this.minSwipeDistance = 50; // 최소 스와이프 거리
+
+        // 관성 스크롤 관련 변수
+        this.touchVelocity = 0; // 터치 속도
+        this.lastTouchTime = 0; // 마지막 터치 시간
+        this.momentumAnimation = null; // 관성 애니메이션 ID
+
+        // 스크롤 잠금 관련
+        this.scrollLocked = false; // 스크롤 잠금 상태
+        this.lockReason = ''; // 잠금 이유
+    }
+
+    init() {
+        this.setupSections();
+        this.setupEventListeners();
+        this.handleQueryString(); // 쿼리스트링 처리
+        this.updateSectionPositions();
+        console.log('🎮 Manual Scroll System initialized');
+    }
+
+    // 모든 섹션 요소 가져오기
+    setupSections() {
+        this.sections.forEach(section => {
+            section.element = document.getElementById(section.id);
+            if (!section.element) {
+                console.warn(`⚠️ Section ${section.id} not found`);
+            }
+        });
+    }
+
+    // 쿼리스트링 처리 (예: ?section=3)
+    handleQueryString() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetSection = urlParams.get('section');
+
+        if (targetSection !== null) {
+            const sectionNumber = parseInt(targetSection);
+            if (sectionNumber >= 0 && sectionNumber <= this.maxSections) {
+                console.log(`🔗 Query string detected: starting from section ${sectionNumber}`);
+                this.currentSection = sectionNumber;
+                this.virtualScrollY = sectionNumber * 100;
+
+                // 섹션별 초기 상태 설정
+                setTimeout(() => {
+                    this.initializeSectionState(sectionNumber);
+                }, 100);
+            } else {
+                console.warn(`⚠️ Invalid section number in query string: ${targetSection}`);
+            }
+        }
+    }
+
+    // 섹션별 초기 상태 설정
+    initializeSectionState(sectionNumber) {
+        if (sectionNumber === 0) {
+            // Section-0: Hero - 아무것도 안함
+            console.log('🏠 Starting from Hero section');
+        } else if (sectionNumber === 1) {
+            // Section-1: 메인 애니메이션 완료 상태로 시작
+            console.log('🎬 Starting from Section-1 (animation completed state)');
+        } else if (sectionNumber === 5) {
+            // Section-5: 슬라임 애니메이션 표시
+            console.log(`🟢 Starting from Section-5 with slime animation`);
+            if (window.pixelCharacterManager) {
+                window.pixelCharacterManager.switchToSlimeState();
+            }
+        } else if (sectionNumber >= 2) {
+            // Section-2 이상: 캐릭터 표시
+            console.log(`🏃 Starting from Section-${sectionNumber} with character`);
+            if (window.pixelCharacterManager) {
+                const startHeight = sectionNumber === 2 ? 60 : -25;
+                window.pixelCharacterManager.switchToSectionState(sectionNumber, startHeight);
+            }
+        }
+    }
+
+    // 이벤트 리스너 설정
+    setupEventListeners() {
+        // 마우스 휠 이벤트
+        document.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+
+        // 터치 이벤트 (모바일 스와이프)
+        document.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+        document.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+        document.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+
+        // 키보드 이벤트
+        document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+
+        // 네이티브 스크롤 완전 차단
+        document.addEventListener('scroll', (e) => {
+            window.scrollTo(0, 0);
+            e.preventDefault();
+        }, { passive: false });
+    }
+
+    // 마우스 휠 처리
+    handleWheel(e) {
+        e.preventDefault();
+
+        if (this.isTransitioning) return;
+
+        const delta = e.deltaY;
+        this.handleScrollDelta(delta, 'trackpad');
+    }
+
+    // 터치 시작
+    handleTouchStart(e) {
+        if (e.touches.length === 1) {
+            this.touchStartY = e.touches[0].clientY;
+            this.touchLastY = e.touches[0].clientY; // 실시간 이동용 초기화
+            this.isTouching = true;
+
+            // 관성 애니메이션 중단
+            if (this.momentumAnimation) {
+                cancelAnimationFrame(this.momentumAnimation);
+                this.momentumAnimation = null;
+            }
+
+            this.touchVelocity = 0;
+            this.lastTouchTime = Date.now();
+        }
+    }
+
+    // 터치 이동 (실시간 스크롤 처리)
+    handleTouchMove(e) {
+        e.preventDefault(); // 네이티브 스크롤 방지
+
+        if (!this.isTouching || e.touches.length !== 1) return;
+
+        const currentY = e.touches[0].clientY;
+        const currentTime = Date.now();
+        const delta = this.touchLastY - currentY; // 이전 프레임 대비 이동량
+
+        // 실시간으로 스크롤 처리
+        if (Math.abs(delta) > 1) { // 최소 1px 이상 이동시만
+            this.handleScrollDelta(delta, 'touch');
+
+            // 속도 계산 (픽셀/밀리초)
+            const timeDiff = currentTime - this.lastTouchTime;
+            if (timeDiff > 0) {
+                this.touchVelocity = delta / timeDiff;
+            }
+
+            this.touchLastY = currentY; // 현재 위치를 이전 위치로 업데이트
+            this.lastTouchTime = currentTime;
+        }
+    }
+
+    // 터치 종료 (관성 스크롤 활성화 - 미끄러지는 효과)
+    handleTouchEnd(e) {
+        this.isTouching = false;
+        this.touchEndY = e.changedTouches[0].clientY;
+
+        // 관성 스크롤 시작 (속도가 충분히 클 때만)
+        if (Math.abs(this.touchVelocity) > 0.1) {
+            this.startMomentumScroll();
+            console.log('👆 Touch ended - starting momentum scroll');
+        } else {
+            console.log('👆 Touch ended - no momentum (velocity too low)');
+        }
+    }
+
+    // 키보드 처리 (방향키 + 숫자키)
+    handleKeyboard(e) {
+        if (this.isTransitioning) return;
+
+        switch(e.key) {
+            case 'ArrowDown':
+            case 'PageDown':
+                e.preventDefault();
+                this.handleScrollDelta(12.5, 'keyboard'); // 4배 느린 정규화된 속도
+                break;
+            case 'ArrowUp':
+            case 'PageUp':
+                e.preventDefault();
+                this.handleScrollDelta(-12.5, 'keyboard'); // 4배 느린 정규화된 속도
+                break;
+            // 숫자키로 직접 섹션 이동 (개발용)
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+                const sectionNumber = parseInt(e.key);
+                if (sectionNumber <= this.maxSections) {
+                    e.preventDefault();
+                    console.log(`⌨️ Keyboard shortcut: jumping to section ${sectionNumber}`);
+                    this.goToSection(sectionNumber);
+                }
+                break;
+        }
+    }
+
+    // 스크롤 델타 처리 (공통 로직)
+    handleScrollDelta(delta, inputType = 'unknown') {
+        // 애니메이션 재생 중에는 스크롤 차단
+        if (this.isAnimationLocked) {
+            console.log('🔒 Scroll blocked - animation playing');
+            return;
+        }
+
+        // 전환 중이거나 스크롤 잠금 중에는 스크롤 차단
+        if (this.isTransitioning || this.scrollLocked) {
+            console.log(`🔒 Scroll blocked - ${this.isTransitioning ? 'transitioning' : `locked (${this.lockReason})`}`);
+            return;
+        }
+
+        // 디바이스별 속도 설정
+        let speed;
+        switch(inputType) {
+            case 'trackpad':
+                speed = this.trackpadSpeed;
+                break;
+            case 'touch':
+                speed = this.touchSpeed;
+                break;
+            case 'keyboard':
+                speed = this.keyboardSpeed;
+                break;
+            default:
+                speed = this.trackpadSpeed; // 기본값은 트랙패드
+        }
+
+        // 일정한 속도로 정규화 (디바이스별 다른 속도)
+        const scrollDirection = delta > 0 ? 'down' : 'up';
+        const normalizedDelta = scrollDirection === 'down' ? speed : -speed;
+        const scrollMagnitude = Math.abs(normalizedDelta);
+
+        console.log(`🔄 Scroll: ${scrollDirection} (${inputType}: ${scrollMagnitude}), Section: ${this.currentSection}`);
+
+        // 섹션별 특별 처리
+        if (this.currentSection === 0) {
+            // Section-0 (Hero) → Section-1 트리거
+            if (scrollDirection === 'down' && scrollMagnitude > 10) {
+                this.triggerSection1Transition();
+            }
+        } else if (this.currentSection === 5) {
+            // Section-5: 슬라임 애니메이션 (idle/run 정책 적용)
+            this.handleCharacterMovement(normalizedDelta, this.currentSection);
+        } else if (this.currentSection >= 2) {
+            // Section-2부터는 모든 섹션에서 캐릭터 Y축 이동 (Section-5 제외)
+            this.handleCharacterMovement(normalizedDelta, this.currentSection);
+        } else {
+            // Section-0, Section-1 외의 다른 섹션들은 일반적인 섹션 전환
+            const targetSection = scrollDirection === 'down' ?
+                this.currentSection + 1 : this.currentSection - 1;
+
+            if (targetSection >= 0 && targetSection <= this.maxSections) {
+                this.goToSection(targetSection);
+            }
+        }
+    }
+
+    // 특정 섹션으로 이동
+    goToSection(sectionIndex) {
+        if (sectionIndex < 0 || sectionIndex > this.maxSections || this.isTransitioning) {
+            return;
+        }
+
+        console.log(`🚀 Moving to section ${sectionIndex} from ${this.currentSection}`);
+
+        this.isTransitioning = true;
+        this.currentSection = sectionIndex;
+        this.virtualScrollY = sectionIndex * 100; // 스크롤 위치도 조정
+
+        // URL 업데이트 (히스토리 추가하지 않고)
+        this.updateURL(sectionIndex);
+
+        // 모든 섹션의 위치 업데이트
+        this.updateSectionPositions();
+
+        // 캐릭터 전환 애니메이션 트리거
+        this.triggerCharacterTransition();
+
+        // 전환 완료 후 잠금 해제 (즉시)
+        setTimeout(() => {
+            this.isTransitioning = false;
+        }, 50); // 즉시 해제 (약간의 딜레이만)
+    }
+
+    // URL 업데이트 (쿼리스트링 업데이트 비활성화)
+    updateURL(sectionIndex) {
+        // 쿼리스트링 업데이트 비활성화 - 개발 편의를 위해서만 유지
+        // console.log(`🔗 URL update skipped for section ${sectionIndex}`);
+        return; // 아무것도 하지 않음
+    }
+
+    // 모든 섹션의 Y축 위치 업데이트
+    updateSectionPositions() {
+        this.sections.forEach((section, index) => {
+            if (!section.element) return;
+
+            // 현재 섹션을 기준으로 상대적 위치 계산
+            const relativePosition = index - this.currentSection;
+            const targetY = relativePosition * 100; // 100vh 단위
+
+            // Y축 transform 적용
+            section.element.style.transform = `translateY(${targetY}vh)`;
+            section.targetY = targetY;
+
+            console.log(`📍 Section ${index}: translateY(${targetY}vh)`);
+        });
+    }
+
+    // 캐릭터 위치 업데이트 (현재 섹션 내에서의 미세한 움직임)
+    updateCharacterPosition() {
+        // 픽셀 캐릭터 매니저와 연동
+        if (window.pixelCharacterManager) {
+            const sectionProgress = (this.virtualScrollY % 100) / 100; // 0~1
+            window.pixelCharacterManager.updateCharacterByManualScroll(sectionProgress);
+        }
+    }
+
+    // 캐릭터 전환 애니메이션 트리거
+    triggerCharacterTransition() {
+        if (window.pixelCharacterManager) {
+            if (this.currentSection === 5) {
+                // Section-5로 전환시 슬라임 상태로
+                window.pixelCharacterManager.switchToSlimeState();
+            } else {
+                // 다른 섹션은 기본 전환
+                window.pixelCharacterManager.handleSectionTransition(this.currentSection);
+            }
+        }
+    }
+
+    // Section-0에서 Section-1으로의 특별 전환
+    triggerSection1Transition() {
+        console.log('🎬 Triggering Section-1 main animation');
+
+        // 섹션 이동
+        this.goToSection(1);
+
+        // 애니메이션 잠금 활성화
+        this.isAnimationLocked = true;
+
+        // 픽셀 캐릭터 매니저에 메인 애니메이션 시작 요청
+        if (window.pixelCharacterManager) {
+            window.pixelCharacterManager.playMainAnimation(() => {
+                // 애니메이션 완료 콜백
+                console.log('🎉 Section-1 animation completed, moving to Section-2');
+
+                // 애니메이션 잠금 해제
+                this.isAnimationLocked = false;
+
+                // Section-2로 자동 이동 (캐릭터 시작)
+                this.goToSection(2);
+
+                // Section-2에서 idle 상태로 시작 (60% 높이에서)
+                if (window.pixelCharacterManager) {
+                    window.pixelCharacterManager.switchToSectionState(2, 60);
+                }
+            });
+        }
+    }
+
+    // 모든 섹션에서 캐릭터 Y축 이동 처리
+    handleCharacterMovement(delta, currentSectionIndex) {
+        // 섹션별로 개별 진행도 관리
+        const sectionKey = `section${currentSectionIndex}ScrollProgress`;
+        if (!this[sectionKey]) {
+            this[sectionKey] = 0;
+        }
+
+        // 스크롤 방향에 따라 해당 섹션의 Y축 진행도 업데이트 (4배 더 느리게)
+        this[sectionKey] += delta * 0.002; // 0.002 → 0.0005 (4배 감소)
+        this[sectionKey] = Math.max(0, Math.min(1.5, this[sectionKey])); // 0~1.5 범위
+
+        console.log(`🏃 Section-${currentSectionIndex} Character Y progress: ${(this[sectionKey] * 100).toFixed(1)}%`);
+
+        // 포털 시스템: 1.2 이상이면 다음 섹션으로 전환
+        if (this[sectionKey] >= 1.2) {
+            console.log(`🚪 Character reached portal (120%) - moving to Section-${currentSectionIndex + 1}`);
+            this.triggerPortalTransition(currentSectionIndex);
+            return;
+        }
+
+        // 픽셀 캐릭터 매니저에 움직임 알림
+        if (window.pixelCharacterManager) {
+            const startHeight = currentSectionIndex === 2 ? 60 : -25; // Section-2는 60%, 나머지는 상단 바깥(-25%)
+            window.pixelCharacterManager.updateSectionMovement(delta, this[sectionKey], currentSectionIndex, startHeight);
+        }
+    }
+
+    // 포털 전환 (섹션간 이동)
+    triggerPortalTransition(fromSection) {
+        if (this.isTransitioning) return;
+
+        const nextSection = fromSection + 1;
+        if (nextSection > this.maxSections) {
+            console.log('🚫 Cannot move beyond last section');
+            return;
+        }
+
+        console.log(`🌀 Portal transition triggered - Section-${fromSection} → Section-${nextSection}`);
+
+        // 캐릭터 숨기기
+        if (window.pixelCharacterManager) {
+            window.pixelCharacterManager.hideCharacter();
+        }
+
+        // 해당 섹션 진행도 리셋
+        const sectionKey = `section${fromSection}ScrollProgress`;
+        this[sectionKey] = 0;
+
+        // 다음 섹션으로 이동
+        this.goToSection(nextSection);
+
+        // 다음 섹션에서 캐릭터 시작 (섹션별 시작 위치 다르게)
+        setTimeout(() => {
+            if (window.pixelCharacterManager) {
+                const startHeight = nextSection === 2 ? 60 : -25; // Section-2는 60%, 나머지는 상단 바깥
+                window.pixelCharacterManager.switchToSectionState(nextSection, startHeight);
+            }
+        }, 100);
+    }
+
+    // 애니메이션 잠금 제어
+    lockForAnimation() {
+        this.isAnimationLocked = true;
+    }
+
+    unlockAfterAnimation() {
+        this.isAnimationLocked = false;
+    }
+
+    // 외부에서 섹션 이동 호출
+    nextSection() {
+        if (!this.isAnimationLocked) {
+            this.goToSection(this.currentSection + 1);
+        }
+    }
+
+    prevSection() {
+        if (!this.isAnimationLocked) {
+            this.goToSection(this.currentSection - 1);
+        }
+    }
+
+    // 관성 스크롤 애니메이션
+    startMomentumScroll() {
+        const deceleration = 0.85; // 감속 계수 (0.95→0.85, 더 빨리 멈춤)
+        const minVelocity = 0.01; // 최소 속도 (이하로 떨어지면 멈춤)
+        const velocityScale = 0.3; // 속도 스케일 (0.3, 더 느리게)
+
+        const animate = () => {
+            if (this.isTransitioning || this.isTouching) {
+                this.momentumAnimation = null;
+                return;
+            }
+
+            // 속도가 충분히 작아지면 멈춤
+            if (Math.abs(this.touchVelocity) < minVelocity) {
+                this.momentumAnimation = null;
+                return;
+            }
+
+            // 관성 스크롤 적용 (속도를 delta로 변환, 더 느리게)
+            const delta = this.touchVelocity * 16 * velocityScale; // 속도 스케일 적용
+            this.handleScrollDelta(delta, 'touch');
+
+            // 속도 감속
+            this.touchVelocity *= deceleration;
+
+            // 다음 프레임 예약
+            this.momentumAnimation = requestAnimationFrame(animate);
+        };
+
+        this.momentumAnimation = requestAnimationFrame(animate);
+        console.log(`🚀 Momentum scroll started with velocity: ${this.touchVelocity.toFixed(3)}`);
+    }
+
+    // 현재 상태 정보
+    getState() {
+        return {
+            currentSection: this.currentSection,
+            virtualScrollY: this.virtualScrollY,
+            isTransitioning: this.isTransitioning,
+            isAnimationLocked: this.isAnimationLocked,
+            characterScrollProgress: this.characterScrollProgress,
+            scrollLocked: this.scrollLocked,
+            lockReason: this.lockReason
+        };
+    }
+
+    // 스크롤 잠금
+    lockScroll(reason = 'unknown') {
+        this.scrollLocked = true;
+        this.lockReason = reason;
+        console.log(`🔒 Scroll locked: ${reason}`);
+
+        // 진행 중인 관성 애니메이션 중단
+        if (this.momentumAnimation) {
+            cancelAnimationFrame(this.momentumAnimation);
+            this.momentumAnimation = null;
+        }
+    }
+
+    // 스크롤 잠금 해제
+    unlockScroll(reason = 'unknown') {
+        this.scrollLocked = false;
+        this.lockReason = '';
+        console.log(`🔓 Scroll unlocked: ${reason}`);
+    }
+}
+
+export default ManualScrollManager;

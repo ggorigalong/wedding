@@ -14,7 +14,7 @@ class ManualScrollManager {
 
         // 디바이스별 스크롤 속도 설정
         this.trackpadSpeed = 6; // 트랙패드 속도 (더 느리게)
-        this.touchSpeed = 10; // 터치 속도 (절반으로 감소)
+        this.touchSpeed = 5; // 터치 속도 (두배로 감소)
         this.keyboardSpeed = 12.5; // 키보드 속도 (기존 유지)
 
         // 섹션 정보 (Section-4 제거됨)

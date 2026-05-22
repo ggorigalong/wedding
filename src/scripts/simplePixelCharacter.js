@@ -1037,6 +1037,8 @@ class SimplePixelCharacterManager {
         img.style.cssText = `
             display: block;
             image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
             -webkit-user-drag: none;
             -webkit-user-select: none;
             user-select: none;

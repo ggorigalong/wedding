@@ -2,6 +2,7 @@
 let bgm = null;
 let audioToggle = null;
 let isPlaying = false;
+let userHasInteracted = false;
 
 // Map functionality
 let map;
@@ -16,28 +17,114 @@ const weddingLocation = {
 // Audio control functionality
 function initAudioControl() {
     bgm = document.getElementById('bgm');
-    audioToggle = document.getElementById('audioToggle');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
 
-    if (audioToggle) {
-        audioToggle.addEventListener('click', toggleAudio);
+    if (bgm) {
+        // BGM 초기 설정: 볼륨 0에서 시작 (나중에 페이드인)
+        bgm.volume = 0;
+        bgm.load(); // 음원 미리 로드
+    }
+
+    if (playBtn) {
+        playBtn.addEventListener('click', playAudio);
+    }
+
+    if (pauseBtn) {
+        pauseBtn.addEventListener('click', pauseAudio);
     }
 }
 
-function toggleAudio() {
+function playAudio() {
     if (!bgm) return;
 
+    bgm.volume = 0.7; // 직접 재생시에는 바로 볼륨 설정
+    bgm.play().catch(e => {
+        console.log('Audio play failed:', e);
+    });
+
+    isPlaying = true;
+    updatePlayerUI();
+}
+
+function pauseAudio() {
+    if (!bgm) return;
+
+    bgm.pause();
+    isPlaying = false;
+    updatePlayerUI();
+}
+
+function updatePlayerUI() {
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const soundwave = document.getElementById('soundwave');
+
     if (isPlaying) {
-        bgm.pause();
-        audioToggle.textContent = '🔇';
-        audioToggle.classList.add('muted');
-        isPlaying = false;
+        playBtn.style.display = 'none';
+        pauseBtn.style.display = 'flex';
+        soundwave.classList.add('active');
     } else {
-        bgm.play().catch(e => {
-            console.log('Audio play failed:', e);
+        playBtn.style.display = 'flex';
+        pauseBtn.style.display = 'none';
+        soundwave.classList.remove('active');
+    }
+}
+
+// BGM 페이드인 함수
+function fadeinBGM(duration = 3000) {
+    if (!bgm) {
+        console.log('❌ BGM element not found');
+        return;
+    }
+
+    console.log('🔍 DEBUG fadeinBGM: userHasInteracted =', userHasInteracted);
+
+    if (!userHasInteracted) {
+        console.log('⚠️ Cannot auto-play audio - user interaction required first');
+        console.log('🔍 Please click/tap anywhere on the page first');
+        return;
+    }
+
+    console.log('🎵 Starting BGM fadein...');
+
+    // BGM 시작
+    bgm.currentTime = 0;
+    bgm.volume = 0;
+
+    const playPromise = bgm.play();
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log('🎵 BGM started successfully');
+            isPlaying = true;
+
+            // 새로운 플레이어 UI 업데이트
+            updatePlayerUI();
+
+            // 페이드인 효과
+            const startTime = performance.now();
+            const targetVolume = 0.7; // 목표 볼륨
+
+            function fadeStep(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // 부드러운 페이드인 곡선
+                const volume = targetVolume * Math.sin(progress * Math.PI / 2);
+                bgm.volume = volume;
+
+                if (progress < 1) {
+                    requestAnimationFrame(fadeStep);
+                } else {
+                    console.log(`🎵 BGM fadein completed (${duration}ms)`);
+                }
+            }
+
+            requestAnimationFrame(fadeStep);
+
+        }).catch(e => {
+            console.log('❌ BGM play failed:', e);
         });
-        audioToggle.textContent = '🎵';
-        audioToggle.classList.remove('muted');
-        isPlaying = true;
     }
 }
 
@@ -338,20 +425,48 @@ document.addEventListener('DOMContentLoaded', function() {
     initKakaoMap();
     initLazyLoading();
 
+    // BGM 관련 함수와 변수들을 전역에서 접근 가능하도록 설정
+    window.fadeinBGM = fadeinBGM;
+    window.bgm = bgm;
+    window.isPlaying = isPlaying;
+
+    // userHasInteracted를 업데이트하는 함수도 전역에 추가
+    window.getUserInteracted = () => userHasInteracted;
+
     // 수동 스크롤 시스템은 import에서 자동 초기화됨
     // 픽셀 캐릭터 시스템도 import에서 자동 초기화됨
 
-    // 음악 자동재생 설정
-    let hasPlayed = false;
-    const playAudio = () => {
-        if (!hasPlayed) {
-            toggleAudio();
-            hasPlayed = true;
+    // 음악 자동재생을 위한 사용자 상호작용 감지
+    const enableAudioContext = () => {
+        if (!userHasInteracted) {
+            userHasInteracted = true;
+            console.log('✅ User interaction detected - audio context enabled');
+
+            // BGM을 미리 로드하고 준비상태로 만들기
+            if (bgm) {
+                bgm.load();
+                // 브라우저에 따라 play/pause로 오디오 컨텍스트 활성화
+                const playPromise = bgm.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        bgm.pause();
+                        bgm.currentTime = 0;
+                        console.log('🎵 Audio context prepared for auto-play');
+                    }).catch(e => {
+                        console.log('Audio context preparation failed:', e);
+                    });
+                }
+            }
         }
     };
 
-    document.addEventListener('click', playAudio, { once: true });
-    document.addEventListener('touchstart', playAudio, { once: true });
+    // 다양한 사용자 상호작용 이벤트 감지
+    document.addEventListener('click', enableAudioContext, { once: true });
+    document.addEventListener('touchstart', enableAudioContext, { once: true });
+    document.addEventListener('keydown', enableAudioContext, { once: true });
+
+    // 전역 변수들 설정
+    window.userHasInteracted = userHasInteracted;
 
     // Initialize gallery popup
     galleryPopup = new GalleryPopup();

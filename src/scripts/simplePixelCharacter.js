@@ -1388,14 +1388,18 @@ class SimplePixelCharacterManager {
             this.sectionTransitionTimer = null;
         }
 
-        this.characterY = startHeight;
-        this.currentSection = sectionIndex;
-
-        // Section-2로 전환할 때 통합 캐릭터 다시 보이기 (section1 애니메이션 완료 후)
+        // Section-2는 60% 위치에서 시작, 다른 섹션은 startHeight에서 시작
         if (sectionIndex === 2) {
+            this.characterY = 60; // Section-2는 60% 위치에서 시작
+            this.updateUnifiedCharacterPosition(); // DOM 위치 즉시 업데이트
+            console.log('🎯 Section-2 character positioned at 60% (equivalent to 0.68 progress)');
             this.showUnifiedCharacter();
             console.log('👀 Unified character shown after section1 animation completion');
+        } else {
+            this.characterY = startHeight;
         }
+
+        this.currentSection = sectionIndex;
 
         // 스크롤 중이면 run, 아니면 idle로 시작
         const initialState = this.isScrolling ? 'lee-run' : 'lee-idle';
@@ -1405,7 +1409,7 @@ class SimplePixelCharacterManager {
 
     // 호환성을 위한 기존 메서드들
     switchToIdleState() {
-        this.switchToSectionState(2, 60);
+        this.switchToSectionState(2, -25);
     }
 
     switchToSection3State() {
@@ -1523,13 +1527,22 @@ class SimplePixelCharacterManager {
         // Y 위치 업데이트 (일반 캐릭터는 모든 섹션에서 동일)
         // hit-idle 전환 시에는 위치 업데이트 스킵
         if (!this.skipPositionUpdate) {
-            // 0~1: startHeight~100% (화면 내)
-            // 1~1.5: 100%~125% (화면 밖으로 이동)
-            if (yProgress <= 1) {
-                const range = 100 - startHeight; // 이동 범위 계산
-                this.characterY = startHeight + (yProgress * range);
+            if (sectionIndex === 2) {
+                // Section2 특별 처리: 60%에서 시작하여 100%까지 이동
+                // yProgress 0~1을 characterY 60%~100%로 매핑
+                if (yProgress <= 1) {
+                    this.characterY = 60 + (yProgress * 40); // 60% + (0~1 * 40%) = 60%~100%
+                } else {
+                    this.characterY = 100 + ((yProgress - 1) * 50); // 100%~125% (화면 밖)
+                }
             } else {
-                this.characterY = 100 + ((yProgress - 1) * 50); // 화면 밖으로 이동
+                // 다른 섹션: -25%~100% (기존 로직)
+                if (yProgress <= 1) {
+                    const range = 100 - startHeight; // 이동 범위 계산
+                    this.characterY = startHeight + (yProgress * range);
+                } else {
+                    this.characterY = 100 + ((yProgress - 1) * 50); // 화면 밖으로 이동
+                }
             }
         } else {
             console.log('⏭️ Skipping position update to preserve hit-idle position');

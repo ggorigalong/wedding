@@ -42,31 +42,117 @@ body:has(#initial-loading) {
 }
 
 /* Audio Control */
-.audio-control {
+/* Music Player Bar */
+.music-player {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
     z-index: 1000;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.audio-btn {
-    background: var(--primary-orange);
+.music-info {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    gap: 10px;
+    overflow: hidden;
+}
+
+.soundwave {
+    opacity: 1; /* 항상 보이게 */
+    transition: opacity 0.3s ease;
+}
+
+.soundwave.active {
+    opacity: 1;
+}
+
+.soundwave svg {
+    display: block;
+}
+
+.bar {
+    transform-origin: bottom;
+    /* 기본적으로 애니메이션 없음 */
+}
+
+/* 재생 중일 때만 애니메이션 실행 */
+.soundwave.active .bar1 {
+    animation: soundwave 0.8s infinite ease-in-out alternate;
+    animation-delay: 0s;
+}
+
+.soundwave.active .bar2 {
+    animation: soundwave 0.6s infinite ease-in-out alternate;
+    animation-delay: 0.1s;
+}
+
+.soundwave.active .bar3 {
+    animation: soundwave 1s infinite ease-in-out alternate;
+    animation-delay: 0.3s;
+}
+
+.soundwave.active .bar4 {
+    animation: soundwave 0.7s infinite ease-in-out alternate;
+    animation-delay: 0.2s;
+}
+
+.soundwave.active .bar5 {
+    animation: soundwave 0.9s infinite ease-in-out alternate;
+    animation-delay: 0.4s;
+}
+
+@keyframes soundwave {
+    0% {
+        transform: scaleY(0.3);
+    }
+    100% {
+        transform: scaleY(1);
+    }
+}
+
+.song-title {
+    color: white;
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 0.9;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.play-btn, .pause-btn {
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
+    color: white;
     cursor: pointer;
-    box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
-    transition: transform 0.3s ease;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.audio-btn:hover {
-    transform: scale(1.1);
+.play-btn:hover, .pause-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
-.audio-btn.muted {
-    background: #ccc;
+.play-btn svg, .pause-btn svg {
+    opacity: 0.9;
+}
+
+.play-btn:hover svg, .pause-btn:hover svg {
+    opacity: 1;
 }
 
 /* Hero Section */
@@ -1120,19 +1206,6 @@ body:has(#initial-loading) {
 }
 
 /* Debug Section Labels */
-.section-debug {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(255, 107, 53, 0.9);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-    font-weight: bold;
-    z-index: 1000;
-    font-family: monospace;
-}
 
 .introduction {
     height: 100vh; /* 모든 섹션 100vh 통일 */

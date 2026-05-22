@@ -125,7 +125,7 @@ class ManualScrollManager {
             // Section-2 이상: 캐릭터 표시
             console.log(`🏃 Starting from Section-${sectionNumber} with character`);
             if (window.pixelCharacterManager) {
-                const startHeight = sectionNumber === 2 ? 60 : -25;
+                const startHeight = -25; // 모든 섹션 통일
                 window.pixelCharacterManager.switchToSectionState(sectionNumber, startHeight);
             }
         }
@@ -755,15 +755,29 @@ class ManualScrollManager {
                 // 애니메이션 완료 콜백
                 console.log('🎉 Section-1 animation completed, moving to Section-2');
 
+                // BGM 페이드인 시작
+                console.log('🔍 DEBUG: Checking BGM function availability:', {
+                    fadeinBGM: !!window.fadeinBGM,
+                    bgm: !!window.bgm,
+                    isPlaying: window.isPlaying
+                });
+
+                if (window.fadeinBGM) {
+                    console.log('🎵 Starting BGM fadein after section1 animation');
+                    window.fadeinBGM(3000); // 3초에 걸쳐 페이드인
+                } else {
+                    console.error('❌ window.fadeinBGM function not found!');
+                }
+
                 // 애니메이션 잠금 해제
                 this.isAnimationLocked = false;
 
                 // Section-2로 자동 이동 (캐릭터 시작)
                 this.goToSection(2);
 
-                // Section-2에서 idle 상태로 시작 (60% 높이에서)
+                // Section-2에서 idle 상태로 시작 (-25% 높이에서, 하지만 이미 진행된 상태)
                 if (window.pixelCharacterManager) {
-                    window.pixelCharacterManager.switchToSectionState(2, 60);
+                    window.pixelCharacterManager.switchToSectionState(2, -25);
                 }
             });
         } else {
@@ -825,7 +839,7 @@ class ManualScrollManager {
 
         // 픽셀 캐릭터 매니저에 움직임 알림
         if (window.pixelCharacterManager) {
-            const startHeight = currentSectionIndex === 2 ? 60 : -25; // Section-2는 60%, 나머지는 상단 바깥(-25%)
+            const startHeight = -25; // 모든 섹션 통일
             window.pixelCharacterManager.updateSectionMovement(delta, this[sectionKey], currentSectionIndex, startHeight);
         }
     }
@@ -882,7 +896,7 @@ class ManualScrollManager {
             if (window.pixelCharacterManager && targetSection >= 2) {
                 let startHeight;
                 if (targetSection === 2) {
-                    startHeight = 60; // Section-2는 항상 60%에서 시작
+                    startHeight = -25; // Section-2도 -25%에서 시작 (통일)
                 } else if (direction === 'down') {
                     startHeight = -25; // 아래로 이동시 상단에서 시작
                 } else {

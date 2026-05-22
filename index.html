@@ -14,7 +14,7 @@
 
     <!-- Preload critical resources -->
     <link rel="preload" href="/src/styles/main.css" as="style">
-    <link rel="preload" href="/public/sounds/song.mp3" as="audio">
+    <link rel="preload" href="/public/sounds/HaSong-i, Bouquet, Outlaw.mp3.mp3" as="audio">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -53,13 +53,35 @@
     </div>
 
     <!-- Background Audio -->
-    <audio muted id="bgm" loop>
-        <source src="/sounds/song.mp3" type="audio/mpeg">
+    <audio id="bgm" loop>
+        <source src="/sounds/HaSong-i, Bouquet, Outlaw.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Audio Control -->
-    <div class="audio-control" id="audioControl">
-        <button id="audioToggle" class="audio-btn" aria-label="음악 재생/정지">🎵</button>
+    <!-- New Audio Control Bar -->
+    <div class="music-player" id="musicPlayer">
+        <div class="music-info">
+            <div class="soundwave" id="soundwave">
+                <svg width="16" height="16" viewBox="0 0 20 16" fill="none">
+                    <rect class="bar bar1" x="2" y="4" width="2" height="8" fill="white" rx="1"/>
+                    <rect class="bar bar2" x="6" y="2" width="2" height="12" fill="white" rx="1"/>
+                    <rect class="bar bar3" x="10" y="6" width="2" height="4" fill="white" rx="1"/>
+                    <rect class="bar bar4" x="14" y="1" width="2" height="14" fill="white" rx="1"/>
+                    <rect class="bar bar5" x="18" y="3" width="2" height="10" fill="white" rx="1"/>
+                </svg>
+            </div>
+            <span class="song-title">HaSong-i, Bouquet, Outlaw.mp3</span>
+        </div>
+        <button class="play-btn" id="playBtn" aria-label="재생">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+        </button>
+        <button class="pause-btn" id="pauseBtn" aria-label="일시정지" style="display: none;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
     </div>
 
     <!-- Main Hero Section -->
@@ -72,7 +94,6 @@
 
     <!-- Invitation Message Section -->
     <section id="section-1" class="invitation">
-        <div class="section-debug">Section 1</div>
         <div class="container">
             <!-- <div class="invitation-text">
                 <p class="message">
@@ -106,12 +127,10 @@
 
     
     <section id="section-2" class="empty-section">
-        <div class="section-debug">Section 2</div>
         <!-- 빈 섹션 - 캐릭터 애니메이션만 표시 -->
     </section>
 
     <section id="section-3" class="introduction">
-        <div class="section-debug">Section 3</div>
         <div class="container">
             <div class="intro-content">
                 <div class="intro-text center vertical" id="groom-text" style="flex-direction: column;">
@@ -130,13 +149,11 @@
 
     <!-- Slime Animation Section -->
     <section id="section-5" class="slime-section">
-        <div class="section-debug">Section 5 - Slime</div>
         <!-- 슬라임 애니메이션이 80vh 위치에 표시됨 -->
     </section>
 
     <!-- Photo Gallery Section -->
     <section id="section-6" class="gallery">
-        <div class="section-debug">Section 6 - Gallery</div>
         <div class="container">
             <div class="section-subtitle">Gallery</div>
             <h2 class="section-title">갤러리</h2>
@@ -174,7 +191,6 @@
 
     <!-- Location Section -->
     <section id="section-7" class="location">
-        <div class="section-debug">Section 7 - Location</div>
         <div class="container">
             <div class="section-subtitle">Location</div>
             <h2 class="section-title">오시는길</h2>
@@ -238,7 +254,6 @@
 
     <!-- Account Section -->
     <section id="section-8" class="account">
-        <div class="section-debug">Section 8 - Account</div>
         <div class="container">
             <div class="section-subtitle">Account</div>
             <h2 class="section-title">마음 전하는 곳</h2>
@@ -312,7 +327,6 @@
 
     <!-- Section 9 -->
     <section id="section-9" class="song-section">
-        <div class="section-debug">Section 9 - Song</div>
         <div class="container">
             <div class="section-subtitle">Song</div>
             <h2 class="section-title">우리의 노래</h2>

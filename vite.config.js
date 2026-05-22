@@ -17,8 +17,10 @@ export default defineConfig({
 
   // Dev server options
   server: {
+    host: '0.0.0.0',
     port: 3000,
-    open: true
+    open: true,
+    allowedHosts: ['ran-solomon-symantec-jackets.trycloudflare.com']
   },
 
   // Asset handling

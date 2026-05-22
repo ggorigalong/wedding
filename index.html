@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이태인 ♥ 하송 - 결혼합니다</title>
-    <meta name="description" content="이태인과 하송의 결혼식에 초대합니다">
+    <title>이태인 ♥ 하송이 - 결혼합니다</title>
+    <meta name="description" content="이태인과 하송이의 결혼식에 초대합니다">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="이태인 ♥ 하송 - 결혼합니다">
+    <meta property="og:title" content="이태인 ♥ 하송이 - 결혼합니다">
     <meta property="og:description" content="2024년 9월 16일, 저희 결혼합니다">
     <meta property="og:type" content="website">
     <meta property="og:image" content="/public/images/gallery/IMG_5688.jpg">
@@ -29,6 +29,29 @@
     <link rel="stylesheet" href="/src/styles/main.css">
 </head>
 <body>
+    <!-- Initial Loading Screen -->
+    <div id="initial-loading" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        touch-action: none;
+        overflow: hidden;
+    ">
+        <div style="text-align: center;">
+            <div style="font-size: 18px; margin-bottom: 15px;">⏳ Loading...</div>
+            <div style="font-size: 14px; opacity: 0.8;">잠시만 기다려주세요</div>
+        </div>
+    </div>
+
     <!-- Background Audio -->
     <audio muted id="bgm" loop>
         <source src="/sounds/song.mp3" type="audio/mpeg">
@@ -42,7 +65,7 @@
     <!-- Main Hero Section -->
     <section id="section-0" class="hero">
         <div class="hero-image">
-            <img src="/images/gallery/hero-main.png" alt="이태인과 하송의 웨딩 사진" loading="eager">
+            <img src="/images/gallery/hero-main.png" alt="이태인과 하송이의 웨딩 사진" loading="eager">
         </div>
     </section>
 
@@ -69,7 +92,7 @@
                     <div class="parent-info">
                         <span class="parent-label">아버지</span> <span class="parent-name">아버지 성명</span>
                         <span class="parent-label">어머니</span> <span class="parent-name">어머니 성명</span>
-                        <span class="child-label">의 딸</span> <span class="child-name">하송</span>
+                        <span class="child-label">의 딸</span> <span class="child-name">하송이</span>
                     </div>
                 </div>
 
@@ -181,8 +204,6 @@
                 </div>
 
                 <div class="transportation">
-                    <h4>교통편</h4>
-
                     <div class="transport-item">
                         <svg class="transport-icon" viewBox="0 0 24 24" fill="#ffc671" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 16c0 .88.39 1.67 1 2.22V20a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
@@ -194,10 +215,7 @@
                     </div>
 
                     <div class="transport-item">
-                        <svg class="transport-icon" viewBox="0 0 24 24" fill="#ffa245" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/>
-                            <path d="M17.5 16c2.65 0 5.05-.99 6.9-2.6L22 17v-9h-9l3.62 3.62c-1.39 1.16-3.16 1.88-5.12 1.88-3.54 0-6.55-2.31-7.6-5.5L1.53 8.78C2.92 12.97 6.85 16 11.5 16z"/>
-                        </svg>
+                        <img class="transport-icon" src="/icons/subway-svgrepo-com.svg" alt="지하철" style="filter: hue-rotate(30deg) saturate(1.5);">
                         <div class="transport-info">
                             <div class="transport-type">지하철</div>
                             <div class="transport-details">6호선 용산역 1번 출구 → 도보 7분</div>
@@ -222,30 +240,71 @@
     <section id="section-8" class="account">
         <div class="section-debug">Section 8 - Account</div>
         <div class="container">
-            <h2 class="section-title">축의금 안내</h2>
-            <div class="account-info">
-                <p class="account-message">참석이 어려우신 분들을 위해 계좌번호를 안내해 드립니다.</p>
-
-                <div class="account-list">
-                    <div class="account-item">
-                        <h4>신랑측</h4>
+            <div class="section-subtitle">Account</div>
+            <h2 class="section-title">마음 전하는 곳</h2>
+            <p class="account-message">참석이 어려우신 분들을 위해 계좌번호를 안내해 드립니다.<br>너그러운 마음으로 양해 부탁드립니다.</p>
+            <div class="account-info groom-account">
+                <h4>신랑측</h4>
+                <div class="account-card">
+                    <span class="account-name">이태인</span>
+                    <div class="account-right-group">
                         <div class="account-details">
-                            <span class="bank">국민은행</span>
-                            <span class="number">123456-78-901234</span>
-                            <span class="name">이태인</span>
+                            <span class="account-bank">국민은행</span>
+                            <span class="account-number">123456-78-901234</span>
                         </div>
-                        <button class="copy-btn" onclick="copyAccount('123456-78-901234')" aria-label="신랑측 계좌번호 복사">복사</button>
+                        <button class="copy-icon-btn" onclick="copyAccount('123456-78-901234')" aria-label="신랑측 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
                     </div>
+                </div>
+            </div>
 
-                    <div class="account-item">
-                        <h4>신부측</h4>
+            <div class="account-info bride-account">
+                <h4>신부측</h4>
+                <div class="account-card">
+                    <span class="account-name">하송이</span>
+                    <div class="account-right-group">
                         <div class="account-details">
-                            <span class="bank">신한은행</span>
-                            <span class="number">987654-32-109876</span>
-                            <span class="name">하송</span>
+                            <span class="account-bank">신한은행</span>
+                            <span class="account-number">987654-32-109876</span>
                         </div>
-                        <button class="copy-btn" onclick="copyAccount('987654-32-109876')" aria-label="신부측 계좌번호 복사">복사</button>
+                        <button class="copy-icon-btn" onclick="copyAccount('987654-32-109876')" aria-label="신부측 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Guestbook Section -->
+            <div class="guestbook-section">
+                <div class="section-subtitle">Guestbook</div>
+                <h2 class="section-title">방명록</h2>
+
+                <div class="guestbook-item">
+                    <div class="guestbook-header">
+                        <div class="guestbook-info">
+                            <span class="guestbook-from">From. 문지원</span>
+                            <span class="guestbook-divider">|</span>
+                            <span class="guestbook-date">2026.09.20</span>
+                        </div>
+                        <button class="guestbook-delete-btn" onclick="deleteGuestbook('문지원')" aria-label="방명록 삭제">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                                <path d="M20 20L4 4m16 0L4 20"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div  class="guestbook-content">이젠 절대로 안 가지 파출소
+한국에는 살지 호랑이도 
+집에 올때 나는 했지 절도</div>
+                </div>
+
+                <div class="guestbook-buttons">
+                    <button class="guestbook-write-btn" onclick="openGuestbookForm()">작성하기</button>
+                    <button class="guestbook-more-btn" onclick="openGuestbookList()">더보기</button>
                 </div>
             </div>
         </div>

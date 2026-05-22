@@ -4,7 +4,7 @@
 class ManualScrollManager {
     constructor() {
         this.currentSection = 0; // 현재 섹션 인덱스 (0: hero, 1: section1 animation, 2: idle/run area)
-        this.maxSections = 7; // 총 섹션 수 (section-0,1,2,3,5,6,7,8 - section-4 제외)
+        this.maxSections = 8; // 총 섹션 수 (section-0,1,2,3,5,6,7,8 - section-4 제외)
         this.isTransitioning = false; // 전환 중 여부
         this.isAnimationLocked = false; // 애니메이션 재생 중 잠금
         this.scrollSensitivity = 50; // 스크롤 감도
@@ -44,6 +44,7 @@ class ManualScrollManager {
         // 스크롤 잠금 관련
         this.scrollLocked = false; // 스크롤 잠금 상태
         this.lockReason = ''; // 잠금 이유
+        this.isLoading = false; // 로딩 중 여부
     }
 
     init() {
@@ -259,9 +260,18 @@ class ManualScrollManager {
             return;
         }
 
-        // 전환 중이거나 스크롤 잠금 중에는 스크롤 차단
-        if (this.isTransitioning || this.scrollLocked) {
-            console.log(`🔒 Scroll blocked - ${this.isTransitioning ? 'transitioning' : `locked (${this.lockReason})`}`);
+        // 초기 로딩 스크린이 있으면 스크롤 차단
+        const initialLoading = document.getElementById('initial-loading');
+        const pixelLoading = window.pixelCharacterManager?.isLoadingSection1Data;
+        const pixelNotInitialized = !window.pixelCharacterManager?.isFullyInitialized;
+
+        if (this.isTransitioning || this.scrollLocked || this.isLoading || pixelLoading || initialLoading || pixelNotInitialized) {
+            const reason = initialLoading ? 'initial loading' :
+                          this.isTransitioning ? 'transitioning' :
+                          this.isLoading || pixelLoading ? 'data loading' :
+                          pixelNotInitialized ? 'system initializing' :
+                          `locked (${this.lockReason})`;
+            console.log(`🔒 Scroll blocked - ${reason}`);
             return;
         }
 
@@ -291,7 +301,7 @@ class ManualScrollManager {
         // 섹션별 특별 처리
         if (this.currentSection === 0) {
             // Section-0 (Hero): 아래로만 Section-1 애니메이션 트리거
-            if (scrollDirection === 'down' && scrollMagnitude > 10) {
+            if (scrollDirection === 'down' && scrollMagnitude > 5) {
                 this.triggerSection1Transition();
             }
             // 위로는 스크롤 불가 (최상단)
@@ -373,6 +383,329 @@ class ManualScrollManager {
 
             console.log(`📍 Section ${section.id} (index ${index}): translateY(${targetY}vh)`);
         });
+
+        // Section-8 접근시 특별 애니메이션
+        if (this.currentSection === 8) {
+            this.triggerSection8Animation();
+        }
+    }
+
+    // Section-8 지진 및 enemy-hit 애니메이션
+    triggerSection8Animation() {
+        // 스크롤 잠금
+        this.scrollLocked = true;
+        this.lockReason = 'Section8 animation sequence';
+        console.log('🔒 Scroll locked for Section8 animation');
+
+        // enemy_run 애니메이션 트리거
+        const pixelManager = window.pixelCharacterManager ||
+                           window.SimplePixelCharacterManager ||
+                           document.querySelector('#pixel-character-container')?.__pixelManager;
+
+        if (pixelManager && pixelManager.triggerEnemyRun) {
+            pixelManager.triggerEnemyRun();
+        } else if (window.pixelCharacterManager) {
+            window.pixelCharacterManager.triggerEnemyRun();
+        } else {
+            // pixelCharacterManager가 없으면 임시 애니메이션 실행
+            this.createTemporaryEnemyRun();
+        }
+    }
+
+    // JavaScript 지진 효과
+    triggerEarthquakeEffect() {
+        const duration = 500;
+        const strength = 50;
+
+        const body = document.body;
+        const start = performance.now();
+
+        const shake = (now) => {
+            const elapsed = now - start;
+
+            if (elapsed < duration) {
+                const decay = 1 - elapsed / duration;
+
+                const x = Math.round((Math.random() - 0.5) * strength * decay);
+                const y = Math.round((Math.random() - 0.5) * strength * decay);
+
+                const rotate = (Math.random() - 0.5) * 2 * decay;
+
+                body.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
+
+                requestAnimationFrame(shake);
+            } else {
+                body.style.transform = "";
+                // 지진 완료 후 스크롤 잠금 해제
+                this.scrollLocked = false;
+                this.lockReason = '';
+                console.log('🔓 Scroll unlocked after Section8 animation complete');
+
+                // 캐릭터 애니메이션을 leafsflowerdouble 버전으로 변경
+                this.switchToLeafsFlowerDouble();
+            }
+        };
+
+        requestAnimationFrame(shake);
+    }
+
+    // 캐릭터를 leafsflowerdouble 버전으로 전환
+    switchToLeafsFlowerDouble() {
+        console.log('🌸 Switching character animations to leafsflowerdouble version');
+
+        const pixelManager = window.pixelCharacterManager ||
+                           window.SimplePixelCharacterManager ||
+                           document.querySelector('#pixel-character-container')?.__pixelManager;
+
+        if (pixelManager && pixelManager.switchAnimationSet) {
+            pixelManager.switchAnimationSet('leafsflowerdouble');
+        } else if (pixelManager) {
+            // leafsflowerdouble 플래그 설정
+            pixelManager.hasLeafsFlowerDouble = true;
+            console.log('🌸✨ LeafsFlowerDouble flag activated in manualScroll!');
+
+            // 현재 상태 다시 적용하여 새 애니메이션으로 전환
+            if (pixelManager.currentState === 'idle' || pixelManager.currentState === 'run') {
+                const currentState = pixelManager.currentState;
+                pixelManager.switchToState(currentState);
+            }
+
+            console.log('🌸 LeafsFlowerDouble upgrade completed from manualScroll');
+        } else {
+            console.log('⚠️ PixelCharacterManager not found, cannot switch animation set');
+        }
+    }
+
+    // 로딩 상태 설정
+    setLoadingState(loading) {
+        this.isLoading = loading;
+        console.log(`${loading ? '⏳' : '✅'} Loading state: ${loading}`);
+
+        if (loading) {
+            this.showLoadingMessage();
+        } else {
+            this.hideLoadingMessage();
+            this.showScrollGuide();
+        }
+    }
+
+    // 로딩 메시지 표시
+    showLoadingMessage() {
+        // 기존 로딩 메시지 제거
+        const existing = document.getElementById('loading-message');
+        if (existing) existing.remove();
+
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'loading-message';
+        loadingDiv.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 20px 30px;
+                border-radius: 10px;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                font-size: 16px;
+                z-index: 10000;
+                text-align: center;
+                backdrop-filter: blur(5px);
+            ">
+                <div style="margin-bottom: 10px;">⏳ Loading...</div>
+                <div style="font-size: 14px; opacity: 0.8;">잠시만 기다려주세요</div>
+            </div>
+        `;
+        document.body.appendChild(loadingDiv);
+    }
+
+    // 로딩 메시지 숨기기
+    hideLoadingMessage() {
+        // HTML의 초기 로딩 스크린 제거
+        const initialLoading = document.getElementById('initial-loading');
+        if (initialLoading) {
+            initialLoading.remove();
+        }
+
+        // JavaScript로 생성된 로딩 메시지도 제거
+        const loadingDiv = document.getElementById('loading-message');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+    }
+
+    // 스크롤 가이드 표시
+    showScrollGuide() {
+        setTimeout(() => {
+            // 기존 가이드 제거
+            const existing = document.getElementById('scroll-guide');
+            if (existing) existing.remove();
+
+            const guideDiv = document.createElement('div');
+            guideDiv.id = 'scroll-guide';
+            guideDiv.innerHTML = `
+                <div style="
+                    position: fixed;
+                    bottom: 30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(255,255,255,0.9);
+                    color: #333;
+                    padding: 15px 25px;
+                    border-radius: 25px;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    font-size: 14px;
+                    z-index: 9999;
+                    text-align: center;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    animation: bounceIn 0.8s ease-out, fadeOut 3s ease-in 2s forwards;
+                ">
+                    <div style="margin-bottom: 5px;">↓</div>
+                    <div>스크롤해주세요</div>
+                </div>
+                <style>
+                    @keyframes bounceIn {
+                        0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
+                        50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
+                        70% { transform: translateX(-50%) scale(0.9); }
+                        100% { transform: translateX(-50%) scale(1); }
+                    }
+                    @keyframes fadeOut {
+                        0% { opacity: 1; }
+                        100% { opacity: 0; visibility: hidden; }
+                    }
+                </style>
+            `;
+            document.body.appendChild(guideDiv);
+
+            // 5초 후 제거
+            setTimeout(() => {
+                if (guideDiv.parentNode) {
+                    guideDiv.remove();
+                }
+            }, 5000);
+        }, 500);
+    }
+
+    // 임시 enemy-hit 애니메이션 (pixelCharacterManager 없을 때)
+    createTemporaryEnemyRun() {
+        console.log('🏃 Creating temporary enemy_run animation');
+
+        const enemyRunElement = document.createElement('img');
+        const charSize = 96; // 32px * 3 scale
+        enemyRunElement.style.position = 'fixed';
+        enemyRunElement.style.left = '50%';
+        enemyRunElement.style.top = '10vh';
+        enemyRunElement.style.width = `${charSize}px`;
+        enemyRunElement.style.height = `${charSize}px`;
+        enemyRunElement.style.transform = 'translateX(-50%)';
+        enemyRunElement.style.imageRendering = 'pixelated';
+        enemyRunElement.style.imageRendering = '-moz-crisp-edges';
+        enemyRunElement.style.imageRendering = 'crisp-edges';
+        enemyRunElement.style.zIndex = '99999';
+        enemyRunElement.style.opacity = '1';
+        enemyRunElement.style.pointerEvents = 'none';
+
+        let currentFrame = 1;
+        const totalFrames = 6; // enemy_run1.png ~ enemy_run6.png
+        const frameInterval = 100; // 100ms 간격
+        let currentY = 10; // 10vh에서 시작
+
+        const animate = () => {
+            // 프레임 업데이트
+            const imagePath = `/animation/enemy_run/enemy_run${currentFrame}.png`;
+            enemyRunElement.src = imagePath;
+
+            // 위로 이동 (매 프레임마다 1vh씩 위로)
+            currentY -= 1;
+            enemyRunElement.style.top = `${currentY}vh`;
+
+            // 화면 위쪽으로 완전히 사라지면 enemy-hit 시퀀스 실행
+            if (currentY < -15) {
+                // enemy-run 애니메이션 제거
+                if (enemyRunElement.parentNode) {
+                    enemyRunElement.parentNode.removeChild(enemyRunElement);
+                }
+                // enemy-hit 시퀀스 실행
+                this.triggerEnemyHitSequenceTemp();
+                return;
+            }
+
+            // 다음 프레임으로
+            currentFrame++;
+            if (currentFrame > totalFrames) {
+                currentFrame = 1;
+            }
+
+            // 다음 프레임 스케줄링 (계속 반복)
+            setTimeout(animate, frameInterval);
+        };
+
+        document.body.appendChild(enemyRunElement);
+        animate(); // 첫 프레임 시작
+    }
+
+    // 임시 Enemy Hit 시퀀스 (pixelCharacterManager 없을 때)
+    triggerEnemyHitSequenceTemp() {
+        console.log('💥 Starting temporary enemy-hit sequence');
+
+        const positions = [
+            { top: '0vh', image: 1 },      // 화면 최상단
+            { top: '70vh', image: 2 },     // 70vh 위치
+            { top: '100vh', image: 3 }     // 화면 맨끝
+        ];
+
+        let currentIndex = 0;
+        const frameInterval = 25; // 더 빠른 프레임 (50ms)
+
+        const showNextHit = () => {
+            if (currentIndex >= positions.length) {
+                // 모든 enemy-hit 완료 후 지진 효과
+                console.log('💥 Enemy-hit sequence completed, starting earthquake');
+                this.triggerEarthquakeEffect();
+                return;
+            }
+
+            const pos = positions[currentIndex];
+            this.createEnemyHitElementTemp(pos.top, pos.image);
+            currentIndex++;
+
+            // 다음 hit을 스케줄링
+            setTimeout(showNextHit, frameInterval);
+        };
+
+        // 시퀀스 시작
+        showNextHit();
+    }
+
+    // 임시 개별 Enemy Hit 엘리먼트 생성
+    createEnemyHitElementTemp(topPosition, imageNumber) {
+        const enemyHitElement = document.createElement('img');
+        enemyHitElement.src = `/animation/enemy-hit/enemy-hit${imageNumber}.png`;
+        enemyHitElement.style.position = 'fixed';
+        enemyHitElement.style.left = '50%';
+        enemyHitElement.style.top = topPosition;
+        enemyHitElement.style.width = '96px'; // enemy_run과 동일한 크기
+        enemyHitElement.style.height = '96px';
+        enemyHitElement.style.transform = 'translateX(-50%)';
+        enemyHitElement.style.imageRendering = 'pixelated';
+        enemyHitElement.style.imageRendering = '-moz-crisp-edges';
+        enemyHitElement.style.imageRendering = 'crisp-edges';
+        enemyHitElement.style.zIndex = '99999';
+        enemyHitElement.style.opacity = '1';
+        enemyHitElement.style.pointerEvents = 'none';
+
+        document.body.appendChild(enemyHitElement);
+
+        // 25ms 후 제거 (다음 hit이 나오기 전에 제거)
+        setTimeout(() => {
+            if (enemyHitElement.parentNode) {
+                enemyHitElement.parentNode.removeChild(enemyHitElement);
+            }
+        }, 25);
+
+        console.log(`💥 Enemy-hit${imageNumber} displayed at ${topPosition}`);
     }
 
     // 캐릭터 위치 업데이트 (현재 섹션 내에서의 미세한 움직임)
@@ -408,7 +741,7 @@ class ManualScrollManager {
         this.isAnimationLocked = true;
 
         // 픽셀 캐릭터 매니저에 메인 애니메이션 시작 요청
-        if (window.pixelCharacterManager) {
+        if (window.pixelCharacterManager && window.pixelCharacterManager.characters && window.pixelCharacterManager.characters.has('main')) {
             window.pixelCharacterManager.playMainAnimation(() => {
                 // 애니메이션 완료 콜백
                 console.log('🎉 Section-1 animation completed, moving to Section-2');
@@ -424,6 +757,28 @@ class ManualScrollManager {
                     window.pixelCharacterManager.switchToSectionState(2, 60);
                 }
             });
+        } else {
+            console.error('❌ PixelCharacterManager or main character not ready - cannot play main animation');
+            console.log('Debug info:', {
+                pixelManager: !!window.pixelCharacterManager,
+                characters: !!window.pixelCharacterManager?.characters,
+                hasMain: window.pixelCharacterManager?.characters?.has('main')
+            });
+
+            // 초기화가 안된 경우 약간 기다렸다가 재시도
+            setTimeout(() => {
+                if (window.pixelCharacterManager?.characters?.has('main')) {
+                    console.log('🔄 Retrying main animation after delay...');
+                    window.pixelCharacterManager.playMainAnimation(() => {
+                        this.isAnimationLocked = false;
+                        this.goToSection(2);
+                    });
+                } else {
+                    console.error('❌ Still cannot start main animation, unlocking manually');
+                    this.isAnimationLocked = false;
+                    this.goToSection(2);
+                }
+            }, 500);
         }
     }
 

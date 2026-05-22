@@ -14,7 +14,11 @@ class SimplePixelCharacterManager {
         this.isHitSlimePlaying = false; // hit-slime 애니메이션 재생 중 여부
         this.isHitIdlePlaying = false; // hit-idle 애니메이션 재생 중 여부
         this.hasFlower = false; // 꽃 아이템 획득 여부 (hit-idle 완료 후)
+        this.hasLeafsFlowerDouble = false; // leafsflowerdouble 아이템 획득 여부 (Section8 완료 후)
+        this.galleryLeafsTriggered = false; // 갤러리 leafs 트리거 여부 (초기화)
         this.skipPositionUpdate = false; // 위치 업데이트 스킵 플래그
+        this.isLoadingSection1Data = false; // section1.json 로딩 중 여부
+        this.isFullyInitialized = false; // 완전 초기화 여부
 
         // 통합 캐릭터 컨테이너
         this.mainCharacter = null;
@@ -136,6 +140,18 @@ class SimplePixelCharacterManager {
                 framePrefix: '/animation/run-leafsflower/run-leafsflower',
                 frameCount: 7,
                 frameRate: 18, // 12 → 18
+                loop: true
+            },
+            'idle-leafsflowerdouble': {
+                framePrefix: '/animation/idle-leafsflowerdouble/idle',
+                frameCount: 5,
+                frameRate: 15,
+                loop: true
+            },
+            'run-leafsflowerdouble': {
+                framePrefix: '/animation/run-leafsflowerdouble/run',
+                frameCount: 7,
+                frameRate: 18,
                 loop: true
             }
         };
@@ -376,7 +392,7 @@ class SimplePixelCharacterManager {
         // 갤러리 트리거 관련 초기화
         this.galleryLeafsTriggered = false;
 
-        // 스프레드시트 데이터 로드
+        // 스프레드시트 데이터 로드 (이것이 완료되어야 스크롤 가능)
         await this.loadMainAnimationSpreadsheetData();
     }
 
@@ -525,12 +541,50 @@ class SimplePixelCharacterManager {
     async loadMainAnimationSpreadsheetData() {
         try {
             console.log('📊 Loading section1 spreadsheet data from JSON...');
+            this.isLoadingSection1Data = true;
 
-            // JSON 파일 로드
-            const response = await fetch('/animation/section1.json');
-            if (!response.ok) {
-                throw new Error(`Failed to load JSON: ${response.status}`);
+            // 로딩 시작 시간 기록
+            const loadingStartTime = Date.now();
+            const minimumLoadingTime = 1500; // 최소 1.5초 로딩 시간
+
+            // 로딩 상태를 외부에 알림 (즉시 실행)
+            if (window.manualScrollManager) {
+                window.manualScrollManager.setLoadingState(true);
+            } else {
+                // manualScrollManager가 아직 없으면 DOM에 직접 추가
+                this.showDirectLoadingMessage();
             }
+
+            // 여러 경로로 시도
+            const baseUrl = window.location.origin;
+            const jsonPaths = [
+                `${baseUrl}/animation/section1.json`,
+                '/animation/section1.json',
+                './animation/section1.json',
+                'animation/section1.json'
+            ];
+
+            let response = null;
+            let jsonUrl = '';
+
+            for (const path of jsonPaths) {
+                try {
+                    console.log('🌐 Attempting to load JSON from:', path);
+                    response = await fetch(path);
+                    if (response.ok) {
+                        jsonUrl = path;
+                        break;
+                    }
+                } catch (e) {
+                    console.log(`❌ Failed to load from ${path}:`, e.message);
+                }
+            }
+
+            if (!response || !response.ok) {
+                throw new Error(`Failed to load JSON from all paths`);
+            }
+
+            console.log('✅ Successfully loaded JSON from:', jsonUrl);
 
             const jsonData = await response.json();
             console.log('✅ JSON data loaded:', jsonData);
@@ -542,7 +596,7 @@ class SimplePixelCharacterManager {
             frameKeys.forEach((frameKey, index) => {
                 const frameInfo = jsonData.frames[frameKey];
                 frames.push({
-                    image: `/animation/${jsonData.meta.image}`, // section1.png 경로 구성
+                    image: `${baseUrl}/animation/${jsonData.meta.image}`, // 절대 경로로 section1.png 구성
                     duration: frameInfo.duration,
                     spriteX: frameInfo.frame.x,
                     spriteY: frameInfo.frame.y,
@@ -602,10 +656,128 @@ class SimplePixelCharacterManager {
             // 메인 캐릭터에 데이터 설정
             await this.loadSpreadsheetData('main', spreadsheetData);
 
+            // 최소 로딩 시간 보장 (사용자에게 로딩 경험 제공)
+            const loadingElapsed = Date.now() - loadingStartTime;
+            const remainingTime = Math.max(0, minimumLoadingTime - loadingElapsed);
+
+            if (remainingTime > 0) {
+                console.log(`⏳ Ensuring minimum loading time: ${remainingTime}ms remaining`);
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
+
+            // 로딩 완료
+            this.isLoadingSection1Data = false;
+            this.isFullyInitialized = true;
+
+            // 로딩 완료를 외부에 알림
+            if (window.manualScrollManager) {
+                window.manualScrollManager.setLoadingState(false);
+            } else {
+                // DOM에서 직접 제거
+                this.hideDirectLoadingMessage();
+                this.showDirectScrollGuide();
+            }
+
+            console.log('✅ Section1 data loading completed!');
+
         } catch (error) {
             console.error('❌ Failed to load section1 spreadsheet data:', error);
             console.log('⚠️ Falling back to empty data - animation will use fallback method');
+
+            // 에러 발생 시에도 최소 로딩 시간 보장
+            const loadingElapsed = Date.now() - loadingStartTime;
+            const remainingTime = Math.max(0, minimumLoadingTime - loadingElapsed);
+
+            if (remainingTime > 0) {
+                console.log(`⏳ Ensuring minimum loading time even after error: ${remainingTime}ms remaining`);
+                await new Promise(resolve => setTimeout(resolve, remainingTime));
+            }
+
+            // 로딩 실패해도 완료 처리
+            this.isLoadingSection1Data = false;
+            this.isFullyInitialized = true;
+
+            if (window.manualScrollManager) {
+                window.manualScrollManager.setLoadingState(false);
+            } else {
+                // DOM에서 직접 제거
+                this.hideDirectLoadingMessage();
+                this.showDirectScrollGuide();
+            }
         }
+    }
+
+    // 직접 로딩 메시지 표시 (manualScrollManager 없을 때)
+    showDirectLoadingMessage() {
+        // HTML의 초기 로딩 스크린이 이미 있으므로 그것을 유지
+        // 추가적인 DOM 조작 불필요
+        console.log('⏳ Using initial loading screen from HTML');
+    }
+
+    // 직접 로딩 메시지 제거
+    hideDirectLoadingMessage() {
+        // HTML의 초기 로딩 스크린 제거
+        const initialLoading = document.getElementById('initial-loading');
+        if (initialLoading) {
+            initialLoading.remove();
+        }
+
+        // JavaScript로 생성된 로딩 메시지도 제거
+        const loadingDiv = document.getElementById('loading-message');
+        if (loadingDiv) {
+            loadingDiv.remove();
+        }
+    }
+
+    // 직접 스크롤 가이드 표시
+    showDirectScrollGuide() {
+        setTimeout(() => {
+            const existing = document.getElementById('scroll-guide');
+            if (existing) existing.remove();
+
+            const guideDiv = document.createElement('div');
+            guideDiv.id = 'scroll-guide';
+            guideDiv.innerHTML = `
+                <div style="
+                    position: fixed;
+                    bottom: 30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(255,255,255,0.9);
+                    color: #333;
+                    padding: 15px 25px;
+                    border-radius: 25px;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    font-size: 14px;
+                    z-index: 9999;
+                    text-align: center;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    animation: bounceIn 0.8s ease-out, fadeOut 3s ease-in 2s forwards;
+                ">
+                    <div style="margin-bottom: 5px;">↓</div>
+                    <div>스크롤해주세요</div>
+                </div>
+                <style>
+                    @keyframes bounceIn {
+                        0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
+                        50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
+                        70% { transform: translateX(-50%) scale(0.9); }
+                        100% { transform: translateX(-50%) scale(1); }
+                    }
+                    @keyframes fadeOut {
+                        0% { opacity: 1; }
+                        100% { opacity: 0; visibility: hidden; }
+                    }
+                </style>
+            `;
+            document.body.appendChild(guideDiv);
+
+            setTimeout(() => {
+                if (guideDiv.parentNode) {
+                    guideDiv.remove();
+                }
+            }, 5000);
+        }, 500);
     }
 
     addCharacter(id, options) {
@@ -824,10 +996,16 @@ class SimplePixelCharacterManager {
 
         // 실제 사용할 애니메이션 계산
         let actualAnimation = newState;
-        console.log(`🌸 Flower check: hasFlower=${this.hasFlower}, leafsTriggered=${this.galleryLeafsTriggered}, newState=${newState}`);
+        console.log(`🌸 Animation check: hasLeafsFlowerDouble=${this.hasLeafsFlowerDouble}, hasFlower=${this.hasFlower}, leafsTriggered=${this.galleryLeafsTriggered}, newState=${newState}`);
 
-        // leafs 애니메이션 트리거된 경우 leafs 버전 우선
-        if (this.galleryLeafsTriggered && newState === 'idle') {
+        // leafsflowerdouble 최우선 (Section8 완료 후)
+        if (this.hasLeafsFlowerDouble && newState === 'idle') {
+            actualAnimation = 'idle-leafsflowerdouble';
+            console.log(`🌸✨ Using leafsflowerdouble idle: ${actualAnimation}`);
+        } else if (this.hasLeafsFlowerDouble && newState === 'run') {
+            actualAnimation = 'run-leafsflowerdouble';
+            console.log(`🌸✨ Using leafsflowerdouble run: ${actualAnimation}`);
+        } else if (this.galleryLeafsTriggered && newState === 'idle') {
             actualAnimation = 'idle-leafs';
             console.log(`🍃 Using leafs idle: ${actualAnimation}`);
         } else if (this.galleryLeafsTriggered && newState === 'run') {
@@ -896,10 +1074,16 @@ class SimplePixelCharacterManager {
 
         const mainChar = this.characters.get('main');
 
+        if (!mainChar) {
+            console.error('❌ Main character not found! Character system not initialized.');
+            return;
+        }
+
         if (!mainChar.spreadsheetData) {
             console.error('❌ Main animation spreadsheet data not loaded! Loading fallback...');
             // 폴백: 기존 PNG 시퀀스 방식으로 전환
             this.loadFallbackMainAnimation();
+            return;
         }
 
         this.mainAnimationCallback = callback;
@@ -1602,6 +1786,255 @@ class SimplePixelCharacterManager {
             leafsChar.isActive = false;
             console.log('🍃 Leafs animation completed');
         }, 875);
+    }
+
+    // Enemy Hit 애니메이션 트리거 (캐릭터와 별개로 동작)
+    triggerEnemyRun() {
+        console.log('🏃 triggerEnemyRun function called!');
+        console.log('🏃 Triggering enemy_run animation');
+
+        // enemy_run 전용 IMG 엘리먼트 생성
+        const enemyRunElement = document.createElement('img');
+        enemyRunElement.src = '/animation/enemy_run/enemy_run1.png'; // 첫 번째 프레임
+
+        const enemyRunChar = {
+            element: enemyRunElement,
+            basePath: '/animation/enemy_run/',
+            isActive: true
+        };
+
+        // enemy_run 캐릭터를 10vh 아래에 위치, 3배 크기로 설정
+        const charSize = 96; // 32px * 3 scale
+        enemyRunChar.element.style.position = 'fixed';
+        enemyRunChar.element.style.left = '50%';
+        enemyRunChar.element.style.top = '10vh';
+        enemyRunChar.element.style.width = `${charSize}px`;
+        enemyRunChar.element.style.height = `${charSize}px`;
+        enemyRunChar.element.style.transform = 'translateX(-50%)';
+        enemyRunChar.element.style.imageRendering = 'pixelated';
+        enemyRunChar.element.style.imageRendering = '-moz-crisp-edges';
+        enemyRunChar.element.style.imageRendering = 'crisp-edges';
+        enemyRunChar.element.style.opacity = '1';
+        enemyRunChar.element.style.zIndex = '99999';
+        enemyRunChar.element.style.display = 'block';
+        enemyRunChar.element.style.visibility = 'visible';
+        enemyRunChar.element.style.pointerEvents = 'none';
+
+        // DOM에 추가
+        document.body.appendChild(enemyRunElement);
+
+        console.log('🏃 Enemy-run element created:', enemyRunChar.element);
+
+        // enemy_run 애니메이션 실행 (6프레임, 반복)
+        this.startEnemyRunAnimation(enemyRunChar);
+
+        console.log('🏃 Enemy-run animation started');
+    }
+
+    // Enemy Run 전용 애니메이션 함수
+    startEnemyRunAnimation(character) {
+        if (!character || !character.element) return;
+
+        let currentFrame = 1;
+        const totalFrames = 6; // enemy_run1.png ~ enemy_run6.png
+        const frameInterval = 100; // 100ms 간격
+        let currentY = 10; // 10vh에서 시작
+
+        character.isActive = true;
+
+        const animateFrame = () => {
+            if (!character.isActive) {
+                return;
+            }
+
+            // 프레임 업데이트
+            const imageSrc = `${character.basePath}enemy_run${currentFrame}.png`;
+            character.element.src = imageSrc;
+
+            // 위로 이동 (매 프레임마다 1vh씩 위로)
+            currentY -= 1;
+            character.element.style.top = `${currentY}vh`;
+
+            // 화면 위쪽으로 완전히 사라지면 enemy-hit 실행
+            if (currentY < -15) {
+                character.isActive = false;
+                this.triggerEnemyHitSequence();
+                return;
+            }
+
+            // 다음 프레임으로
+            currentFrame++;
+            if (currentFrame > totalFrames) {
+                currentFrame = 1;
+            }
+
+            // 다음 프레임 스케줄링 (반복 실행)
+            setTimeout(() => requestAnimationFrame(animateFrame), frameInterval);
+        };
+
+        // 애니메이션 시작
+        requestAnimationFrame(animateFrame);
+    }
+
+    // Enemy Hit 시퀀스 (3개 이미지를 순서대로 표시)
+    triggerEnemyHitSequence() {
+        console.log('💥 Starting enemy-hit sequence');
+
+        const positions = [
+            { top: '0vh', image: 1 },      // 화면 최상단
+            { top: '70vh', image: 2 },     // 70vh 위치
+            { top: '100vh', image: 3 }     // 화면 맨끝
+        ];
+
+        let currentIndex = 0;
+        const frameInterval = 50; // 더 빠른 프레임 (50ms)
+
+        const showNextHit = () => {
+            if (currentIndex >= positions.length) {
+                // 모든 enemy-hit 완료 후 지진 효과
+                console.log('💥 Enemy-hit sequence completed, starting earthquake');
+                this.triggerEarthquakeFromPixel();
+                return;
+            }
+
+            const pos = positions[currentIndex];
+            this.createEnemyHitElement(pos.top, pos.image);
+            currentIndex++;
+
+            // 다음 hit을 스케줄링
+            setTimeout(showNextHit, frameInterval);
+        };
+
+        // 시퀀스 시작
+        showNextHit();
+    }
+
+    // 개별 Enemy Hit 엘리먼트 생성
+    createEnemyHitElement(topPosition, imageNumber) {
+        const enemyHitElement = document.createElement('img');
+        enemyHitElement.src = `/animation/enemy-hit/enemy-hit${imageNumber}.png`;
+        enemyHitElement.style.position = 'fixed';
+        enemyHitElement.style.left = '50%';
+        enemyHitElement.style.top = topPosition;
+        enemyHitElement.style.width = '96px'; // enemy_run과 동일한 크기
+        enemyHitElement.style.height = '96px';
+        enemyHitElement.style.transform = 'translateX(-50%)';
+        enemyHitElement.style.imageRendering = 'pixelated';
+        enemyHitElement.style.imageRendering = '-moz-crisp-edges';
+        enemyHitElement.style.imageRendering = 'crisp-edges';
+        enemyHitElement.style.zIndex = '99999';
+        enemyHitElement.style.opacity = '1';
+        enemyHitElement.style.pointerEvents = 'none';
+
+        document.body.appendChild(enemyHitElement);
+
+        // 50ms 후 제거 (다음 hit이 나오기 전에 제거)
+        setTimeout(() => {
+            if (enemyHitElement.parentNode) {
+                enemyHitElement.parentNode.removeChild(enemyHitElement);
+            }
+        }, 50);
+
+        console.log(`💥 Enemy-hit${imageNumber} displayed at ${topPosition}`);
+    }
+
+    // 픽셀 캐릭터에서 직접 지진 효과 트리거
+    triggerEarthquakeFromPixel() {
+        // ManualScrollManager의 지진 효과를 직접 호출
+        if (window.manualScrollManager && window.manualScrollManager.triggerEarthquakeEffect) {
+            window.manualScrollManager.triggerEarthquakeEffect();
+        } else {
+            // 직접 지진 효과 구현
+            this.executeEarthquake();
+        }
+    }
+
+    // 지진 효과 직접 구현
+    executeEarthquake() {
+        const duration = 500;
+        const strength = 50;
+        const body = document.body;
+        const start = performance.now();
+
+        const shake = (now) => {
+            const elapsed = now - start;
+            if (elapsed < duration) {
+                const decay = 1 - elapsed / duration;
+                const x = Math.round((Math.random() - 0.5) * strength * decay);
+                const y = Math.round((Math.random() - 0.5) * strength * decay);
+                const rotate = (Math.random() - 0.5) * 2 * decay;
+                body.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
+                requestAnimationFrame(shake);
+            } else {
+                body.style.transform = "";
+                // 지진 완료 후 스크롤 잠금 해제
+                if (window.manualScrollManager) {
+                    window.manualScrollManager.scrollLocked = false;
+                    window.manualScrollManager.lockReason = '';
+                    console.log('🔓 Scroll unlocked after Section8 animation complete');
+
+                    // 캐릭터 애니메이션을 leafsflowerdouble 버전으로 변경
+                    window.manualScrollManager.switchToLeafsFlowerDouble();
+                } else {
+                    // manualScrollManager가 없으면 직접 애니메이션 변경
+                    this.switchToLeafsFlowerDoubleFromPixel();
+                }
+                console.log('🌍 Earthquake effect completed');
+            }
+        };
+        requestAnimationFrame(shake);
+    }
+
+    // 픽셀 캐릭터에서 직접 leafsflowerdouble로 전환
+    switchToLeafsFlowerDoubleFromPixel() {
+        console.log('🌸 Switching to leafsflowerdouble from pixel manager');
+
+        // leafsflowerdouble 플래그 설정
+        this.hasLeafsFlowerDouble = true;
+        console.log('🌸✨ LeafsFlowerDouble flag activated!');
+
+        // 현재 상태 다시 적용하여 새 애니메이션으로 전환
+        if (this.currentState === 'idle' || this.currentState === 'run') {
+            const currentState = this.currentState;
+            this.switchToState(currentState);
+        }
+
+        console.log('🌸 LeafsFlowerDouble upgrade completed');
+    }
+
+    // Enemy Hit 전용 애니메이션 함수 (기존 함수 유지)
+    startEnemyHitAnimation(character) {
+        if (!character || !character.element) return;
+
+        let currentFrame = 1;
+        const totalFrames = 2; // enemy-hit1.png, enemy-hit2.png
+        const frameInterval = 125; // 125ms 간격 (2배 빠르게)
+
+        character.isActive = true;
+        let animationCount = 0;
+        const maxAnimations = totalFrames; // 2프레임만 재생하고 끝
+
+        const animateFrame = () => {
+            if (!character.isActive || animationCount >= maxAnimations) {
+                character.isActive = false;
+                return;
+            }
+
+            const imagePath = `/animation/enemy-hit/enemy-hit${currentFrame}.png`;
+            character.element.src = imagePath;
+
+            currentFrame = currentFrame >= totalFrames ? 1 : currentFrame + 1;
+            animationCount++;
+
+            if (animationCount < maxAnimations) {
+                setTimeout(animateFrame, frameInterval);
+            } else {
+                character.isActive = false;
+            }
+        };
+
+        // 첫 프레임으로 시작
+        animateFrame();
     }
 
     // 현재 상태 정보

@@ -11,7 +11,7 @@
     "serve": "vite preview --port 3000"
   },
   "keywords": ["wedding", "invitation", "mobile", "minimal"],
-  "author": "이태인 & 하송",
+  "author": "이태인 & 하송이",
   "license": "MIT",
   "dependencies": {
     "swiper": "^12.1.4"

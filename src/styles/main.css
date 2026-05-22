@@ -1280,3 +1280,33 @@ body:has(#initial-loading) {
     color: var(--text-dark);
     text-align: center;
 }
+
+/* Section 9 - Song Section */
+.song-section {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    padding: 4rem 2rem;
+    text-align: center;
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.song-message {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-medium);
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .song-section {
+        padding: 3rem 1.5rem;
+    }
+
+    .song-message {
+        font-size: 1rem;
+    }
+}

@@ -17,7 +17,7 @@ class PixelCharacterManager {
         this.scrollDirection = 'none'; // 'up', 'down', 'none'
         this.scrollProgress = 0; // 전체 스크롤 진행도
         this.runStartY = 50; // Run 애니메이션 시작 Y 위치
-        this.currentCharacterY = 50; // 현재 캐릭터 Y 위치 (idle/run 공유)
+        this.currentCharacterY = 50; // 현재 캐릭터 Y 위치 (lee-idle/lee-run 공유)
         this.currentMap = 'section-0'; // 현재 활성 맵
         this.isTransitioning = false; // 포털 전환 중 플래그
 

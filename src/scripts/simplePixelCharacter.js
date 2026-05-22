@@ -4,9 +4,10 @@ class SimplePixelCharacterManager {
     constructor() {
         this.characters = new Map();
         this.container = null;
-        this.currentState = 'hidden'; // 'hidden', 'main', 'idle', 'run'
+        this.currentState = 'hidden'; // 'hidden', 'main', 'lee-idle', 'lee-run'
         this.currentSection = 0;
-        this.characterY = 50; // 캐릭터 Y 위치 (퍼센트)
+        this.characterY = 50; // Lee 캐릭터 Y 위치 (퍼센트)
+        this.songY = 125; // Song 캐릭터 Y 위치 (퍼센트, Lee와 반대 방향)
         this.isScrolling = false;
         this.scrollTimeout = null;
         this.mainAnimationCallback = null; // 메인 애니메이션 완료 콜백
@@ -16,6 +17,12 @@ class SimplePixelCharacterManager {
         this.hasFlower = false; // 꽃 아이템 획득 여부 (hit-idle 완료 후)
         this.hasLeafsFlowerDouble = false; // leafsflowerdouble 아이템 획득 여부 (Section8 완료 후)
         this.galleryLeafsTriggered = false; // 갤러리 leafs 트리거 여부 (초기화)
+        this.idleWowTriggered = false; // idle-wow 애니메이션 트리거 여부
+        this.isIdleWowPlaying = false; // idle-wow 애니메이션 재생 중 여부
+        this.idleWowPhase = 1; // 1: 전체실행(1~15), 2: 부분반복(11~15)
+        this.idleWowRepeatCount = 0; // 11~15 반복 횟수 (최대 5회)
+        this.endingTriggered = false; // ending 애니메이션 트리거 여부
+        this.isEndingPlaying = false; // ending 애니메이션 재생 중 여부
         this.skipPositionUpdate = false; // 위치 업데이트 스킵 플래그
         this.isLoadingSection1Data = false; // section1.json 로딩 중 여부
         this.isFullyInitialized = false; // 완전 초기화 여부
@@ -94,25 +101,31 @@ class SimplePixelCharacterManager {
 
         // 애니메이션 상태들 먼저 정의
         this.animationStates = {
-            'idle': {
-                framePrefix: '/animation/idle1/idle',
+            'lee-idle': {
+                framePrefix: '/animation/lee-idle/idle',
                 frameCount: 2, // idle1.png, idle2.png
                 frameRate: 15, // 8 → 15
                 loop: true
             },
-            'run': {
-                framePrefix: '/animation/run1/run',
+            'lee-run': {
+                framePrefix: '/animation/lee-run/run',
                 frameCount: 7, // run1.png ~ run7.png
                 frameRate: 18, // 12 → 18
                 loop: true
             },
-            'idle-flower': {
+            'lee-idle-wow': {
+                framePrefix: '/animation/idle-wow/idle-wow',
+                frameCount: 15, // idle-wow1.png ~ idle-wow15.png
+                frameRate: 10,
+                loop: false // 커스텀 반복 로직 사용
+            },
+            'lee-idle-flower': {
                 framePrefix: '/animation/idle-flower/idle',
                 frameCount: 2,
                 frameRate: 15, // 8 → 15
                 loop: true
             },
-            'run-flower1': {
+            'lee-run-flower': {
                 framePrefix: '/animation/run-flower1/run-flower',
                 frameCount: 7,
                 frameRate: 18, // 12 → 18
@@ -130,30 +143,30 @@ class SimplePixelCharacterManager {
                 frameRate: 18, // 12 → 18
                 loop: false
             },
-            'idle-leafs': {
+            'lee-idle-leafs': {
                 framePrefix: '/animation/idle-leafs/idle',
                 frameCount: 2,
                 frameRate: 15, // 8 → 15
                 loop: true
             },
-            'run-leafsflower': {
+            'lee-run-leafsflower': {
                 framePrefix: '/animation/run-leafsflower/run-leafsflower',
                 frameCount: 7,
                 frameRate: 18, // 12 → 18
                 loop: true
             },
-            'idle-leafsflowerdouble': {
+            'lee-idle-leafsflowerdouble': {
                 framePrefix: '/animation/idle-leafsflowerdouble/idle',
                 frameCount: 5,
                 frameRate: 15,
                 loop: true
             },
-            'run-leafsflowerdouble': {
+            'lee-run-leafsflowerdouble': {
                 framePrefix: '/animation/run-leafsflowerdouble/run',
                 frameCount: 7,
                 frameRate: 18,
                 loop: true
-            }
+            },
         };
 
         // 각 애니메이션의 IMG 태그들 생성
@@ -263,10 +276,21 @@ class SimplePixelCharacterManager {
             visible: false
         });
 
-        // 아이들 애니메이션 (Section-2에서 기본 상태)
-        this.addCharacter('idle', {
+        // Ending 애니메이션 (Section-9에서 50vh 도달 시) - 스프레드시트 기반
+        this.addCharacter('ending', {
+            isSpreadsheetBased: true, // section1과 동일한 구조
+            spreadsheetData: null, // ending.json에서 로드될 데이터
+            scale: 4,
+            x: '50%',
+            y: '50%',
+            visible: false,
+            zIndex: 2000  // 높은 z-index로 다른 요소 위에 표시
+        });
+
+        // Lee 아이들 애니메이션 (Section-2에서 기본 상태)
+        this.addCharacter('lee-idle', {
             isPngSequence: true,
-            framePrefix: '/animation/idle1/idle',
+            framePrefix: '/animation/lee-idle/idle',
             frameCount: 2,
             frameRate: 4,
             framePadding: 0,
@@ -276,10 +300,10 @@ class SimplePixelCharacterManager {
             visible: false
         });
 
-        // 런 애니메이션 (Section-2에서 스크롤 시)
-        this.addCharacter('run', {
+        // Lee 런 애니메이션 (Section-2에서 스크롤 시)
+        this.addCharacter('lee-run', {
             isPngSequence: true,
-            framePrefix: '/animation/run1/run',
+            framePrefix: '/animation/lee-run/run',
             frameCount: 7,
             frameRate: 14,
             framePadding: 0,
@@ -287,6 +311,21 @@ class SimplePixelCharacterManager {
             x: '50%',
             y: '50%',
             visible: false
+        });
+
+        // Lee idle-wow 애니메이션 (Section-9에서 20vh 도달 시)
+        this.addCharacter('lee-idle-wow', {
+            isPngSequence: true,
+            framePrefix: '/animation/idle-wow/idle-wow',
+            frameCount: 8,
+            frameRate: 10,
+            framePadding: 0,
+            scale: 4,
+            x: '50%',
+            y: '50%',
+            visible: false,
+            loop: false,  // 한 번만 재생
+            zIndex: 1000
         });
 
         // 슬라임 idle 애니메이션 (Section-5에서 사용)
@@ -344,8 +383,8 @@ class SimplePixelCharacterManager {
             loop: true // 반복 실행
         });
 
-        // idle-flower 애니메이션 (꽃 아이템 획득 후)
-        this.addCharacter('idle-flower', {
+        // Lee idle-flower 애니메이션 (꽃 아이템 획득 후)
+        this.addCharacter('lee-idle-flower', {
             isPngSequence: true,
             framePrefix: '/animation/idle-flower/idle',
             frameCount: 2, // idle1.png, idle2.png
@@ -358,8 +397,8 @@ class SimplePixelCharacterManager {
             loop: true
         });
 
-        // run-flower1 애니메이션 (꽃 아이템 획득 후)
-        this.addCharacter('run-flower1', {
+        // Lee run-flower 애니메이션 (꽃 아이템 획득 후)
+        this.addCharacter('lee-run-flower', {
             isPngSequence: true,
             framePrefix: '/animation/run-flower1/run-flower',
             frameCount: 7, // run-flower1.png ~ run-flower7.png
@@ -387,7 +426,25 @@ class SimplePixelCharacterManager {
             zIndex: 500 // 갤러리 이미지(z-index: 200)보다 높게 설정
         });
 
-        console.log('🎮 Characters setup: main (spreadsheet), idle (png), run (png), slime-idle (png), slime-hurt (png), hit-slime (png), hit-idle (png), idle-flower (png), run-flower1 (png), leafs (png)');
+
+        // Song 통합 캐릭터 (하나의 컨테이너에서 idle/run 전환)
+        this.addCharacter('song', {
+            isPngSequence: true,
+            framePrefix: '/animation/song-idle/song-idle', // 기본은 idle
+            frameCount: 5,
+            frameRate: 8,
+            framePadding: 0,
+            scale: 4,
+            x: '50%', // 중앙
+            y: '120%', // 화면 아래 바깥
+            visible: false,
+            loop: true,
+            zIndex: 1000,
+            currentAnimation: 'song-idle' // 현재 상태 추적
+        });
+
+        console.log('🎮 Characters setup: main (spreadsheet), lee-idle (png), lee-run (png), slime-idle (png), slime-hurt (png), hit-slime (png), hit-idle (png), lee-idle-flower (png), lee-run-flower (png), leafs (png), song (unified));')
+
 
         // 갤러리 트리거 관련 초기화
         this.galleryLeafsTriggered = false;
@@ -436,6 +493,7 @@ class SimplePixelCharacterManager {
         console.log(`🎭 Unified character: switching to ${animationName}`);
     }
 
+
     // 통합 캐릭터 애니메이션 실행 (성능 최적화)
     startUnifiedAnimation() {
         const animation = this.animationStates[this.mainCharacter.currentAnimation];
@@ -476,7 +534,6 @@ class SimplePixelCharacterManager {
                 const currentImg = frameImages[this.mainCharacter.currentFrame];
                 if (currentImg) {
                     currentImg.style.visibility = 'visible';
-                    console.log(`🖼️ Frame updated: frame ${this.mainCharacter.currentFrame + 1}/${animation.frameCount} (IMG tag method)`);
                 }
             } else {
                 console.warn(`⚠️ No frame images found for: ${this.mainCharacter.currentAnimation}`);
@@ -485,7 +542,10 @@ class SimplePixelCharacterManager {
             this.mainCharacter.currentFrame++;
 
             // 애니메이션 완료 또는 반복
-            if (this.mainCharacter.currentFrame >= animation.frameCount) {
+            if (this.mainCharacter.currentAnimation === 'lee-idle-wow') {
+                // idle-wow 특별 처리: 1~15 → 11~15를 5회 반복
+                this.handleIdleWowFrameLogic();
+            } else if (this.mainCharacter.currentFrame >= animation.frameCount) {
                 if (animation.loop) {
                     this.mainCharacter.currentFrame = 0; // 반복
                 } else {
@@ -506,21 +566,27 @@ class SimplePixelCharacterManager {
         this.mainCharacter.animationTimer = requestAnimationFrame(updateFrame);
     }
 
-    // 통합 캐릭터 숨기기 (IMG 태그 방식)
+    // 통합 캐릭터 숨기기 (IMG 태그 방식) - ending 애니메이션용 강화
     hideUnifiedCharacter() {
-        console.log('👻 Hiding unified character');
+        console.log('👻 Hiding unified character for ending animation');
         this.mainCharacter.element.style.opacity = '0';
+        this.mainCharacter.element.style.display = 'none';
+        this.mainCharacter.element.style.visibility = 'hidden';
         this.mainCharacter.isActive = false;
         if (this.mainCharacter.animationTimer) {
             cancelAnimationFrame(this.mainCharacter.animationTimer);
         }
 
-        // 모든 IMG 태그 숨기기
+        // 모든 IMG 태그 완전히 숨기기
         for (const frameImages of this.frameImages.values()) {
-            frameImages.forEach(img => img.style.visibility = 'hidden');
+            frameImages.forEach(img => {
+                img.style.visibility = 'hidden';
+                img.style.display = 'none';
+                img.style.opacity = '0';
+            });
         }
 
-        console.log(`👻 Unified character hidden: opacity=${this.mainCharacter.element.style.opacity}, isActive=${this.mainCharacter.isActive}`);
+        console.log(`👻 Unified character completely hidden for ending: opacity=0, display=none, isActive=${this.mainCharacter.isActive}`);
     }
 
     // 통합 캐릭터 보이기 (IMG 태그 방식)
@@ -707,6 +773,126 @@ class SimplePixelCharacterManager {
         }
     }
 
+    // Ending 애니메이션 스프레드시트 데이터 로드 (ending.json에서)
+    async loadEndingAnimationData() {
+        try {
+            console.log('📊 Loading ending spreadsheet data from JSON...');
+
+            // 여러 경로로 시도 (section1과 동일한 패턴)
+            const baseUrl = window.location.origin;
+            const jsonPaths = [
+                `${baseUrl}/animation/ending/ending.json`,
+                '/animation/ending/ending.json',
+                './animation/ending/ending.json',
+                'animation/ending/ending.json'
+            ];
+
+            let response = null;
+            let loadedPath = null;
+
+            for (const path of jsonPaths) {
+                try {
+                    console.log(`🔍 Trying ending.json path: ${path}`);
+                    response = await fetch(path);
+                    if (response.ok) {
+                        loadedPath = path;
+                        console.log(`✅ Successfully loaded from: ${path}`);
+                        break;
+                    }
+                } catch (e) {
+                    console.log(`❌ Failed to load from ${path}:`, e.message);
+                    continue;
+                }
+            }
+
+            if (!response || !response.ok) {
+                throw new Error('Could not load ending.json from any path');
+            }
+
+            const jsonData = await response.json();
+            console.log(`📥 Raw ending JSON loaded:`, jsonData);
+
+            // JSON 데이터를 스프레드시트 형태로 변환
+            const frames = [];
+            const frameKeys = Object.keys(jsonData.frames);
+
+            for (let i = 0; i < frameKeys.length; i++) {
+                const key = frameKeys[i];
+                const frameInfo = jsonData.frames[key];
+
+                frames.push({
+                    image: `${baseUrl}/animation/ending/${jsonData.meta.image}`, // 절대 경로로 ending.png 구성 (section1과 동일)
+                    duration: frameInfo.duration,
+                    spriteX: frameInfo.frame.x,
+                    spriteY: frameInfo.frame.y,
+                    spriteWidth: frameInfo.frame.w,
+                    spriteHeight: frameInfo.frame.h
+                });
+            }
+
+            // frameTags를 이용한 애니메이션 시퀀스 생성 (section1과 동일)
+            const frameTags = jsonData.meta.frameTags || [];
+            console.log('📋 Available ending frameTags:', frameTags);
+
+            // 애니메이션 시퀀스 계산 (frameTags에 따른 repeat 적용)
+            const animationSequence = [];
+
+            frameTags.forEach(tag => {
+                const from = tag.from;
+                const to = tag.to;
+                const repeatCount = parseInt(tag.repeat) || 1;
+
+                console.log(`🏷️ Ending Tag "${tag.name}": frames ${from}-${to}, repeat ${repeatCount} times`);
+
+                // 해당 태그의 프레임 범위를 repeat만큼 반복
+                for (let r = 0; r < repeatCount; r++) {
+                    for (let f = from; f <= to; f++) {
+                        animationSequence.push(f);
+                    }
+                }
+            });
+
+            // 애니메이션 시퀀스가 없으면 모든 프레임을 순서대로 재생
+            if (animationSequence.length === 0) {
+                console.log('⚠️ No ending frameTags found, using all frames in order');
+                for (let i = 0; i < frames.length; i++) {
+                    animationSequence.push(i);
+                }
+            }
+
+            console.log(`🎬 Ending animation sequence: [${animationSequence.slice(0, 20).join(', ')}${animationSequence.length > 20 ? '...' : ''}] (total: ${animationSequence.length} frames)`);
+
+            const spreadsheetData = {
+                frames: frames,
+                animationSequence: animationSequence,
+                totalDuration: frames.reduce((total, frame) => total + frame.duration, 0),
+                meta: {
+                    size: jsonData.meta?.size || { w: 50, h: 64 },
+                    scale: jsonData.meta?.scale || "1"
+                },
+                metadata: {
+                    name: 'Ending Animation',
+                    frameCount: frames.length,
+                    sequenceLength: animationSequence.length,
+                    spritesheet: jsonData.meta.image,
+                    frameTags: frameTags
+                }
+            };
+
+            console.log(`📊 Converted ${frames.length} ending frames from JSON to spreadsheet format`);
+            console.log('🎬 Total ending duration:', spreadsheetData.totalDuration + 'ms');
+
+            // Ending 캐릭터에 데이터 설정
+            await this.loadSpreadsheetData('ending', spreadsheetData);
+
+            console.log('✅ Ending data loading completed!');
+
+        } catch (error) {
+            console.error('❌ Failed to load ending spreadsheet data:', error);
+            console.log('⚠️ Ending animation will not be available');
+        }
+    }
+
     // 직접 로딩 메시지 표시 (manualScrollManager 없을 때)
     showDirectLoadingMessage() {
         // HTML의 초기 로딩 스크린이 이미 있으므로 그것을 유지
@@ -851,10 +1037,18 @@ class SimplePixelCharacterManager {
 
     // 스프레드시트 기반 애니메이션 시작
     startSpreadsheetAnimation(character) {
+        console.log(`🎬 startSpreadsheetAnimation called for: ${character.id}`);
+
         if (!character.spreadsheetData || !character.spreadsheetData.frames) {
             console.error('❌ Spreadsheet data not loaded for character:', character.id);
             return;
         }
+
+        console.log(`✅ Spreadsheet data found for ${character.id}:`, {
+            frameCount: character.spreadsheetData.frames.length,
+            sequenceLength: character.spreadsheetData.animationSequence.length,
+            totalDuration: character.spreadsheetData.totalDuration
+        });
 
         // 스프라이트시트 이미지 미리 로드
         const spritesheetImg = new Image();
@@ -895,10 +1089,12 @@ class SimplePixelCharacterManager {
                 character.isActive = false;
                 console.log(`✅ Spreadsheet animation completed: ${character.id} (${animationSequence.length} frames played)`);
 
-                // 메인 애니메이션 완료 콜백 호출
+                // 애니메이션 완료 콜백 호출
                 if (character.id === 'main' && this.mainAnimationCallback) {
                     this.mainAnimationCallback();
                     this.mainAnimationCallback = null;
+                } else if (character.id === 'ending') {
+                    this.onEndingAnimationComplete();
                 }
                 return;
             }
@@ -927,6 +1123,19 @@ class SimplePixelCharacterManager {
             // 캔버스를 데이터 URL로 변환하여 이미지 소스로 설정
             character.img.src = canvas.toDataURL();
             character.currentFrame = frameIndex;
+
+            // 이미지 표시 강제 확인 (ending 캐릭터인 경우)
+            if (character.id === 'ending') {
+                character.img.style.display = 'block';
+                character.img.style.opacity = '1';
+                character.img.style.visibility = 'visible';
+                console.log(`🎬 ENDING IMG SET:`, {
+                    src: character.img.src.substring(0, 50) + '...',
+                    display: character.img.style.display,
+                    opacity: character.img.style.opacity,
+                    parentOpacity: character.element.style.opacity
+                });
+            }
 
             console.log(`🎬 Sequence ${sequenceIndex + 1}/${animationSequence.length} - Frame ${frameIndex}: sprite(${frameData.spriteX},${frameData.spriteY},${frameData.spriteWidth}x${frameData.spriteHeight}) (${frameData.duration}ms)`);
 
@@ -999,23 +1208,23 @@ class SimplePixelCharacterManager {
         console.log(`🌸 Animation check: hasLeafsFlowerDouble=${this.hasLeafsFlowerDouble}, hasFlower=${this.hasFlower}, leafsTriggered=${this.galleryLeafsTriggered}, newState=${newState}`);
 
         // leafsflowerdouble 최우선 (Section8 완료 후)
-        if (this.hasLeafsFlowerDouble && newState === 'idle') {
-            actualAnimation = 'idle-leafsflowerdouble';
+        if (this.hasLeafsFlowerDouble && newState === 'lee-idle') {
+            actualAnimation = 'lee-idle-leafsflowerdouble';
             console.log(`🌸✨ Using leafsflowerdouble idle: ${actualAnimation}`);
-        } else if (this.hasLeafsFlowerDouble && newState === 'run') {
-            actualAnimation = 'run-leafsflowerdouble';
+        } else if (this.hasLeafsFlowerDouble && newState === 'lee-run') {
+            actualAnimation = 'lee-run-leafsflowerdouble';
             console.log(`🌸✨ Using leafsflowerdouble run: ${actualAnimation}`);
-        } else if (this.galleryLeafsTriggered && newState === 'idle') {
-            actualAnimation = 'idle-leafs';
+        } else if (this.galleryLeafsTriggered && newState === 'lee-idle') {
+            actualAnimation = 'lee-idle-leafs';
             console.log(`🍃 Using leafs idle: ${actualAnimation}`);
-        } else if (this.galleryLeafsTriggered && newState === 'run') {
-            actualAnimation = 'run-leafsflower';
+        } else if (this.galleryLeafsTriggered && newState === 'lee-run') {
+            actualAnimation = 'lee-run-leafsflower';
             console.log(`🍃 Using leafs run: ${actualAnimation}`);
-        } else if (this.hasFlower && newState === 'idle') {
-            actualAnimation = 'idle-flower';
+        } else if (this.hasFlower && newState === 'lee-idle') {
+            actualAnimation = 'lee-idle-flower';
             console.log(`🌸 Using flower idle: ${actualAnimation}`);
-        } else if (this.hasFlower && newState === 'run') {
-            actualAnimation = 'run-flower1';
+        } else if (this.hasFlower && newState === 'lee-run') {
+            actualAnimation = 'lee-run-flower';
             console.log(`🌸 Using flower run: ${actualAnimation}`);
         } else {
             console.log(`🎭 Using normal animation: ${actualAnimation}`);
@@ -1029,10 +1238,10 @@ class SimplePixelCharacterManager {
             console.log('🌸 Hit-idle transition: flower item acquired! Position preserved at 50%');
 
             // 꽃 모드로 재계산
-            if (newState === 'idle') {
-                actualAnimation = 'idle-flower';
-            } else if (newState === 'run') {
-                actualAnimation = 'run-flower1';
+            if (newState === 'lee-idle') {
+                actualAnimation = 'lee-idle-flower';
+            } else if (newState === 'lee-run') {
+                actualAnimation = 'lee-run-flower';
             }
         }
 
@@ -1057,9 +1266,9 @@ class SimplePixelCharacterManager {
             console.log(`🎭 Unified character activated for Section-${this.currentSection}: ${actualAnimation}`);
         }
 
-        // 기존 개별 캐릭터들 숨기기 (슬라임 제외)
+        // 기존 개별 캐릭터들 숨기기 (슬라임과 song 캐릭터들 제외)
         this.characters.forEach((char, id) => {
-            if (id.startsWith('slime-')) return; // 슬라임은 별도 관리
+            if (id.startsWith('slime-') || id.startsWith('song-')) return; // 슬라임과 song 캐릭터들은 별도 관리
             this.stopAnimation(char);
             char.element.style.opacity = '0';
         });
@@ -1144,7 +1353,7 @@ class SimplePixelCharacterManager {
         this.currentSection = sectionIndex;
 
         // 스크롤 중이면 run, 아니면 idle로 시작
-        const initialState = this.isScrolling ? 'run' : 'idle';
+        const initialState = this.isScrolling ? 'lee-run' : 'lee-idle';
         console.log(`🏃 Starting Section-${sectionIndex} in ${initialState} state (isScrolling: ${this.isScrolling})`);
         this.switchToState(initialState);
     }
@@ -1168,12 +1377,12 @@ class SimplePixelCharacterManager {
         this.isHitSlimePlaying = false;
         console.log('🟢 Section-5 hit-slime state reset');
 
-        // Section-5에서는 일반 캐릭터(idle/run)도 함께 표시
+        // Section-5에서는 Lee 캐릭터(lee-idle/lee-run)도 함께 표시
         const startHeight = -25; // 화면 위 바깥에서 시작
         this.characterY = startHeight;
 
         // 스크롤 상태에 따라 일반 캐릭터 시작 상태 결정
-        const mainState = this.isScrolling ? 'run' : 'idle';
+        const mainState = this.isScrolling ? 'lee-run' : 'lee-idle';
         this.switchToState(mainState);
 
         // 슬라임은 별도로 70vh에 고정하여 표시
@@ -1259,10 +1468,10 @@ class SimplePixelCharacterManager {
 
             if (sectionIndex === 5) {
                 // Section-5: 메인 캐릭터만 run 상태 (슬라임은 항상 idle 유지)
-                this.switchToState('run');
+                this.switchToState('lee-run');
             } else {
                 // 다른 섹션: 일반 run 상태
-                this.switchToState('run');
+                this.switchToState('lee-run');
             }
         }
 
@@ -1317,7 +1526,21 @@ class SimplePixelCharacterManager {
         } else if (sectionIndex === 6) {
             // Section-6에서 갤러리 leafs 트리거 체크
             this.checkGalleryLeafsTrigger();
+        } else if (sectionIndex === 8) {
+            // Section-8 체크
+            console.log('🏛️ Section-8 detected! sectionIndex:', sectionIndex);
+        } else if (sectionIndex === 9) {
+            // Section-9: song 상태 업데이트 (위치 + 애니메이션)
+            console.log('🎵 Section-9 detected! Updating song state and position');
+            this.updateSongState(yProgress);
+
+            // Lee가 20vh(characterY = 20) 도달 시 idle-wow 트리거 체크
+            this.checkIdleWowTrigger();
+
+            // Lee가 50vh(characterY = 50) 도달 시 ending 트리거 체크
+            this.checkEndingTrigger();
         }
+
 
         console.log(`🏃 Section-${sectionIndex} Character Y: ${this.characterY.toFixed(1)}% (progress: ${(yProgress * 100).toFixed(1)}%)`);
 
@@ -1339,10 +1562,39 @@ class SimplePixelCharacterManager {
 
                 if (sectionIndex === 5) {
                     // Section-5: 메인 캐릭터만 idle 상태 (슬라임은 항상 idle 유지)
-                    this.switchToState('idle');
+                    this.switchToState('lee-idle');
+                } else if (sectionIndex === 9) {
+                    // Section-9: idle-wow 재생 중이면 Lee 처리 무시, Song은 별도 처리
+                    if (this.isIdleWowPlaying) {
+                        console.log('🎉 Section-9 scroll stopped - idle-wow playing, ignoring Lee transition');
+
+                        // Song은 독립적으로 idle로 전환
+                        const song = this.characters.get('song');
+                        if (song) {
+                            this.switchSongAnimation(song, 'song-idle');
+                            console.log('🎵 Song set to idle (independent of idle-wow)');
+                        }
+                        return;
+                    }
+
+                    // Section-9: 일반 상태 - Lee와 Song 모두 idle로 전환
+                    console.log('🎵 Section-9 scroll stopped - Lee to idle, Song to idle');
+
+                    // Lee가 leafsflowerdouble 모드라면 통합 애니메이션 사용
+                    if (this.hasLeafsFlowerDouble) {
+                        this.switchUnifiedAnimation('lee-idle-leafsflowerdouble');
+                    } else {
+                        this.switchToState('lee-idle');
+                    }
+
+                    // Song 애니메이션만 idle로 변경 (위치 변경 없음)
+                    const song = this.characters.get('song');
+                    if (song) {
+                        this.switchSongAnimation(song, 'song-idle');
+                    }
                 } else {
-                    // 다른 섹션: 일반 idle 상태
-                    this.switchToState('idle');
+                    // 다른 섹션: 일반 lee idle 상태
+                    this.switchToState('lee-idle');
                 }
             }, 200); // 200ms 후 idle로 전환
         }
@@ -1426,6 +1678,193 @@ class SimplePixelCharacterManager {
         }
     }
 
+    // Idle-wow 트리거 체크 (Section-9에서만)
+    checkIdleWowTrigger() {
+        if (this.currentSection !== 9) return;
+        if (this.idleWowTriggered || this.isIdleWowPlaying) return;
+
+        console.log(`🔍 Checking idle-wow trigger: characterY=${this.characterY.toFixed(1)}, section=${this.currentSection}`);
+
+        // Lee가 20vh(characterY = 20) 도달했는지 체크
+        if (this.characterY >= 20) {
+            console.log('🎉 Idle-wow triggered at 20vh from top!');
+            this.triggerIdleWowAnimation();
+        }
+    }
+
+    // Ending 트리거 체크 (Section-9에서만)
+    checkEndingTrigger() {
+        if (this.currentSection !== 9) return;
+        if (this.endingTriggered || this.isEndingPlaying) return;
+
+        // 디버깅을 위해 더 자세한 로그 추가
+        if (this.characterY >= 45) { // 45vh부터 로그 시작
+            console.log(`🔍 Ending trigger check: characterY=${this.characterY.toFixed(1)}vh, section=${this.currentSection}, triggered=${this.endingTriggered}, playing=${this.isEndingPlaying}`);
+        }
+
+        // Lee가 50vh(characterY = 50) 도달했는지 체크
+        if (this.characterY >= 50) {
+            console.log('🎬 ENDING TRIGGERED at 50vh!');
+            this.triggerEndingAnimation();
+        }
+    }
+
+    // Ending 애니메이션 실행
+    triggerEndingAnimation() {
+        this.endingTriggered = true;
+        this.isEndingPlaying = true;
+
+        // 스크롤 잠금
+        if (window.manualScrollManager) {
+            window.manualScrollManager.lockScroll('ending animation');
+        }
+
+        // 통합 캐릭터 완전히 숨기기
+        this.hideUnifiedCharacter();
+
+        // Lee 개별 캐릭터들도 모두 숨기기
+        const leeCharacters = ['lee-idle', 'lee-run', 'lee-idle-wow', 'lee-idle-flower', 'lee-run-flower', 'lee-idle-leafsflowerdouble', 'lee-run-leafsflowerdouble'];
+        leeCharacters.forEach(charId => {
+            const char = this.characters.get(charId);
+            if (char) {
+                char.visible = false;
+                char.element.style.opacity = '0';
+                char.element.style.display = 'none';
+                char.element.style.visibility = 'hidden';
+                console.log(`👻 Hidden Lee character: ${charId}`);
+            }
+        });
+
+        // Song 캐릭터도 숨기기
+        const song = this.characters.get('song');
+        if (song) {
+            song.visible = false;
+            song.element.style.opacity = '0';
+            song.element.style.display = 'none';
+            song.element.style.visibility = 'hidden';
+            console.log('👻 Hidden Song character');
+        }
+
+        // Ending 애니메이션 데이터가 로드되었는지 확인
+        const endingChar = this.characters.get('ending');
+        if (!endingChar) {
+            console.error('❌ Ending character not found');
+            return;
+        }
+
+        if (!endingChar.spreadsheetData) {
+            console.log('🔄 Ending data not loaded, loading now...');
+            this.loadEndingAnimationData().then(() => {
+                this.startEndingAnimation();
+            }).catch(error => {
+                console.error('❌ Failed to load ending data:', error);
+                // 실패 시 스크롤 잠금 해제
+                if (window.manualScrollManager) {
+                    window.manualScrollManager.unlockScroll('ending animation failed');
+                }
+            });
+        } else {
+            this.startEndingAnimation();
+        }
+
+        console.log('🎬 Ending animation started, scroll locked');
+    }
+
+    // Ending 애니메이션 시작
+    startEndingAnimation() {
+        const endingChar = this.characters.get('ending');
+        if (!endingChar) {
+            console.error('❌ Ending character not found');
+            return;
+        }
+
+        // Ending 캐릭터 표시 (강력한 스타일 적용)
+        endingChar.visible = true;
+        endingChar.element.style.opacity = '1';
+        endingChar.element.style.display = 'block';
+        endingChar.element.style.visibility = 'visible';
+        endingChar.element.style.top = '50%';
+        endingChar.element.style.left = '50%';
+        endingChar.element.style.zIndex = '2000';
+        endingChar.element.style.position = 'absolute';
+        endingChar.element.style.width = 'auto';
+        endingChar.element.style.height = 'auto';
+
+
+        // 스프레드시트 애니메이션을 위한 img 요소 확인
+        if (!endingChar.img) {
+            endingChar.img = endingChar.element.querySelector('img');
+        }
+
+        console.log('🎬 Starting ending animation...', {
+            hasSpreadsheetData: !!endingChar.spreadsheetData,
+            hasImg: !!endingChar.img,
+            visible: endingChar.visible,
+            elementStyle: endingChar.element.style.cssText
+        });
+
+        // 스프레드시트 애니메이션 시작
+        this.startSpreadsheetAnimation(endingChar);
+
+        console.log('🎬 Ending animation playing...');
+    }
+
+    // Ending 애니메이션 완료 처리
+    onEndingAnimationComplete() {
+        console.log('🎬 Ending animation completed!');
+
+        this.isEndingPlaying = false;
+
+        // Ending 캐릭터 숨기기
+        const endingChar = this.characters.get('ending');
+        if (endingChar) {
+            endingChar.visible = false;
+            endingChar.element.style.display = 'none';
+            endingChar.element.style.opacity = '0';
+        }
+
+        // ending.jpg 이미지를 화면에 cover로 표시
+        this.showEndingImage();
+
+        // 스크롤 잠금 해제
+        if (window.manualScrollManager) {
+            window.manualScrollManager.unlockScroll('ending animation completed');
+        }
+
+        console.log('🎬 Ending animation completed, scroll unlocked, ending image displayed');
+    }
+
+    // ending.jpg 이미지를 화면에 cover로 표시
+    showEndingImage() {
+        // 기존 ending 이미지가 있으면 제거
+        const existingEndingImg = document.getElementById('ending-cover-image');
+        if (existingEndingImg) {
+            existingEndingImg.remove();
+        }
+
+        // ending.jpg를 화면 전체에 cover로 표시
+        const endingImg = document.createElement('div');
+        endingImg.id = 'ending-cover-image';
+        endingImg.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('/images/gallery/ending.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 9999;
+            pointer-events: none;
+        `;
+
+        // body에 추가 (최상위 레이어)
+        document.body.appendChild(endingImg);
+
+        console.log('🎬 Ending cover image displayed');
+    }
+
     // Hit-slime 애니메이션 실행
     triggerHitSlimeAnimation() {
         this.hitSlimeTriggered = true;
@@ -1436,7 +1875,7 @@ class SimplePixelCharacterManager {
             window.manualScrollManager.lockScroll('hit-slime animation');
         }
 
-        // 통합 캐릭터 (idle/run) 숨기기
+        // 통합 캐릭터 (lee-idle/lee-run) 숨기기
         this.hideUnifiedCharacter();
         console.log(`🫥 Unified character hidden for hit-slime`);
 
@@ -1455,6 +1894,99 @@ class SimplePixelCharacterManager {
         }
 
         console.log('💥 Hit-slime animation started, scroll locked');
+    }
+
+    // Idle-wow 애니메이션 실행
+    triggerIdleWowAnimation() {
+        this.idleWowTriggered = true;
+        this.isIdleWowPlaying = true;
+
+        // 스크롤 잠금
+        if (window.manualScrollManager) {
+            window.manualScrollManager.lockScroll('idle-wow animation');
+        }
+
+        // 통합 캐릭터가 활성화되어 있는지 확인
+        console.log('🎯 Current unified character:', {
+            'isActive': this.mainCharacter?.isActive,
+            'currentAnimation': this.mainCharacter?.currentAnimation
+        });
+
+        if (this.mainCharacter?.isActive) {
+            // 위치 유지하면서 idle-wow 애니메이션으로 전환 (Lee만)
+            this.switchToIdleWow();
+        } else {
+            console.log('❌ No active unified character found for idle-wow transition');
+        }
+
+        console.log('🎉 Idle-wow animation started, scroll locked');
+    }
+
+    // Lee 캐릭터를 idle-wow로 전환 (통합 캐릭터 시스템)
+    switchToIdleWow() {
+        // 기존 통합 캐릭터 애니메이션 정지하지만 숨기지는 않음 (위치 유지)
+        if (this.mainCharacter.animationTimer) {
+            cancelAnimationFrame(this.mainCharacter.animationTimer);
+        }
+
+        // idle-wow 상태 초기화
+        this.idleWowPhase = 1;
+        this.idleWowRepeatCount = 0;
+
+        // idle-wow 애니메이션으로 전환 (통합 시스템 사용)
+        this.switchUnifiedAnimation('lee-idle-wow');
+
+        console.log('🎉 Switched to idle-wow animation via unified character system (Phase 1: 1~15)');
+    }
+
+    // Idle-wow 애니메이션 완료 처리 (통합 캐릭터 시스템)
+    onIdleWowAnimationComplete() {
+        console.log('🎉 Idle-wow animation completed via unified system!');
+
+        this.isIdleWowPlaying = false;
+
+        // leafsflowerdouble 모드 활성화
+        this.hasLeafsFlowerDouble = true;
+
+        // 스크롤 잠금 해제
+        if (window.manualScrollManager) {
+            window.manualScrollManager.unlockScroll('idle-wow animation completed');
+        }
+
+        // Lee만 leafsflowerdouble 모드로 전환 (Song은 건드리지 않음)
+        const targetAnimation = this.isScrolling ? 'lee-run-leafsflowerdouble' : 'lee-idle-leafsflowerdouble';
+        this.switchUnifiedAnimation(targetAnimation);
+
+        console.log('🎉 Idle-wow completed, switched to leafsflowerdouble mode');
+    }
+
+    // idle-wow 프레임 로직 처리: 1~15 → 11~15를 5회 반복
+    handleIdleWowFrameLogic() {
+        if (this.idleWowPhase === 1) {
+            // Phase 1: 1~15 프레임 완료 체크
+            if (this.mainCharacter.currentFrame >= 15) {
+                console.log('🎉 Phase 1 complete (1~15), starting Phase 2 (11~15 x5)');
+                this.idleWowPhase = 2;
+                this.idleWowRepeatCount = 0;
+                this.mainCharacter.currentFrame = 10; // 11번째 프레임 (index 10)
+            }
+        } else if (this.idleWowPhase === 2) {
+            // Phase 2: 11~15 프레임 반복 (5회)
+            if (this.mainCharacter.currentFrame >= 15) {
+                this.idleWowRepeatCount++;
+                console.log(`🔄 Repeat ${this.idleWowRepeatCount}/5 complete (11~15)`);
+
+                if (this.idleWowRepeatCount >= 5) {
+                    // 5회 반복 완료 → 애니메이션 종료
+                    console.log('🎉 All repeats complete! Ending idle-wow animation');
+                    this.onIdleWowAnimationComplete();
+                    return; // 애니메이션 종료
+                } else {
+                    // 다음 반복을 위해 11번째 프레임으로 리셋
+                    this.mainCharacter.currentFrame = 10; // 11번째 프레임 (index 10)
+                }
+            }
+        }
     }
 
     // Hit-slime 애니메이션 시작 (한 번만 재생)
@@ -1742,10 +2274,10 @@ class SimplePixelCharacterManager {
         const currentAnimation = this.mainCharacter.currentAnimation;
         let newAnimation = null;
 
-        if (currentAnimation === 'run' || currentAnimation === 'run-flower1') {
-            newAnimation = 'run-leafsflower';
-        } else if (currentAnimation === 'idle' || currentAnimation === 'idle-flower') {
-            newAnimation = 'idle-leafs';
+        if (currentAnimation === 'lee-run' || currentAnimation === 'lee-run-flower') {
+            newAnimation = 'lee-run-leafsflower';
+        } else if (currentAnimation === 'lee-idle' || currentAnimation === 'lee-idle-flower') {
+            newAnimation = 'lee-idle-leafs';
         }
 
         if (newAnimation && currentAnimation !== newAnimation) {
@@ -1994,7 +2526,7 @@ class SimplePixelCharacterManager {
         console.log('🌸✨ LeafsFlowerDouble flag activated!');
 
         // 현재 상태 다시 적용하여 새 애니메이션으로 전환
-        if (this.currentState === 'idle' || this.currentState === 'run') {
+        if (this.currentState === 'lee-idle' || this.currentState === 'lee-run') {
             const currentState = this.currentState;
             this.switchToState(currentState);
         }
@@ -2035,6 +2567,83 @@ class SimplePixelCharacterManager {
 
         // 첫 프레임으로 시작
         animateFrame();
+    }
+
+    // Section-9: song 통합 캐릭터 상태 업데이트 (위치 + 애니메이션)
+    updateSongState(yProgress) {
+        const song = this.characters.get('song');
+
+        if (!song || !song.element) {
+            console.log('🎵 song character not found');
+            return;
+        }
+
+        // 첫 진입시 활성화
+        if (!song.isActive) {
+            song.isActive = true;
+            song.element.style.opacity = '1';
+            song.element.style.visibility = 'visible';
+            song.element.style.display = 'block';
+            this.startAnimation(song);
+            console.log('🎵 song character activated');
+        }
+
+        // Song Y 위치 계산 (Lee와 완전히 동일한 로직, 방향만 반대)
+        // Lee: startHeight(-25) → 100% (위에서 아래로)
+        // Song: startHeight(125) → 0% (아래에서 위로)
+        const startHeight = 125; // 화면 아래 바깥에서 시작 (Lee의 -25와 반대)
+
+        // Lee와 동일한 계산 로직
+        if (yProgress <= 1) {
+            const range = 0 - startHeight; // Lee: 125, Song: -125 (음수 = 반대 방향)
+            this.songY = startHeight + (yProgress * range);
+        } else {
+            this.songY = 0 - ((yProgress - 1) * 50); // 화면 위 바깥으로 이동
+        }
+
+        // 위치 업데이트 (Lee와 동일)
+        song.element.style.top = `${this.songY}%`;
+        song.element.style.left = '50%';
+        song.element.style.transform = 'translate(-50%, -50%) scale(4)';
+
+        // 애니메이션 상태에 따라 전환
+        const shouldShowRun = this.isScrolling;
+        const targetAnimation = shouldShowRun ? 'song-run' : 'song-idle';
+
+        this.switchSongAnimation(song, targetAnimation);
+
+        console.log(`🎵 Song Y: ${this.songY.toFixed(1)}% (progress: ${(yProgress * 100).toFixed(1)}%), animation=${targetAnimation}`);
+    }
+
+    // Song 애니메이션 전환 (하나의 캐릭터에서)
+    switchSongAnimation(song, targetAnimation) {
+        if (song.currentAnimation === targetAnimation) {
+            return; // 이미 같은 애니메이션
+        }
+
+        // 기존 애니메이션 정지
+        if (song.animationInterval) {
+            clearInterval(song.animationInterval);
+        }
+
+        // 새 애니메이션 설정
+        if (targetAnimation === 'song-idle') {
+            song.framePrefix = '/animation/song-idle/song-idle';
+            song.frameCount = 5;
+            song.frameRate = 8;
+            song.element.style.opacity = '1';  // opacity 명시적 설정
+        } else if (targetAnimation === 'song-run') {
+            song.framePrefix = '/animation/song-run/song-run';
+            song.frameCount = 7;
+            song.frameRate = 12;
+        }
+
+        song.currentAnimation = targetAnimation;
+        song.currentFrame = 0;
+
+        // 애니메이션 재시작
+        this.startAnimation(song);
+        console.log(`🎵 Song switched to: ${targetAnimation}`);
     }
 
     // 현재 상태 정보

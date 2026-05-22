@@ -3,8 +3,8 @@
 
 class ManualScrollManager {
     constructor() {
-        this.currentSection = 0; // 현재 섹션 인덱스 (0: hero, 1: section1 animation, 2: idle/run area)
-        this.maxSections = 8; // 총 섹션 수 (section-0,1,2,3,5,6,7,8 - section-4 제외)
+        this.currentSection = 0; // 현재 섹션 인덱스 (0: hero, 1: section1 animation, 2: lee area)
+        this.maxSections = 9; // 총 섹션 수 (section-0,1,2,3,5,6,7,8,9 - section-4 제외)
         this.isTransitioning = false; // 전환 중 여부
         this.isAnimationLocked = false; // 애니메이션 재생 중 잠금
         this.scrollSensitivity = 50; // 스크롤 감도
@@ -26,7 +26,8 @@ class ManualScrollManager {
             { id: 'section-5', element: null, targetY: 0 },
             { id: 'section-6', element: null, targetY: 0 },
             { id: 'section-7', element: null, targetY: 0 },
-            { id: 'section-8', element: null, targetY: 0 }
+            { id: 'section-8', element: null, targetY: 0 },
+            { id: 'section-9', element: null, targetY: 0 }
         ];
 
         // 터치 관련 변수
@@ -314,7 +315,7 @@ class ManualScrollManager {
                 this.goToSection(0);
             }
         } else if (this.currentSection === 5) {
-            // Section-5: 슬라임 애니메이션 (idle/run 정책 적용)
+            // Section-5: 슬라임 애니메이션 (lee-idle/lee-run 정책 적용)
             this.handleCharacterMovement(normalizedDelta, this.currentSection);
         } else if (this.currentSection >= 2) {
             // Section-2부터는 모든 섹션에서 캐릭터 Y축 이동 (Section-5 제외)
@@ -388,6 +389,14 @@ class ManualScrollManager {
         if (this.currentSection === 8) {
             this.triggerSection8Animation();
         }
+
+        // Section-9 접근시 로그
+        if (this.currentSection === 9) {
+            console.log('🎵 Manual Scroll: Section-9 reached! Should trigger song-run...');
+        }
+
+        // 현재 섹션 디버깅 로그
+        console.log(`🎯 Manual Scroll: currentSection = ${this.currentSection}, maxSections = ${this.maxSections}`);
     }
 
     // Section-8 지진 및 enemy-hit 애니메이션
@@ -465,7 +474,7 @@ class ManualScrollManager {
             console.log('🌸✨ LeafsFlowerDouble flag activated in manualScroll!');
 
             // 현재 상태 다시 적용하여 새 애니메이션으로 전환
-            if (pixelManager.currentState === 'idle' || pixelManager.currentState === 'run') {
+            if (pixelManager.currentState === 'lee-idle' || pixelManager.currentState === 'lee-run') {
                 const currentState = pixelManager.currentState;
                 pixelManager.switchToState(currentState);
             }
@@ -796,9 +805,9 @@ class ManualScrollManager {
 
         console.log(`🏃 Section-${currentSectionIndex} Character Y progress: ${(this[sectionKey] * 100).toFixed(1)}%`);
 
-        // 포털 시스템: 아래로 1.2 이상이면 다음 섹션으로, 위로 -0.2 이하면 이전 섹션으로
-        if (this[sectionKey] >= 1.2) {
-            console.log(`🚪 Character reached bottom portal (120%) - moving to Section-${currentSectionIndex + 1}`);
+        // 포털 시스템: 아래로 1.5 이상이면 다음 섹션으로, 위로 -0.2 이하면 이전 섹션으로
+        if (this[sectionKey] >= 1.5) {
+            console.log(`🚪 Character reached bottom portal (150%) - moving to Section-${currentSectionIndex + 1}`);
             this.triggerPortalTransition(currentSectionIndex, 'down');
             return;
         } else if (this[sectionKey] <= -0.2 && currentSectionIndex >= 1) {

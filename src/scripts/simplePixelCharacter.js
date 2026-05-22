@@ -128,7 +128,7 @@ class SimplePixelCharacterManager {
             'lee-idle-wow': {
                 framePrefix: '/animation/idle-wow/idle-wow',
                 frameCount: 15, // idle-wow1.png ~ idle-wow15.png
-                frameRate: 10,
+                frameRate: 12, // 10 → 20 (두배 빠르게)
                 loop: false // 커스텀 반복 로직 사용
             },
             'lee-idle-flower': {
@@ -1875,12 +1875,14 @@ class SimplePixelCharacterManager {
 
         this.isEndingPlaying = false;
 
-        // Ending 캐릭터 숨기기
+        // Ending 캐릭터를 마지막 프레임에 계속 표시 (숨기지 않음)
         const endingChar = this.characters.get('ending');
         if (endingChar) {
-            endingChar.visible = false;
-            endingChar.element.style.display = 'none';
-            endingChar.element.style.opacity = '0';
+            // 애니메이션은 중단하지만 캐릭터는 계속 보이게 유지
+            endingChar.visible = true;
+            endingChar.element.style.display = 'block';
+            endingChar.element.style.opacity = '1';
+            console.log('🎬 Ending character remains visible at final frame');
         }
 
         // ending.jpg 이미지를 화면에 cover로 표시

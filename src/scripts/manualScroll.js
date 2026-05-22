@@ -189,8 +189,9 @@ class ManualScrollManager {
         const currentTime = Date.now();
         const delta = this.touchLastY - currentY; // 이전 프레임 대비 이동량
 
-        // 실시간으로 스크롤 처리
-        if (Math.abs(delta) > 1) { // 최소 1px 이상 이동시만
+        // 실시간으로 스크롤 처리 (section0에서는 더 민감하게)
+        const threshold = this.currentSection === 0 ? 0.1 : 1;
+        if (Math.abs(delta) > threshold) { // section0: 0.1px, 다른 섹션: 1px
             this.handleScrollDelta(delta, 'touch');
 
             // 속도 계산 (픽셀/밀리초)
@@ -292,6 +293,11 @@ class ManualScrollManager {
                 speed = this.trackpadSpeed; // 기본값은 트랙패드
         }
 
+        // Section-2에서는 터치 속도 2배 빠르게
+        if (this.currentSection === 2 && inputType === 'touch') {
+            speed = this.touchSpeed * 2; // 5 * 2 = 10
+        }
+
         // 일정한 속도로 정규화 (디바이스별 다른 속도)
         const scrollDirection = delta > 0 ? 'down' : 'up';
         const normalizedDelta = scrollDirection === 'down' ? speed : -speed;
@@ -302,7 +308,7 @@ class ManualScrollManager {
         // 섹션별 특별 처리
         if (this.currentSection === 0) {
             // Section-0 (Hero): 아래로만 Section-1 애니메이션 트리거
-            if (scrollDirection === 'down' && scrollMagnitude > 5) {
+            if (scrollDirection === 'down' && scrollMagnitude > 2) {
                 this.triggerSection1Transition();
             }
             // 위로는 스크롤 불가 (최상단)

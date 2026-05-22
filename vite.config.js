@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  // Base public path
-  base: './',
+  // Base public path for production
+  base: '/',
 
   // Build options
   build: {
@@ -12,7 +12,11 @@ export default defineConfig({
       input: {
         main: 'index.html'
       }
-    }
+    },
+    // Ensure all public assets are copied
+    copyPublicDir: true,
+    // 대용량 파일 경고 임계값 증가
+    chunkSizeWarningLimit: 1000
   },
 
   // Dev server options
@@ -23,6 +27,9 @@ export default defineConfig({
     allowedHosts: ['ran-solomon-symantec-jackets.trycloudflare.com']
   },
 
+  // Public directory
+  publicDir: 'public',
+
   // Asset handling
-  assetsInclude: ['**/*.mp3', '**/*.wav']
+  assetsInclude: ['**/*.mp3', '**/*.wav', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.webp']
 })

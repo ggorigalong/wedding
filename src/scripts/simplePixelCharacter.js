@@ -52,6 +52,18 @@ class SimplePixelCharacterManager {
         this.createContainer();
         await this.setupUnifiedCharacter();
         await this.setupCharacters();
+
+        // 초기화 완료 후 쿼리스트링이 없을 때만 section0에서 시작하도록 설정
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasQuerySection = urlParams.get('section') !== null;
+
+        if (!hasQuerySection && window.manualScrollManager && window.manualScrollManager.currentSection !== 0) {
+            console.log('🔄 No query string detected, forcing start from section0 for proper initialization');
+            window.manualScrollManager.goToSection(0);
+        } else if (hasQuerySection) {
+            console.log(`🔗 Query string detected: section=${urlParams.get('section')}, maintaining current section`);
+        }
+
         console.log(`🎮 Simple Pixel Character System initialized (${this.isMobile ? 'Mobile' : 'Desktop'} mode)`);
     }
 
@@ -527,13 +539,19 @@ class SimplePixelCharacterManager {
             if (frameImages) {
                 // 모든 애니메이션의 모든 프레임 숨기기 (확실한 중복 방지)
                 for (const allFrameImages of this.frameImages.values()) {
-                    allFrameImages.forEach(img => img.style.visibility = 'hidden');
+                    allFrameImages.forEach(img => {
+                        img.style.visibility = 'hidden';
+                        img.style.display = 'none';
+                        img.style.opacity = '0';
+                    });
                 }
 
                 // 현재 애니메이션의 현재 프레임만 보이기
                 const currentImg = frameImages[this.mainCharacter.currentFrame];
                 if (currentImg) {
                     currentImg.style.visibility = 'visible';
+                    currentImg.style.display = 'block';
+                    currentImg.style.opacity = '1';
                 }
             } else {
                 console.warn(`⚠️ No frame images found for: ${this.mainCharacter.currentAnimation}`);
@@ -592,9 +610,30 @@ class SimplePixelCharacterManager {
     // 통합 캐릭터 보이기 (IMG 태그 방식)
     showUnifiedCharacter() {
         console.log('👀 Showing unified character');
+        console.log('🔍 DEBUG - mainCharacter element:', this.mainCharacter.element);
+        console.log('🔍 DEBUG - mainCharacter element style:', {
+            opacity: this.mainCharacter.element.style.opacity,
+            visibility: this.mainCharacter.element.style.visibility,
+            display: this.mainCharacter.element.style.display,
+            position: this.mainCharacter.element.style.position,
+            top: this.mainCharacter.element.style.top,
+            left: this.mainCharacter.element.style.left,
+            zIndex: this.mainCharacter.element.style.zIndex
+        });
+
         this.mainCharacter.element.style.opacity = '1';
+        this.mainCharacter.element.style.visibility = 'visible';
+        this.mainCharacter.element.style.display = 'block'; // display 복원
         this.mainCharacter.isActive = true;
+
         console.log(`👀 Unified character shown: opacity=${this.mainCharacter.element.style.opacity}, isActive=${this.mainCharacter.isActive}`);
+        console.log('🔍 DEBUG - After showing:', {
+            opacity: this.mainCharacter.element.style.opacity,
+            visibility: this.mainCharacter.element.style.visibility,
+            display: this.mainCharacter.element.style.display,
+            childrenCount: this.mainCharacter.element.children.length,
+            computedStyles: window.getComputedStyle(this.mainCharacter.element).display
+        });
     }
 
     // 통합 캐릭터 위치 업데이트
@@ -1351,6 +1390,12 @@ class SimplePixelCharacterManager {
 
         this.characterY = startHeight;
         this.currentSection = sectionIndex;
+
+        // Section-2로 전환할 때 통합 캐릭터 다시 보이기 (section1 애니메이션 완료 후)
+        if (sectionIndex === 2) {
+            this.showUnifiedCharacter();
+            console.log('👀 Unified character shown after section1 animation completion');
+        }
 
         // 스크롤 중이면 run, 아니면 idle로 시작
         const initialState = this.isScrolling ? 'lee-run' : 'lee-idle';

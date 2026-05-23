@@ -265,12 +265,14 @@ class ManualScrollManager {
         // 초기 로딩 스크린이 있으면 스크롤 차단
         const initialLoading = document.getElementById('initial-loading');
         const pixelLoading = window.pixelCharacterManager?.isLoadingSection1Data;
+        const criticalAssetsLoading = window.pixelCharacterManager?.isLoadingCriticalAssets;
         const pixelNotInitialized = !window.pixelCharacterManager?.isFullyInitialized;
 
-        if (this.isTransitioning || this.scrollLocked || this.isLoading || pixelLoading || initialLoading || pixelNotInitialized) {
+        if (this.isTransitioning || this.scrollLocked || this.isLoading || pixelLoading || criticalAssetsLoading || initialLoading || pixelNotInitialized) {
             const reason = initialLoading ? 'initial loading' :
                           this.isTransitioning ? 'transitioning' :
                           this.isLoading || pixelLoading ? 'data loading' :
+                          criticalAssetsLoading ? 'critical assets loading' :
                           pixelNotInitialized ? 'system initializing' :
                           `locked (${this.lockReason})`;
             console.log(`🔒 Scroll blocked - ${reason}`);
@@ -528,8 +530,8 @@ class ManualScrollManager {
                 text-align: center;
                 backdrop-filter: blur(5px);
             ">
-                <div style="margin-bottom: 10px;">⏳ Loading...</div>
-                <div style="font-size: 14px; opacity: 0.8;">잠시만 기다려주세요</div>
+                <div style="margin-bottom: 10px;">Wedding Day</div>
+                <div style="font-size: 14px; opacity: 0.8;">이태인 ♥ 하송이</div>
             </div>
         `;
         document.body.appendChild(loadingDiv);
@@ -608,13 +610,10 @@ class ManualScrollManager {
         console.log('🏃 Creating temporary enemy_run animation');
 
         const enemyRunElement = document.createElement('img');
-        const charSize = 96; // 32px * 3 scale
         enemyRunElement.style.position = 'fixed';
         enemyRunElement.style.left = '50%';
         enemyRunElement.style.top = '10vh';
-        enemyRunElement.style.width = `${charSize}px`;
-        enemyRunElement.style.height = `${charSize}px`;
-        enemyRunElement.style.transform = 'translateX(-50%)';
+        enemyRunElement.style.transform = 'translateX(-50%) scale(2)'; // 32px * 3 = 96px와 동일
         enemyRunElement.style.imageRendering = 'pixelated';
         enemyRunElement.style.imageRendering = '-moz-crisp-edges';
         enemyRunElement.style.imageRendering = 'crisp-edges';
@@ -701,9 +700,7 @@ class ManualScrollManager {
         enemyHitElement.style.position = 'fixed';
         enemyHitElement.style.left = '50%';
         enemyHitElement.style.top = topPosition;
-        enemyHitElement.style.width = '96px'; // enemy_run과 동일한 크기
-        enemyHitElement.style.height = '96px';
-        enemyHitElement.style.transform = 'translateX(-50%)';
+        enemyHitElement.style.transform = 'translateX(-50%) scale(3)'; // 32px * 3 = 96px와 동일
         enemyHitElement.style.imageRendering = 'pixelated';
         enemyHitElement.style.imageRendering = '-moz-crisp-edges';
         enemyHitElement.style.imageRendering = 'crisp-edges';

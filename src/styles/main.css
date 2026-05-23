@@ -1,7 +1,9 @@
-/* Custom Font */
+/* Custom Font - Optimized Local Loading */
 @font-face {
     font-family: 'OmuDaye';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
+    src: url('/font/omyu-pretty-minimal.woff2') format('woff2'),
+         url('/font/omyu pretty.woff2') format('woff2'),
+         url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-01@1.0/omyu_pretty.woff2') format('woff2');
     font-weight: normal;
     font-display: swap;
 }

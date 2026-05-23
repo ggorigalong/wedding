@@ -390,7 +390,7 @@ class PixelCharacterManager {
             // Position in center and show
             mainCharacter.element.style.left = '50%';
             mainCharacter.element.style.top = '50%';
-            mainCharacter.element.style.transform = 'translate(-50%, -50%) scale(4)';
+            mainCharacter.element.style.transform = 'translate(-50%, -50%) scale(2)';
             mainCharacter.element.style.opacity = '1';
             mainCharacter.element.style.zIndex = '1000'; // Above other content during animation
             mainCharacter.isActive = true;

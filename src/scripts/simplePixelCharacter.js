@@ -21,10 +21,12 @@ class SimplePixelCharacterManager {
         this.isIdleWowPlaying = false; // idle-wow 애니메이션 재생 중 여부
         this.idleWowPhase = 1; // 1: 전체실행(1~15), 2: 부분반복(11~15)
         this.idleWowRepeatCount = 0; // 11~15 반복 횟수 (최대 5회)
+        this.hasIdleWowCompleted = false; // idle-wow 완료 여부 (idle-wow-normal 상태용)
         this.endingTriggered = false; // ending 애니메이션 트리거 여부
         this.isEndingPlaying = false; // ending 애니메이션 재생 중 여부
         this.skipPositionUpdate = false; // 위치 업데이트 스킵 플래그
         this.isLoadingSection1Data = false; // section1.json 로딩 중 여부
+        this.isLoadingCriticalAssets = false; // 중요 애셋 로딩 중 여부
         this.isFullyInitialized = false; // 완전 초기화 여부
 
         // 통합 캐릭터 컨테이너
@@ -99,7 +101,7 @@ class SimplePixelCharacterManager {
             position: absolute;
             left: 50%;
             top: 50%;
-            transform: translate(-50%, -50%) scale(4);
+            transform: translate(-50%, -50%) scale(2);
             z-index: 10;
             opacity: 0;
             pointer-events: none;
@@ -110,6 +112,14 @@ class SimplePixelCharacterManager {
 
         // 프리로드된 이미지 저장소 (호환성 유지)
         this.preloadedImages = {};
+
+        // 로딩 그룹 분류
+        this.criticalAnimations = ['lee-idle', 'lee-run']; // Section 0-1에서 즉시 필요
+        this.backgroundAnimations = [
+            'lee-idle-wow', 'lee-idle-wow-normal', 'lee-idle-flower', 'lee-run-flower',
+            'hit-idle', 'hit-slime', 'lee-idle-leafs', 'lee-run-leafsflower',
+            'lee-idle-leafsflowerdouble', 'lee-run-leafsflowerdouble'
+        ]; // 나중에 필요한 것들
 
         // 애니메이션 상태들 먼저 정의
         this.animationStates = {
@@ -130,6 +140,12 @@ class SimplePixelCharacterManager {
                 frameCount: 15, // idle-wow1.png ~ idle-wow15.png
                 frameRate: 12, // 10 → 20 (두배 빠르게)
                 loop: false // 커스텀 반복 로직 사용
+            },
+            'lee-idle-wow-normal': {
+                framePrefix: '/animation/idle-wow-normal/idle-wow-normal',
+                frameCount: 5, // idle-wow-normal1.png, idle-wow-normal2.png (기본 idle과 유사)
+                frameRate: 8,
+                loop: true
             },
             'lee-idle-flower': {
                 framePrefix: '/animation/idle-flower/idle',
@@ -169,7 +185,7 @@ class SimplePixelCharacterManager {
             },
             'lee-idle-leafsflowerdouble': {
                 framePrefix: '/animation/idle-leafsflowerdouble/idle',
-                frameCount: 5,
+                frameCount: 2,
                 frameRate: 15,
                 loop: true
             },
@@ -184,10 +200,24 @@ class SimplePixelCharacterManager {
         // 각 애니메이션의 IMG 태그들 생성
         await this.createFrameImages();
 
-        // 모든 애니메이션 이미지 프리로드 (백그라운드에서 실행, 호환성 유지)
-        this.preloadAllAnimationImages().catch(err =>
-            console.warn('⚠️ Image preloading failed:', err)
-        );
+        // 중요 애니메이션만 먼저 로드 (로딩창에 포함)
+        this.isLoadingCriticalAssets = true;
+        this.preloadCriticalAnimations()
+            .then(() => {
+                this.isLoadingCriticalAssets = false;
+                console.log('✅ Critical assets loading completed');
+            })
+            .catch(err => {
+                this.isLoadingCriticalAssets = false;
+                console.warn('⚠️ Critical image preloading failed:', err);
+            });
+
+        // 나머지 애니메이션은 백그라운드에서 로드 (로딩창 무관)
+        setTimeout(() => {
+            this.preloadAllBackgroundAssets().catch(err =>
+                console.warn('⚠️ Background assets preloading failed:', err)
+            );
+        }, 100); // 초기화 완료 후 백그라운드 로딩 시작
 
         console.log('🔧 Unified character system initialized (IMG tag method)');
     }
@@ -244,12 +274,15 @@ class SimplePixelCharacterManager {
         console.log('✅ All IMG tags created and loaded');
     }
 
-    // 모든 애니메이션 이미지 프리로드
-    async preloadAllAnimationImages() {
-        console.log('📥 Starting image preloading...');
+    // 중요 애니메이션만 프리로드 (로딩창에 포함)
+    async preloadCriticalAnimations() {
+        console.log('📥 Starting critical image preloading...');
         const loadPromises = [];
 
-        for (const [animationName, config] of Object.entries(this.animationStates)) {
+        for (const animationName of this.criticalAnimations) {
+            const config = this.animationStates[animationName];
+            if (!config) continue;
+
             this.preloadedImages[animationName] = {};
 
             for (let i = 1; i <= config.frameCount; i++) {
@@ -263,8 +296,8 @@ class SimplePixelCharacterManager {
                         resolve();
                     };
                     img.onerror = () => {
-                        console.warn(`❌ Failed to preload: ${imagePath}`);
-                        resolve(); // Continue even if one image fails
+                        console.warn(`❌ Failed to preload critical: ${imagePath}`);
+                        resolve();
                     };
                     img.src = imagePath;
                 });
@@ -274,7 +307,97 @@ class SimplePixelCharacterManager {
         }
 
         await Promise.all(loadPromises);
-        console.log('✅ All animation images preloaded');
+        console.log('✅ Critical animation images preloaded');
+    }
+
+    // 모든 백그라운드 애셋 로드 (animationStates + addCharacter 기반)
+    async preloadAllBackgroundAssets() {
+        console.log('📥 Starting complete background asset preloading...');
+
+        // 1. animationStates 기반 애니메이션들
+        await this.preloadBackgroundAnimations();
+
+        // 2. addCharacter 기반 애니메이션들 (slime, leafs, song 등)
+        await this.preloadAddCharacterAssets();
+
+        console.log('✅ All background assets preloaded');
+    }
+
+    // animationStates 기반 애니메이션을 백그라운드에서 로드
+    async preloadBackgroundAnimations() {
+        console.log('📥 Starting animationStates background preloading...');
+        const loadPromises = [];
+
+        for (const animationName of this.backgroundAnimations) {
+            const config = this.animationStates[animationName];
+            if (!config) continue;
+
+            this.preloadedImages[animationName] = {};
+
+            for (let i = 1; i <= config.frameCount; i++) {
+                const imagePath = `${config.framePrefix}${i}.png`;
+                const imageKey = `frame_${i}`;
+
+                const promise = new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        this.preloadedImages[animationName][imageKey] = img;
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        console.warn(`❌ Failed to preload background: ${imagePath}`);
+                        resolve();
+                    };
+                    img.src = imagePath;
+                });
+
+                loadPromises.push(promise);
+            }
+        }
+
+        await Promise.all(loadPromises);
+        console.log('✅ AnimationStates background images preloaded');
+    }
+
+    // addCharacter 기반 애니메이션을 백그라운드에서 로드
+    async preloadAddCharacterAssets() {
+        console.log('📥 Starting addCharacter assets preloading...');
+        const loadPromises = [];
+
+        // addCharacter 기반 애니메이션 리스트
+        const addCharacterAnimations = [
+            'slime-idle', 'slime-hurt', 'hit-slime',
+            'leafs', 'song'
+        ];
+
+        for (const animationName of addCharacterAnimations) {
+            // 각 addCharacter 애니메이션의 설정 정보를 가져오기
+            const character = this.characters.get(animationName);
+            if (!character || !character.framePrefix || !character.frameCount) continue;
+
+            // framePrefix와 frameCount를 사용하여 이미지 경로 생성
+            for (let i = 1; i <= character.frameCount; i++) {
+                const imagePath = `${character.framePrefix}${i}.png`;
+
+                const promise = new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        console.log(`✅ Preloaded: ${imagePath}`);
+                        resolve();
+                    };
+                    img.onerror = () => {
+                        console.warn(`❌ Failed to preload: ${imagePath}`);
+                        resolve();
+                    };
+                    img.src = imagePath;
+                });
+
+                loadPromises.push(promise);
+            }
+        }
+
+        await Promise.all(loadPromises);
+        console.log('✅ AddCharacter assets preloaded');
     }
 
     async setupCharacters() {
@@ -282,7 +405,7 @@ class SimplePixelCharacterManager {
         this.addCharacter('main', {
             isSpreadsheetBased: true, // 새로운 플래그
             spreadsheetData: null, // 나중에 로드될 데이터
-            scale: 4,
+            scale: 2,
             x: '50%',
             y: '50%',
             visible: false
@@ -292,7 +415,7 @@ class SimplePixelCharacterManager {
         this.addCharacter('ending', {
             isSpreadsheetBased: true, // section1과 동일한 구조
             spreadsheetData: null, // ending.json에서 로드될 데이터
-            scale: 4,
+            scale: 2,
             x: '50%',
             y: '50%',
             visible: false,
@@ -306,7 +429,7 @@ class SimplePixelCharacterManager {
             frameCount: 2,
             frameRate: 4,
             framePadding: 0,
-            scale: 4,
+            scale: 2,
             x: '50%',
             y: '50%',
             visible: false
@@ -374,7 +497,7 @@ class SimplePixelCharacterManager {
             frameCount: 21, // hit-slime 파일 개수 확인 후 조정 필요
             frameRate: 12, // 적당한 속도
             framePadding: 0,
-            scale: 4, // 1.5배 크게 (4 * 1.5 = 6)
+            scale: 2, // 1.5배 크게 (4 * 1.5 = 6)
             x: '50%',
             y: '70%', // 70vh 위치에 고정
             visible: false,
@@ -1248,8 +1371,14 @@ class SimplePixelCharacterManager {
         let actualAnimation = newState;
         console.log(`🌸 Animation check: hasLeafsFlowerDouble=${this.hasLeafsFlowerDouble}, hasFlower=${this.hasFlower}, leafsTriggered=${this.galleryLeafsTriggered}, newState=${newState}`);
 
-        // leafsflowerdouble 최우선 (Section8 완료 후)
-        if (this.hasLeafsFlowerDouble && newState === 'lee-idle') {
+        // idle-wow 완료 후에는 idle-wow-normal이 최우선 (leafsflowerdouble 차단)
+        if (this.hasIdleWowCompleted && newState === 'lee-idle') {
+            actualAnimation = 'lee-idle-wow-normal';
+            console.log(`✨ Using idle-wow-normal (blocks leafsflowerdouble): ${actualAnimation}`);
+        } else if (this.hasIdleWowCompleted && this.hasLeafsFlowerDouble && newState === 'lee-run') {
+            actualAnimation = 'lee-run-leafsflowerdouble'; // idle-wow 완료 후에도 run은 leafsflowerdouble 유지
+            console.log(`✨ Using leafsflowerdouble run (idle-wow completed): ${actualAnimation}`);
+        } else if (this.hasLeafsFlowerDouble && newState === 'lee-idle') {
             actualAnimation = 'lee-idle-leafsflowerdouble';
             console.log(`🌸✨ Using leafsflowerdouble idle: ${actualAnimation}`);
         } else if (this.hasLeafsFlowerDouble && newState === 'lee-run') {
@@ -1640,8 +1769,10 @@ class SimplePixelCharacterManager {
                     // Section-9: 일반 상태 - Lee와 Song 모두 idle로 전환
                     console.log('🎵 Section-9 scroll stopped - Lee to idle, Song to idle');
 
-                    // Lee가 leafsflowerdouble 모드라면 통합 애니메이션 사용
-                    if (this.hasLeafsFlowerDouble) {
+                    // Lee가 idle-wow 완료 상태라면 직접 wow-normal 사용
+                    if (this.hasIdleWowCompleted) {
+                        this.switchUnifiedAnimation('lee-idle-wow-normal');
+                    } else if (this.hasLeafsFlowerDouble) {
                         this.switchUnifiedAnimation('lee-idle-leafsflowerdouble');
                     } else {
                         this.switchToState('lee-idle');
@@ -2006,20 +2137,17 @@ class SimplePixelCharacterManager {
         console.log('🎉 Idle-wow animation completed via unified system!');
 
         this.isIdleWowPlaying = false;
-
-        // leafsflowerdouble 모드 활성화
-        this.hasLeafsFlowerDouble = true;
+        this.hasIdleWowCompleted = true; // idle-wow 완료 상태로 설정
 
         // 스크롤 잠금 해제
         if (window.manualScrollManager) {
             window.manualScrollManager.unlockScroll('idle-wow animation completed');
         }
 
-        // Lee만 leafsflowerdouble 모드로 전환 (Song은 건드리지 않음)
-        const targetAnimation = this.isScrolling ? 'lee-run-leafsflowerdouble' : 'lee-idle-leafsflowerdouble';
-        this.switchUnifiedAnimation(targetAnimation);
+        // 먼저 idle-wow-normal로 전환 (leafsflowerdouble는 나중에)
+        this.switchUnifiedAnimation('lee-idle-wow-normal');
 
-        console.log('🎉 Idle-wow completed, switched to leafsflowerdouble mode');
+        console.log('🎉 Idle-wow completed, switched to idle-wow-normal mode');
     }
 
     // idle-wow 프레임 로직 처리: 1~15 → 11~15를 5회 반복
@@ -2038,7 +2166,7 @@ class SimplePixelCharacterManager {
                 this.idleWowRepeatCount++;
                 console.log(`🔄 Repeat ${this.idleWowRepeatCount}/5 complete (11~15)`);
 
-                if (this.idleWowRepeatCount >= 5) {
+                if (this.idleWowRepeatCount >= 2) {
                     // 5회 반복 완료 → 애니메이션 종료
                     console.log('🎉 All repeats complete! Ending idle-wow animation');
                     this.onIdleWowAnimationComplete();
@@ -2398,13 +2526,10 @@ class SimplePixelCharacterManager {
         };
 
         // enemy_run 캐릭터를 10vh 아래에 위치, 3배 크기로 설정
-        const charSize = 96; // 32px * 3 scale
         enemyRunChar.element.style.position = 'fixed';
         enemyRunChar.element.style.left = '50%';
         enemyRunChar.element.style.top = '10vh';
-        enemyRunChar.element.style.width = `${charSize}px`;
-        enemyRunChar.element.style.height = `${charSize}px`;
-        enemyRunChar.element.style.transform = 'translateX(-50%)';
+        enemyRunChar.element.style.transform = 'translateX(-50%) scale(3)'; // 32px * 3 = 96px와 동일
         enemyRunChar.element.style.imageRendering = 'pixelated';
         enemyRunChar.element.style.imageRendering = '-moz-crisp-edges';
         enemyRunChar.element.style.imageRendering = 'crisp-edges';
@@ -2510,9 +2635,7 @@ class SimplePixelCharacterManager {
         enemyHitElement.style.position = 'fixed';
         enemyHitElement.style.left = '50%';
         enemyHitElement.style.top = topPosition;
-        enemyHitElement.style.width = '96px'; // enemy_run과 동일한 크기
-        enemyHitElement.style.height = '96px';
-        enemyHitElement.style.transform = 'translateX(-50%)';
+        enemyHitElement.style.transform = 'translateX(-50%) scale(3)'; // 32px * 3 = 96px와 동일
         enemyHitElement.style.imageRendering = 'pixelated';
         enemyHitElement.style.imageRendering = '-moz-crisp-edges';
         enemyHitElement.style.imageRendering = 'crisp-edges';

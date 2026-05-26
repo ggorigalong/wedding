@@ -8,7 +8,7 @@
 
     <!-- Open Graph -->
     <meta property="og:title" content="이태인 ♥ 하송이 - 결혼합니다">
-    <meta property="og:description" content="2024년 9월 16일, 저희 결혼합니다">
+    <meta property="og:description" content="2026년 9월 12일 오전 11:00, 저희 결혼합니다">
     <meta property="og:type" content="website">
     <meta property="og:image" content="/public/images/gallery/IMG_5688.jpg">
 
@@ -87,15 +87,16 @@
 
     <!-- Main Hero Section -->
     <section id="section-0" class="hero">
+        <img src="/images/gallery/hero-text.png" alt="웨딩 텍스트" class="hero-text-overlay" loading="eager">
         <div class="hero-image">
             <img src="/images/gallery/hero-main.png" alt="이태인과 하송이의 웨딩 사진" loading="eager">
-            <img src="/images/gallery/hero-text.png" alt="웨딩 텍스트" class="hero-text-overlay" loading="eager">
         </div>
     </section>
 
 
     <!-- Invitation Message Section -->
     <section id="section-1" class="invitation">
+        <img src="/images/gallery/hero-animation-text.png" alt="웨딩 애니메이션 텍스트" class="hero-text-overlay" loading="eager">
         <div class="container">
             <!-- <div class="invitation-text">
                 <p class="message">
@@ -120,8 +121,8 @@
                 </div>
 
                 <div class="wedding-info">
-                    <p><strong>일시</strong> 2024년 9월 16일 월요일 오전 11시</p>
-                    <p><strong>장소</strong> 웨딩홀 이름</p>
+                    <p><strong>일시</strong> 2026년 9월 12일 월요일 오전 11시</p>
+                    <p><strong>장소</strong> 용산 가족공원</p>
                 </div>
             </div> -->
         </div>
@@ -138,8 +139,8 @@
                 <div class="intro-text center vertical" id="groom-text" style="flex-direction: column;">
                     <div></div>
                     <div style="font-size: 36px; color: #ed931e;">결혼식 초대장</div>
-                    <div style="font-size: 24px; color: #f9fbec;">2026.09.16.</div>
-                    <div style="font-size: 24px; color: #f9fbec;">Sun, AM 11:00</div>
+                    <div style="font-size: 24px; color: #f9fbec;">2026.09.12.</div>
+                    <div style="font-size: 24px; color: #f9fbec;">Sat, AM 11:00</div>
                     <div style="font-size: 24px; color: #f9fbec;">신랑 이태인</div>
                     <div style="font-size: 24px; color: #f9fbec;"><span style="color: #ffdf47;">♥</span></div>
                     <div style="font-size: 24px; color: #f9fbec;">신부 하송이</div>
@@ -197,7 +198,7 @@
             <div class="section-subtitle">Location</div>
             <h2 class="section-title">오시는길</h2>
             <div class="location-info">
-                <h3 class="venue-name">웨딩홀 이름</h3>
+                <h3 class="venue-name">용산 가족공원</h3>
                 <div class="address-container">
                     <address class="address">서울 용산구 용산동6가 168-6</address>
                     <button class="copy-address-btn" onclick="copyAddress('서울 용산구 용산동6가 168-6')" aria-label="주소 복사">
@@ -207,6 +208,8 @@
                     </button>
                 </div>
 
+                <!-- 지도 영역 (롤백용 주석 처리) -->
+                <!--
                 <div class="map-container">
                     <div id="map" class="map" style="height: 300px;"></div>
                     <div class="map-buttons">
@@ -220,6 +223,18 @@
                         </button>
                     </div>
                 </div>
+                -->
+
+                <!-- 주차 안내 -->
+                <div class="transportation">
+                    <div class="transport-item">
+                        <img class="transport-icon" src="/icons/info-square-svgrepo-com.svg" alt="안내" style="filter: hue-rotate(30deg) saturate(1.5);">
+                        <div class="transport-info">
+                            <div class="transport-type">주차 안내</div>
+                            <div class="transport-details">공원 내 주차 공간이 매우 협소하오니,<br>가급적 대중교통을 이용해 주시면 감사하겠습니다.</div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="transportation">
                     <div class="transport-item">
@@ -228,7 +243,7 @@
                         </svg>
                         <div class="transport-info">
                             <div class="transport-type">버스</div>
-                            <div class="transport-details">643번 5014번 어쩌구예식장 정문 앞 하차 → 도보 3분</div>
+                            <div class="transport-details">400번, 502번 국립중앙박물관역 도보 9분</div>
                         </div>
                     </div>
 
@@ -236,7 +251,7 @@
                         <img class="transport-icon" src="/icons/subway-svgrepo-com.svg" alt="지하철" style="filter: hue-rotate(30deg) saturate(1.5);">
                         <div class="transport-info">
                             <div class="transport-type">지하철</div>
-                            <div class="transport-details">6호선 용산역 1번 출구 → 도보 7분</div>
+                            <div class="transport-details">4호선/경의중앙선 이촌역 2번출구 도보 10분</div>
                         </div>
                     </div>
 
@@ -245,8 +260,8 @@
                             <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                         </svg>
                         <div class="transport-info">
-                            <div class="transport-type">자가용</div>
-                            <div class="transport-details">건물 지하 주차장 이용 (3시간 무료)</div>
+                            <div class="transport-type">근처 주차장</div>
+                            <div class="transport-details">동작대교 공영주차장</div>
                         </div>
                     </div>
                 </div>
@@ -266,10 +281,28 @@
                     <span class="account-name">이태인</span>
                     <div class="account-right-group">
                         <div class="account-details">
-                            <span class="account-bank">국민은행</span>
-                            <span class="account-number">123456-78-901234</span>
+                            <span class="account-bank">하나은행</span>
+                            <span class="account-number">176-910582-37807</span>
                         </div>
-                        <button class="copy-icon-btn" onclick="copyAccount('123456-78-901234')" aria-label="신랑측 계좌번호 복사">
+                        <button class="copy-icon-btn" onclick="copyAccount('176-910582-37807')" aria-label="신랑측 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="account-info groom-mother-account">
+                <h4>신랑 어머니</h4>
+                <div class="account-card">
+                    <span class="account-name">강경미</span>
+                    <div class="account-right-group">
+                        <div class="account-details">
+                            <span class="account-bank">기업은행</span>
+                            <span class="account-number">110-359-691007</span>
+                        </div>
+                        <button class="copy-icon-btn" onclick="copyAccount('110-359-691007')" aria-label="신랑모 계좌번호 복사">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
                             </svg>
@@ -284,10 +317,28 @@
                     <span class="account-name">하송이</span>
                     <div class="account-right-group">
                         <div class="account-details">
-                            <span class="account-bank">신한은행</span>
-                            <span class="account-number">987654-32-109876</span>
+                            <span class="account-bank">카카오뱅크</span>
+                            <span class="account-number">3333-12-7983155</span>
                         </div>
-                        <button class="copy-icon-btn" onclick="copyAccount('987654-32-109876')" aria-label="신부측 계좌번호 복사">
+                        <button class="copy-icon-btn" onclick="copyAccount('3333-12-7983155')" aria-label="신부측 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="account-info bride-father-account">
+                <h4>신부 아버지</h4>
+                <div class="account-card">
+                    <span class="account-name">기업은행</span>
+                    <div class="account-right-group">
+                        <div class="account-details">
+                            <span class="account-bank">기업은행</span>
+                            <span class="account-number">114-017613-03-026</span>
+                        </div>
+                        <button class="copy-icon-btn" onclick="copyAccount('114-017613-03-026')" aria-label="신부부 계좌번호 복사">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
                             </svg>

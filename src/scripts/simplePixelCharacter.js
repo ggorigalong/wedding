@@ -407,7 +407,7 @@ class SimplePixelCharacterManager {
             spreadsheetData: null, // 나중에 로드될 데이터
             scale: 2,
             x: '50%',
-            y: '50%',
+            y: 'clamp(46%, calc(40% + 1.5vh), 54%);',
             visible: false
         });
 

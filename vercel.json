@@ -7,7 +7,15 @@
   "devCommand": "npm run dev",
   "rewrites": [
     {
-      "source": "/((?!animation|sounds|images|assets|icons).*)",
+      "source": "/bride",
+      "destination": "/bride.html"
+    },
+    {
+      "source": "/groom",
+      "destination": "/groom.html"
+    },
+    {
+      "source": "/",
       "destination": "/index.html"
     }
   ],

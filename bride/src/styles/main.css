@@ -192,6 +192,7 @@ body:has(#initial-loading) {
     margin-top: 5vh;
     width: 100%;
     min-height: 20vh;
+    max-width: 400px;
 }
 
 .invitation .hero-text-overlay {

@@ -27,8 +27,6 @@ export default defineConfig({
     port: 3000,
     open: true,
     allowedHosts: ['ran-solomon-symantec-jackets.trycloudflare.com'],
-    // 히스토리 API 폴백 완전 비활성화 - 정적 파일만 서빙
-    middlewareMode: false,
     fs: {
       strict: false
     }

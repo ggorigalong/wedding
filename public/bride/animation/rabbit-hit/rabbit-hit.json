@@ -1,0 +1,396 @@
+{ "frames": {
+   "gun-2 0.gif": {
+    "frame": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 1.gif": {
+    "frame": { "x": 52, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 2.gif": {
+    "frame": { "x": 104, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 3.gif": {
+    "frame": { "x": 156, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 4.gif": {
+    "frame": { "x": 208, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 5.gif": {
+    "frame": { "x": 260, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 6.gif": {
+    "frame": { "x": 312, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 7.gif": {
+    "frame": { "x": 364, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 8.gif": {
+    "frame": { "x": 416, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 9.gif": {
+    "frame": { "x": 468, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 10.gif": {
+    "frame": { "x": 520, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 11.gif": {
+    "frame": { "x": 572, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 2000
+   },
+   "gun-2 12.gif": {
+    "frame": { "x": 624, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 13.gif": {
+    "frame": { "x": 676, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 14.gif": {
+    "frame": { "x": 728, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 15.gif": {
+    "frame": { "x": 780, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 16.gif": {
+    "frame": { "x": 832, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 17.gif": {
+    "frame": { "x": 884, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 18.gif": {
+    "frame": { "x": 936, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 19.gif": {
+    "frame": { "x": 988, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 20.gif": {
+    "frame": { "x": 1040, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 21.gif": {
+    "frame": { "x": 1092, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 22.gif": {
+    "frame": { "x": 1144, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 23.gif": {
+    "frame": { "x": 1196, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 24.gif": {
+    "frame": { "x": 1248, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 25.gif": {
+    "frame": { "x": 1300, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 50
+   },
+   "gun-2 26.gif": {
+    "frame": { "x": 1352, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 50
+   },
+   "gun-2 27.gif": {
+    "frame": { "x": 1404, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 28.gif": {
+    "frame": { "x": 1456, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 29.gif": {
+    "frame": { "x": 1508, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 30.gif": {
+    "frame": { "x": 1560, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 31.gif": {
+    "frame": { "x": 1612, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 32.gif": {
+    "frame": { "x": 1664, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 33.gif": {
+    "frame": { "x": 1716, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 34.gif": {
+    "frame": { "x": 1768, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 35.gif": {
+    "frame": { "x": 1820, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 36.gif": {
+    "frame": { "x": 1872, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 37.gif": {
+    "frame": { "x": 1924, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 38.gif": {
+    "frame": { "x": 1976, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 39.gif": {
+    "frame": { "x": 2028, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 40.gif": {
+    "frame": { "x": 2080, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 41.gif": {
+    "frame": { "x": 2132, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 42.gif": {
+    "frame": { "x": 2184, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 43.gif": {
+    "frame": { "x": 2236, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 44.gif": {
+    "frame": { "x": 2288, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   },
+   "gun-2 45.gif": {
+    "frame": { "x": 2340, "y": 0, "w": 52, "h": 36 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
+    "sourceSize": { "w": 52, "h": 36 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3.7-arm64",
+  "image": "rabbit-hit.png",
+  "format": "RGBA8888",
+  "size": { "w": 2392, "h": 36 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "idle", "from": 0, "to": 6, "direction": "forward", "repeat": "3", "color": "#000000ff" },
+   { "name": "request", "from": 7, "to": 11, "direction": "forward", "repeat": "1", "color": "#000000ff" },
+   { "name": "deny", "from": 12, "to": 15, "direction": "forward", "repeat": "1", "color": "#000000ff" },
+   { "name": "short-ready", "from": 16, "to": 22, "direction": "forward", "repeat": "1", "color": "#000000ff" },
+   { "name": "fear", "from": 25, "to": 26, "direction": "forward", "repeat": "10", "color": "#000000ff" },
+   { "name": "gun-in", "from": 27, "to": 33, "direction": "forward", "color": "#000000ff" },
+   { "name": "getflower", "from": 34, "to": 40, "direction": "forward", "color": "#000000ff" },
+   { "name": "Tag", "from": 41, "to": 45, "direction": "forward", "color": "#000000ff" }
+  ],
+  "layers": [
+   { "name": "Layer 3", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 4", "opacity": 255, "blendMode": "normal" }
+  ],
+  "slices": [
+  ]
+ }
+}

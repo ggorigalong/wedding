@@ -1417,3 +1417,95 @@ body:has(#initial-loading) {
         font-size: 1rem;
     }
 }
+
+/* Progressive Revelation for Information Animation */
+#location-header, #location-main {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* Independent notices control */
+#wreath-notice, #parking-notice {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.fade-in-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* More specific rules for notices to override ID selectors */
+#wreath-notice.fade-in-active,
+#parking-notice.fade-in-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Information Section Styling */
+.information-section {
+    margin-top: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Toast Message System */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    z-index: 2000;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 90%;
+    width: auto;
+    min-width: 280px;
+}
+
+.toast-message.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-message.hide {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px);
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.info-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.info-text {
+    flex: 1;
+}
+
+.info-type {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.info-details {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}

@@ -8,6 +8,9 @@ class SimplePixelCharacterManager {
         this.currentSection = 0;
         this.characterY = -25; // Ha 캐릭터 Y 위치 (퍼센트, 최상단에서 시작)
         this.songY = 125; // Song 캐릭터 Y 위치 (퍼센트, Lee와 반대 방향)
+        this.currentToast = null; // 현재 표시된 토스트 추적
+        this.wreathNoticeShown = false; // 화환 안내 토스트 표시 여부 추적
+        this.parkingNoticeShown = false; // 주차 안내 토스트 표시 여부 추적
         this.isScrolling = false;
         this.scrollTimeout = null;
         this.mainAnimationCallback = null; // 메인 애니메이션 완료 콜백
@@ -3466,6 +3469,10 @@ class SimplePixelCharacterManager {
         this.informationTriggered = true;
         this.isInformationPlaying = true;
 
+        // 토스트 플래그 리셋
+        this.wreathNoticeShown = false;
+        this.parkingNoticeShown = false;
+
         // 스크롤 잠금 (rabbit 방식과 동일)
         if (window.manualScrollManager) {
             window.manualScrollManager.lockScroll('information animation');
@@ -3570,16 +3577,17 @@ class SimplePixelCharacterManager {
 
     // Location 정보 표시 (애니메이션 완료 후)
     // Toast message system
-    showToast(toastId, duration = 3000) {
+    showToast(toastId) {
+        // 이전 토스트가 있다면 숨기기
+        if (this.currentToast) {
+            this.hideToast(this.currentToast);
+        }
+
         const toast = document.getElementById(toastId);
         if (toast) {
             toast.classList.add('show');
+            this.currentToast = toastId; // 현재 토스트 추적
             console.log(`🍞 Toast ${toastId} shown`);
-
-            // Auto hide after duration
-            setTimeout(() => {
-                this.hideToast(toastId);
-            }, duration);
         } else {
             console.error(`❌ Toast ${toastId} not found!`);
         }
@@ -3590,6 +3598,12 @@ class SimplePixelCharacterManager {
         if (toast) {
             toast.classList.remove('show');
             toast.classList.add('hide');
+
+            // 현재 토스트 추적 초기화
+            if (this.currentToast === toastId) {
+                this.currentToast = null;
+            }
+
             console.log(`🍞 Toast ${toastId} hidden`);
 
             // Remove hide class after animation
@@ -3599,9 +3613,21 @@ class SimplePixelCharacterManager {
         }
     }
 
+    // 모든 토스트 숨기기 (애니메이션 완료 시 사용)
+    hideAllToasts() {
+        if (this.currentToast) {
+            this.hideToast(this.currentToast);
+        }
+    }
+
     showLocationInfo() {
+        // 모든 토스트 숨기기
+        this.hideAllToasts();
+
         const locationHeader = document.getElementById('location-header');
         const locationMain = document.getElementById('location-main');
+        const wreathNotice = document.getElementById('wreath-notice');
+        const parkingNotice = document.getElementById('parking-notice');
 
         if (locationHeader) {
             locationHeader.classList.add('fade-in-active');
@@ -3612,18 +3638,55 @@ class SimplePixelCharacterManager {
             locationMain.classList.add('fade-in-active');
             console.log('🌿📍 Location main shown (final state)');
         }
+
+        // Container 안의 notices도 표시
+        if (wreathNotice) {
+            const beforeComputed = window.getComputedStyle(wreathNotice);
+            wreathNotice.classList.add('fade-in-active');
+            const afterComputed = window.getComputedStyle(wreathNotice);
+            console.log('🔍 Container wreath notice:', {
+                before: { opacity: beforeComputed.opacity, display: beforeComputed.display },
+                after: { opacity: afterComputed.opacity, display: afterComputed.display },
+                className: wreathNotice.className
+            });
+        } else {
+            console.log('❌ Container wreath notice not found');
+        }
+
+        if (parkingNotice) {
+            const beforeComputed = window.getComputedStyle(parkingNotice);
+            parkingNotice.classList.add('fade-in-active');
+            const afterComputed = window.getComputedStyle(parkingNotice);
+            console.log('🔍 Container parking notice:', {
+                before: { opacity: beforeComputed.opacity, display: beforeComputed.display },
+                after: { opacity: afterComputed.opacity, display: afterComputed.display },
+                className: parkingNotice.className
+            });
+        } else {
+            console.log('❌ Container parking notice not found');
+        }
     }
 
     // 화환 안내 토스트 표시 (walk-up 완료 시)
     showWreathNotice() {
+        if (this.wreathNoticeShown) {
+            console.log('🌿💐 Wreath notice already shown, skipping');
+            return;
+        }
         console.log('🌿💐 Showing wreath notice toast');
-        this.showToast('wreath-notice-toast', 3000);
+        this.wreathNoticeShown = true;
+        this.showToast('wreath-notice-toast');
     }
 
     // 주차 안내 토스트 표시 (CarBurn 시작 시)
     showParkingNotice() {
+        if (this.parkingNoticeShown) {
+            console.log('🅿️🚗 Parking notice already shown, skipping');
+            return;
+        }
         console.log('🅿️🚗 Showing parking notice toast');
-        this.showToast('parking-notice-toast', 3000);
+        this.parkingNoticeShown = true;
+        this.showToast('parking-notice-toast');
     }
 
     // Information 애니메이션 후 상태 복원

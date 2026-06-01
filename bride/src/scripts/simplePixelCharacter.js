@@ -132,25 +132,25 @@ class SimplePixelCharacterManager {
         // 애니메이션 상태들 먼저 정의
         this.animationStates = {
             'ha-idle': {
-                framePrefix: 'public/bride/animation/ha-idle/ha-idle',
+                framePrefix: 'bride/animation/ha-idle/ha-idle',
                 frameCount: 14, // ha-idle1.png ~ ha-idle14.png
                 frameRate: 12,
                 loop: true
             },
             'ha-run': {
-                framePrefix: 'public/bride/animation/ha-run/ha-run',
+                framePrefix: 'bride/animation/ha-run/ha-run',
                 frameCount: 7, // ha-run1.png ~ ha-run7.png
                 frameRate: 18,
                 loop: true
             },
             'ha-idle-wow': {
-                framePrefix: 'public/bride/animation/idle-wow/idle-wow',
+                framePrefix: 'bride/animation/idle-wow/idle-wow',
                 frameCount: 15, // idle-wow1.png ~ idle-wow15.png
                 frameRate: 12, // 10 → 20 (두배 빠르게)
                 loop: false // 커스텀 반복 로직 사용
             },
             'ha-idle-wow-normal': {
-                framePrefix: 'public/bride/animation/idle-wow-normal/idle-wow-normal',
+                framePrefix: 'bride/animation/idle-wow-normal/idle-wow-normal',
                 frameCount: 10, // idle-wow-normal1.png ~ idle-wow-normal10.png
                 frameRate: 8,
                 loop: true
@@ -168,7 +168,7 @@ class SimplePixelCharacterManager {
                 loop: true
             },
             'hit-idle': {
-                framePrefix: 'public/bride/animation/hit-idle/hit-idle',
+                framePrefix: 'bride/animation/hit-idle/hit-idle',
                 frameCount: 5,
                 frameRate: 15, // 8 → 15
                 loop: true
@@ -186,13 +186,13 @@ class SimplePixelCharacterManager {
                 loop: true
             },
             'ha-idle-doubleflower': {
-                framePrefix: 'public/bride/animation/ha-idle-doubleflower/ha-idle-doubleflower',
+                framePrefix: 'bride/animation/ha-idle-doubleflower/ha-idle-doubleflower',
                 frameCount: 14,
                 frameRate: 8,
                 loop: true
             },
             'ha-run-doubleflower': {
-                framePrefix: 'public/bride/animation/ha-run-doubleflower/ha-run-doubleflower',
+                framePrefix: 'bride/animation/ha-run-doubleflower/ha-run-doubleflower',
                 frameCount: 8,
                 frameRate: 12,
                 loop: true
@@ -434,7 +434,7 @@ class SimplePixelCharacterManager {
         // Ha 아이들 애니메이션 (Section-2에서 기본 상태)
         this.addCharacter('ha-idle', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/ha-idleidle',
+            framePrefix: 'bride/animation/ha-idleidle',
             frameCount: 2,
             frameRate: 4,
             
@@ -447,7 +447,7 @@ class SimplePixelCharacterManager {
         // Ha 런 애니메이션 (Section-2에서 스크롤 시)
         this.addCharacter('ha-run', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/ha-runrun',
+            framePrefix: 'bride/animation/ha-runrun',
             frameCount: 7,
             frameRate: 14,
             
@@ -460,7 +460,7 @@ class SimplePixelCharacterManager {
         // Ha idle-wow 애니메이션 (Section-9에서 20vh 도달 시)
         this.addCharacter('ha-idle-wow', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/idle-wow/idle-wow',
+            framePrefix: 'bride/animation/idle-wow/idle-wow',
             frameCount: 15,
             frameRate: 10,
             
@@ -475,7 +475,7 @@ class SimplePixelCharacterManager {
         // 토끼 idle 애니메이션 (Section-5에서 사용)
         this.addCharacter('rabbit-idle', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/rabbit/rabbit-idle',
+            framePrefix: 'bride/animation/rabbit/rabbit-idle',
             frameCount: 7, // rabbit-idle1~rabbit-idle7
             frameRate: 8,  // 8fps로 천천히
 
@@ -488,7 +488,7 @@ class SimplePixelCharacterManager {
         // Information idle 애니메이션 (information 완료 후 사용)
         this.addCharacter('information-idle', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/information-idle/information-idle',
+            framePrefix: 'bride/animation/information-idle/information-idle',
             frameCount: 10, // ha-idle1~ha-idle14
             frameRate: 8,  // 8fps로 천천히
 
@@ -558,7 +558,7 @@ class SimplePixelCharacterManager {
         // hit-idle 애니메이션 (hit-rabbit 완료 후 반복 실행)
         this.addCharacter('hit-idle', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/hit-idle/hit-idle',
+            framePrefix: 'bride/animation/hit-idle/hit-idle',
             frameCount: 5, // hit-idle1.png ~ hit-idle5.png
             frameRate: 8, // idle 속도
             
@@ -609,7 +609,7 @@ class SimplePixelCharacterManager {
         // Leafs 애니메이션 (갤러리 하단에서 트리거)
         this.addCharacter('leafs', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/leafs/leafs',
+            framePrefix: 'bride/animation/leafs/leafs',
             frameCount: 7, // leafs1.png ~ leafs7.png
             frameRate: 8,
             
@@ -625,7 +625,7 @@ class SimplePixelCharacterManager {
         // Lee-back 통합 캐릭터 (하나의 컨테이너에서 idle/run 전환)
         this.addCharacter('lee-back', {
             isPngSequence: true,
-            framePrefix: 'public/bride/animation/lee-idle-back/lee-idle-back', // 기본은 idle
+            framePrefix: 'bride/animation/lee-idle-back/lee-idle-back', // 기본은 idle
             frameCount: 5,
             frameRate: 8,
 
@@ -860,8 +860,8 @@ class SimplePixelCharacterManager {
 
             // 여러 경로로 시도
             const jsonPaths = [
-                'public/bride/animation/section1.json',
-                './public/bride/animation/section1.json',
+                'bride/animation/section1.json',
+                './bride/animation/section1.json',
                 'animation/section1.json'
             ];
 
@@ -897,7 +897,7 @@ class SimplePixelCharacterManager {
             frameKeys.forEach((frameKey, index) => {
                 const frameInfo = jsonData.frames[frameKey];
                 frames.push({
-                    image: `public/bride/animation/${jsonData.meta.image}`, // 상대 경로로 section1.png 구성
+                    image: `bride/animation/${jsonData.meta.image}`, // 상대 경로로 section1.png 구성
                     duration: frameInfo.duration,
                     spriteX: frameInfo.frame.x,
                     spriteY: frameInfo.frame.y,
@@ -1052,8 +1052,8 @@ class SimplePixelCharacterManager {
 
             // 여러 경로로 시도 (section1과 동일한 패턴)
             const jsonPaths = [
-                'public/bride/animation/ending/ending.json',
-                './public/bride/animation/ending/ending.json',
+                'bride/animation/ending/ending.json',
+                './bride/animation/ending/ending.json',
                 'animation/ending/ending.json'
             ];
 
@@ -1091,7 +1091,7 @@ class SimplePixelCharacterManager {
                 const frameInfo = jsonData.frames[key];
 
                 frames.push({
-                    image: `public/bride/animation/ending/${jsonData.meta.image}`, // 상대 경로로 ending.png 구성 (section1과 동일)
+                    image: `bride/animation/ending/${jsonData.meta.image}`, // 상대 경로로 ending.png 구성 (section1과 동일)
                     duration: frameInfo.duration,
                     spriteX: frameInfo.frame.x,
                     spriteY: frameInfo.frame.y,
@@ -1360,8 +1360,8 @@ class SimplePixelCharacterManager {
 
             // 여러 경로로 시도 (정확한 경로)
             const jsonPaths = [
-                'public/bride/animation/information/information.json',
-                './public/bride/animation/information/information.json',
+                'bride/animation/information/information.json',
+                './bride/animation/information/information.json',
                 'animation/information/information.json'
             ];
 
@@ -1399,7 +1399,7 @@ class SimplePixelCharacterManager {
                 const frameInfo = jsonData.frames[key];
 
                 frames.push({
-                    image: `public/bride/animation/information/${jsonData.meta.image}`, // 정확한 경로
+                    image: `bride/animation/information/${jsonData.meta.image}`, // 정확한 경로
                     duration: frameInfo.duration,
                     spriteX: frameInfo.frame.x,
                     spriteY: frameInfo.frame.y,
@@ -2076,7 +2076,7 @@ class SimplePixelCharacterManager {
             // 기존 PNG 시퀀스 방식으로 전환
             mainChar.isSpreadsheetBased = false;
             mainChar.isPngSequence = true;
-            mainChar.framePrefix = 'public/bride/animation/section1/section';
+            mainChar.framePrefix = 'bride/animation/section1/section';
             mainChar.frameCount = 69;
             mainChar.frameRate = 12;
             mainChar.framePadding = 0;
@@ -3434,7 +3434,7 @@ class SimplePixelCharacterManager {
                 return;
             }
 
-            const imagePath = `public/bride/animation/enemy-hit/enemy-hit${currentFrame}.png`;
+            const imagePath = `bride/animation/enemy-hit/enemy-hit${currentFrame}.png`;
             character.element.src = imagePath;
 
             currentFrame = currentFrame >= totalFrames ? 1 : currentFrame + 1;
@@ -3510,12 +3510,12 @@ class SimplePixelCharacterManager {
 
         // 새 애니메이션 설정
         if (targetAnimation === 'lee-idle-back') {
-            leeBack.framePrefix = 'public/bride/animation/lee-idle-back/lee-idle-back';
+            leeBack.framePrefix = 'bride/animation/lee-idle-back/lee-idle-back';
             leeBack.frameCount = 5;
             leeBack.frameRate = 8;
             leeBack.element.style.opacity = '1';  // opacity 명시적 설정
         } else if (targetAnimation === 'lee-run-back') {
-            leeBack.framePrefix = 'public/bride/animation/lee-run-back/lee-run-back';
+            leeBack.framePrefix = 'bride/animation/lee-run-back/lee-run-back';
             leeBack.frameCount = 7;
             leeBack.frameRate = 12;
         }

@@ -130,73 +130,73 @@ class SimplePixelCharacterManager {
         // 애니메이션 상태들 먼저 정의
         this.animationStates = {
             'lee-idle': {
-                framePrefix: 'public/groom/animation/lee-idle/idle',
+                framePrefix: 'groom/animation/lee-idle/idle',
                 frameCount: 2, // idle1.png, idle2.png
                 frameRate: 15, // 8 → 15
                 loop: true
             },
             'lee-run': {
-                framePrefix: 'public/groom/animation/lee-run/run',
+                framePrefix: 'groom/animation/lee-run/run',
                 frameCount: 7, // run1.png ~ run7.png
                 frameRate: 18, // 12 → 18
                 loop: true
             },
             'lee-idle-wow': {
-                framePrefix: 'public/groom/animation/idle-wow/idle-wow',
+                framePrefix: 'groom/animation/idle-wow/idle-wow',
                 frameCount: 15, // idle-wow1.png ~ idle-wow15.png
                 frameRate: 12, // 10 → 20 (두배 빠르게)
                 loop: false // 커스텀 반복 로직 사용
             },
             'lee-idle-wow-normal': {
-                framePrefix: 'public/groom/animation/idle-wow-normal/idle-wow-normal',
+                framePrefix: 'groom/animation/idle-wow-normal/idle-wow-normal',
                 frameCount: 5, // idle-wow-normal1.png, idle-wow-normal2.png (기본 idle과 유사)
                 frameRate: 8,
                 loop: true
             },
             'lee-idle-flower': {
-                framePrefix: 'public/groom/animation/idle-flower/idle',
+                framePrefix: 'groom/animation/idle-flower/idle',
                 frameCount: 2,
                 frameRate: 15, // 8 → 15
                 loop: true
             },
             'lee-run-flower': {
-                framePrefix: 'public/groom/animation/run-flower1/run-flower',
+                framePrefix: 'groom/animation/run-flower1/run-flower',
                 frameCount: 7,
                 frameRate: 18, // 12 → 18
                 loop: true
             },
             'hit-idle': {
-                framePrefix: 'public/groom/animation/hit-idle/hit-idle',
+                framePrefix: 'groom/animation/hit-idle/hit-idle',
                 frameCount: 5,
                 frameRate: 15, // 8 → 15
                 loop: true
             },
             'hit-slime': {
-                framePrefix: 'public/groom/animation/hit-slime/hit-slime',
+                framePrefix: 'groom/animation/hit-slime/hit-slime',
                 frameCount: 21,
                 frameRate: 18, // 12 → 18
                 loop: false
             },
             'lee-idle-leafs': {
-                framePrefix: 'public/groom/animation/idle-leafs/idle',
+                framePrefix: 'groom/animation/idle-leafs/idle',
                 frameCount: 2,
                 frameRate: 15, // 8 → 15
                 loop: true
             },
             'lee-run-leafsflower': {
-                framePrefix: 'public/groom/animation/run-leafsflower/run-leafsflower',
+                framePrefix: 'groom/animation/run-leafsflower/run-leafsflower',
                 frameCount: 7,
                 frameRate: 18, // 12 → 18
                 loop: true
             },
             'lee-idle-leafsflowerdouble': {
-                framePrefix: 'public/groom/animation/idle-leafsflowerdouble/idle',
+                framePrefix: 'groom/animation/idle-leafsflowerdouble/idle',
                 frameCount: 2,
                 frameRate: 15,
                 loop: true
             },
             'lee-run-leafsflowerdouble': {
-                framePrefix: 'public/groom/animation/run-leafsflowerdouble/run',
+                framePrefix: 'groom/animation/run-leafsflowerdouble/run',
                 frameCount: 7,
                 frameRate: 18,
                 loop: true
@@ -432,7 +432,7 @@ class SimplePixelCharacterManager {
         // Lee 아이들 애니메이션 (Section-2에서 기본 상태)
         this.addCharacter('lee-idle', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/lee-idle/idle',
+            framePrefix: 'groom/animation/lee-idle/idle',
             frameCount: 2,
             frameRate: 4,
             framePadding: 0,
@@ -445,7 +445,7 @@ class SimplePixelCharacterManager {
         // Lee 런 애니메이션 (Section-2에서 스크롤 시)
         this.addCharacter('lee-run', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/lee-run/run',
+            framePrefix: 'groom/animation/lee-run/run',
             frameCount: 7,
             frameRate: 14,
             framePadding: 0,
@@ -458,7 +458,7 @@ class SimplePixelCharacterManager {
         // Lee idle-wow 애니메이션 (Section-9에서 20vh 도달 시)
         this.addCharacter('lee-idle-wow', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/idle-wow/idle-wow',
+            framePrefix: 'groom/animation/idle-wow/idle-wow',
             frameCount: 8,
             frameRate: 10,
             framePadding: 0,
@@ -473,7 +473,7 @@ class SimplePixelCharacterManager {
         // 슬라임 idle 애니메이션 (Section-5에서 사용)
         this.addCharacter('slime-idle', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/slime/slime',
+            framePrefix: 'groom/animation/slime/slime',
             frameCount: 9, // slime1~slime9
             frameRate: 8,  // 8fps로 천천히
             framePadding: 0,
@@ -486,7 +486,7 @@ class SimplePixelCharacterManager {
         // 슬라임 hurt 애니메이션 (hit-slime 7프레임에서 한 번만 실행)
         this.addCharacter('slime-hurt', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/slime-hurt/slime-hurt',
+            framePrefix: 'groom/animation/slime-hurt/slime-hurt',
             frameCount: 4, // slime-hurt1~4
             frameRate: 12,
             framePadding: 0,
@@ -500,7 +500,7 @@ class SimplePixelCharacterManager {
         // Hit 슬라임 애니메이션 (메인 캐릭터가 60vh 도달시 실행)
         this.addCharacter('hit-slime', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/hit-slime/hit-slime',
+            framePrefix: 'groom/animation/hit-slime/hit-slime',
             frameCount: 21, // hit-slime 파일 개수 확인 후 조정 필요
             frameRate: 12, // 적당한 속도
             framePadding: 0,
@@ -514,7 +514,7 @@ class SimplePixelCharacterManager {
         // hit-idle 애니메이션 (hit-slime 완료 후 반복 실행)
         this.addCharacter('hit-idle', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/hit-idle/hit-idle',
+            framePrefix: 'groom/animation/hit-idle/hit-idle',
             frameCount: 5, // hit-idle1.png ~ hit-idle5.png
             frameRate: 8, // idle 속도
             framePadding: 0,
@@ -528,7 +528,7 @@ class SimplePixelCharacterManager {
         // Wreath 애니메이션 (1회 재생)
         this.addCharacter('wreath', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/wreath/wreath',
+            framePrefix: 'groom/animation/wreath/wreath',
             frameCount: 37, // wreath1~wreath37
             frameRate: 12,  // 12fps로 적당한 속도
             scale: 2,
@@ -545,7 +545,7 @@ class SimplePixelCharacterManager {
         // Wreath-idle 애니메이션 (무한 반복)
         this.addCharacter('wreath-idle', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/wreath-idle/wreath',
+            framePrefix: 'groom/animation/wreath-idle/wreath',
             frameCount: 8, // wreath38~wreath45
             frameRate: 8,  // 8fps로 천천히
             scale: 2,
@@ -569,7 +569,7 @@ class SimplePixelCharacterManager {
         // Information idle 애니메이션 (information 완료 후 사용)
         this.addCharacter('information-idle', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/information-idle/information-idle',
+            framePrefix: 'groom/animation/information-idle/information-idle',
             frameCount: 10, // ha-idle1~ha-idle14
             frameRate: 8,  // 8fps로 천천히
             scale: 2,
@@ -582,7 +582,7 @@ class SimplePixelCharacterManager {
         // Lee idle-flower 애니메이션 (꽃 아이템 획득 후)
         this.addCharacter('lee-idle-flower', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/idle-flower/idle',
+            framePrefix: 'groom/animation/idle-flower/idle',
             frameCount: 2, // idle1.png, idle2.png
             frameRate: 8, // idle 속도
             framePadding: 0,
@@ -596,7 +596,7 @@ class SimplePixelCharacterManager {
         // Lee run-flower 애니메이션 (꽃 아이템 획득 후)
         this.addCharacter('lee-run-flower', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/run-flower1/run-flower',
+            framePrefix: 'groom/animation/run-flower1/run-flower',
             frameCount: 7, // run-flower1.png ~ run-flower7.png
             frameRate: 12, // run 속도
             framePadding: 0,
@@ -610,7 +610,7 @@ class SimplePixelCharacterManager {
         // Leafs 애니메이션 (갤러리 하단에서 트리거)
         this.addCharacter('leafs', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/leafs/leafs',
+            framePrefix: 'groom/animation/leafs/leafs',
             frameCount: 7, // leafs1.png ~ leafs7.png
             frameRate: 8,
             framePadding: 0,
@@ -626,7 +626,7 @@ class SimplePixelCharacterManager {
         // Song 통합 캐릭터 (하나의 컨테이너에서 idle/run 전환)
         this.addCharacter('song', {
             isPngSequence: true,
-            framePrefix: 'public/groom/animation/song-idle/song-idle', // 기본은 idle
+            framePrefix: 'groom/animation/song-idle/song-idle', // 기본은 idle
             frameCount: 5,
             frameRate: 8,
             framePadding: 0,
@@ -832,8 +832,8 @@ class SimplePixelCharacterManager {
 
             // 여러 경로로 시도
             const jsonPaths = [
-                'public/groom/animation/section1.json',
-                './public/groom/animation/section1.json',
+                'groom/animation/section1.json',
+                './groom/animation/section1.json',
                 'animation/section1.json'
             ];
 
@@ -869,7 +869,7 @@ class SimplePixelCharacterManager {
             frameKeys.forEach((frameKey, index) => {
                 const frameInfo = jsonData.frames[frameKey];
                 frames.push({
-                    image: `public/groom/animation/${jsonData.meta.image}`, // 상대 경로로 section1.png 구성
+                    image: `groom/animation/${jsonData.meta.image}`, // 상대 경로로 section1.png 구성
                     duration: frameInfo.duration,
                     spriteX: frameInfo.frame.x,
                     spriteY: frameInfo.frame.y,
@@ -987,8 +987,8 @@ class SimplePixelCharacterManager {
 
             // 여러 경로로 시도 (section1과 동일한 패턴)
             const jsonPaths = [
-                'public/groom/animation/ending/ending.json',
-                './public/groom/animation/ending/ending.json',
+                'groom/animation/ending/ending.json',
+                './groom/animation/ending/ending.json',
                 'animation/ending/ending.json'
             ];
 
@@ -1026,7 +1026,7 @@ class SimplePixelCharacterManager {
                 const frameInfo = jsonData.frames[key];
 
                 frames.push({
-                    image: `public/groom/animation/ending/${jsonData.meta.image}`, // 상대 경로로 ending.png 구성 (section1과 동일)
+                    image: `groom/animation/ending/${jsonData.meta.image}`, // 상대 경로로 ending.png 구성 (section1과 동일)
                     duration: frameInfo.duration,
                     spriteX: frameInfo.frame.x,
                     spriteY: frameInfo.frame.y,
@@ -1649,7 +1649,7 @@ class SimplePixelCharacterManager {
             // 기존 PNG 시퀀스 방식으로 전환
             mainChar.isSpreadsheetBased = false;
             mainChar.isPngSequence = true;
-            mainChar.framePrefix = 'public/groom/animation/section1/section';
+            mainChar.framePrefix = 'groom/animation/section1/section';
             mainChar.frameCount = 69;
             mainChar.frameRate = 12;
             mainChar.framePadding = 0;
@@ -2805,12 +2805,12 @@ class SimplePixelCharacterManager {
 
         // 새 애니메이션 설정
         if (targetAnimation === 'song-idle') {
-            song.framePrefix = 'public/groom/animation/song-idle/song-idle';
+            song.framePrefix = 'groom/animation/song-idle/song-idle';
             song.frameCount = 5;
             song.frameRate = 8;
             song.element.style.opacity = '1';  // opacity 명시적 설정
         } else if (targetAnimation === 'song-run') {
-            song.framePrefix = 'public/groom/animation/song-run/song-run';
+            song.framePrefix = 'groom/animation/song-run/song-run';
             song.frameCount = 7;
             song.frameRate = 12;
         }
@@ -2963,9 +2963,9 @@ class SimplePixelCharacterManager {
             // Console log removed
             // 여러 경로로 시도 (정확한 경로)
             const jsonPaths = [
-                'public/groom/animation/information/information.json',
-                'public/groom/animation/information/information.json',
-                './public/groom/animation/information/information.json',
+                'groom/animation/information/information.json',
+                'groom/animation/information/information.json',
+                './groom/animation/information/information.json',
                 'animation/information/information.json'
             ];
             let response = null;
@@ -2997,7 +2997,7 @@ class SimplePixelCharacterManager {
                 const key = frameKeys[i];
                 const frameInfo = jsonData.frames[key];
                 frames.push({
-                    image: `public/groom/animation/information/${jsonData.meta.image}`, // 정확한 경로
+                    image: `groom/animation/information/${jsonData.meta.image}`, // 정확한 경로
                     duration: frameInfo.duration,
                     spriteX: frameInfo.frame.x,
                     spriteY: frameInfo.frame.y,

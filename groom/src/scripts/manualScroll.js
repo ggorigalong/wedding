@@ -55,7 +55,7 @@ class ManualScrollManager {
 
         // 섹션 4에 있다면 섹션 0으로 강제 이동 (URL 기능은 유지)
         if (this.currentSection === 4) {
-            console.log('🚨 Detected section 4, moving to section 0');
+            // Console log removed
             this.currentSection = 0;
             this.virtualScrollY = 0;
             // URL에서 섹션 4 제거
@@ -67,12 +67,12 @@ class ManualScrollManager {
         // 섹션 4일 때만 강제로 섹션 0으로 이동
         setTimeout(() => {
             if (this.currentSection === 4) {
-                console.log(`🔧 Force moving to section 0 from section 4`);
+                // Console log removed
                 this.goToSection(0);
             }
         }, 100);
 
-        console.log(`🎮 Manual Scroll System initialized - Current section: ${this.currentSection}`);
+        // Console log removed
     }
 
     // 모든 섹션 요소 가져오기
@@ -80,7 +80,7 @@ class ManualScrollManager {
         this.sections.forEach(section => {
             section.element = document.getElementById(section.id);
             if (!section.element) {
-                console.warn(`⚠️ Section ${section.id} not found`);
+                // Console warn removed
             }
         });
     }
@@ -93,7 +93,7 @@ class ManualScrollManager {
         if (targetSection !== null) {
             const sectionNumber = parseInt(targetSection);
             if (sectionNumber >= 0 && sectionNumber <= this.maxSections) {
-                console.log(`🔗 Query string detected: starting from section ${sectionNumber}`);
+                // Console log removed
                 this.currentSection = sectionNumber;
                 this.virtualScrollY = sectionNumber * 100;
 
@@ -102,7 +102,7 @@ class ManualScrollManager {
                     this.initializeSectionState(sectionNumber);
                 }, 100);
             } else {
-                console.warn(`⚠️ Invalid section number in query string: ${targetSection}`);
+                // Console warn removed
             }
         }
     }
@@ -111,19 +111,19 @@ class ManualScrollManager {
     initializeSectionState(sectionNumber) {
         if (sectionNumber === 0) {
             // Section-0: Hero - 아무것도 안함
-            console.log('🏠 Starting from Hero section');
+            // Console log removed
         } else if (sectionNumber === 1) {
             // Section-1: 메인 애니메이션 완료 상태로 시작
-            console.log('🎬 Starting from Section-1 (animation completed state)');
+            // Console log removed
         } else if (sectionNumber === 5) {
             // Section-5: 슬라임 애니메이션 표시
-            console.log(`🟢 Starting from Section-5 with slime animation`);
+            // Console log removed
             if (window.pixelCharacterManager) {
                 window.pixelCharacterManager.switchToSlimeState();
             }
         } else if (sectionNumber >= 2) {
             // Section-2 이상: 캐릭터 표시
-            console.log(`🏃 Starting from Section-${sectionNumber} with character`);
+            // Console log removed
             if (window.pixelCharacterManager) {
                 const startHeight = -25; // 모든 섹션 통일
                 window.pixelCharacterManager.switchToSectionState(sectionNumber, startHeight);
@@ -213,9 +213,9 @@ class ManualScrollManager {
         // 관성 스크롤 시작 (속도가 충분히 클 때만)
         if (Math.abs(this.touchVelocity) > 0.1) {
             this.startMomentumScroll();
-            console.log('👆 Touch ended - starting momentum scroll');
+            // Console log removed
         } else {
-            console.log('👆 Touch ended - no momentum (velocity too low)');
+            // Console log removed
         }
     }
 
@@ -247,7 +247,7 @@ class ManualScrollManager {
                 const sectionNumber = parseInt(e.key);
                 if (sectionNumber <= this.maxSections) {
                     e.preventDefault();
-                    console.log(`⌨️ Keyboard shortcut: jumping to section ${sectionNumber}`);
+                    // Console log removed
                     this.goToSection(sectionNumber);
                 }
                 break;
@@ -258,7 +258,7 @@ class ManualScrollManager {
     handleScrollDelta(delta, inputType = 'unknown') {
         // 애니메이션 재생 중에는 스크롤 차단
         if (this.isAnimationLocked) {
-            console.log('🔒 Scroll blocked - animation playing');
+            // Console log removed
             return;
         }
 
@@ -275,7 +275,7 @@ class ManualScrollManager {
                           criticalAssetsLoading ? 'critical assets loading' :
                           pixelNotInitialized ? 'system initializing' :
                           `locked (${this.lockReason})`;
-            console.log(`🔒 Scroll blocked - ${reason}`);
+            // Console log removed
             return;
         }
 
@@ -305,7 +305,7 @@ class ManualScrollManager {
         const normalizedDelta = scrollDirection === 'down' ? speed : -speed;
         const scrollMagnitude = Math.abs(normalizedDelta);
 
-        console.log(`🔄 Scroll: ${scrollDirection} (${inputType}: ${scrollMagnitude}), Section: ${this.currentSection}`);
+        // Console log removed
 
         // 섹션별 특별 처리
         if (this.currentSection === 0) {
@@ -345,7 +345,7 @@ class ManualScrollManager {
             return;
         }
 
-        console.log(`🚀 Moving to section ${sectionIndex} from ${this.currentSection}`);
+        // Console log removed
 
         this.isTransitioning = true;
         this.currentSection = sectionIndex;
@@ -369,7 +369,7 @@ class ManualScrollManager {
     // URL 업데이트 (쿼리스트링 업데이트 비활성화)
     updateURL(sectionIndex) {
         // 쿼리스트링 업데이트 비활성화 - 개발 편의를 위해서만 유지
-        // console.log(`🔗 URL update skipped for section ${sectionIndex}`);
+        // // Console log removed
         return; // 아무것도 하지 않음
     }
 
@@ -390,23 +390,23 @@ class ManualScrollManager {
             section.element.style.transform = `translateY(${targetY}vh)`;
             section.targetY = targetY;
 
-            console.log(`📍 Section ${section.id} (index ${index}): translateY(${targetY}vh)`);
+            // Console log removed
         });
 
 
         // Section-9 접근시 로그
         if (this.currentSection === 9) {
-            console.log('🎵 Manual Scroll: Section-9 reached! Should trigger song-run...');
+            // Console log removed
         }
 
         // 현재 섹션 디버깅 로그
-        console.log(`🎯 Manual Scroll: currentSection = ${this.currentSection}, maxSections = ${this.maxSections}`);
+        // Console log removed
     }
 
 
     // 캐릭터를 leafsflowerdouble 버전으로 전환
     switchToLeafsFlowerDouble() {
-        console.log('🌸 Switching character animations to leafsflowerdouble version');
+        // Console log removed
 
         const pixelManager = window.pixelCharacterManager ||
                            window.SimplePixelCharacterManager ||
@@ -417,7 +417,7 @@ class ManualScrollManager {
         } else if (pixelManager) {
             // leafsflowerdouble 플래그 설정
             pixelManager.hasLeafsFlowerDouble = true;
-            console.log('🌸✨ LeafsFlowerDouble flag activated in manualScroll!');
+            // Console log removed
 
             // 현재 상태 다시 적용하여 새 애니메이션으로 전환
             if (pixelManager.currentState === 'lee-idle' || pixelManager.currentState === 'lee-run') {
@@ -425,16 +425,16 @@ class ManualScrollManager {
                 pixelManager.switchToState(currentState);
             }
 
-            console.log('🌸 LeafsFlowerDouble upgrade completed from manualScroll');
+            // Console log removed
         } else {
-            console.log('⚠️ PixelCharacterManager not found, cannot switch animation set');
+            // Console log removed
         }
     }
 
     // 로딩 상태 설정
     setLoadingState(loading) {
         this.isLoading = loading;
-        console.log(`${loading ? '⏳' : '✅'} Loading state: ${loading}`);
+        // Console log removed
 
         if (loading) {
             this.showLoadingMessage();
@@ -568,7 +568,7 @@ class ManualScrollManager {
 
     // Section-0에서 Section-1으로의 특별 전환
     triggerSection1Transition() {
-        console.log('🎬 Triggering Section-1 main animation');
+        // Console log removed
 
         // 섹션 이동
         this.goToSection(1);
@@ -580,20 +580,16 @@ class ManualScrollManager {
         if (window.pixelCharacterManager && window.pixelCharacterManager.characters && window.pixelCharacterManager.characters.has('main')) {
             window.pixelCharacterManager.playMainAnimation(() => {
                 // 애니메이션 완료 콜백
-                console.log('🎉 Section-1 animation completed, moving to Section-2');
+                // Console log removed
 
                 // BGM 페이드인 시작
-                console.log('🔍 DEBUG: Checking BGM function availability:', {
-                    fadeinBGM: !!window.fadeinBGM,
-                    bgm: !!window.bgm,
-                    isPlaying: window.isPlaying
-                });
+                // DEBUG: Checking BGM function availability
 
                 if (window.fadeinBGM) {
-                    console.log('🎵 Starting BGM fadein after section1 animation');
+                    // Console log removed
                     window.fadeinBGM(3000); // 3초에 걸쳐 페이드인
                 } else {
-                    console.error('❌ window.fadeinBGM function not found!');
+                    // Console error removed
                 }
 
                 // 애니메이션 잠금 해제
@@ -608,23 +604,19 @@ class ManualScrollManager {
                 }
             });
         } else {
-            console.error('❌ PixelCharacterManager or main character not ready - cannot play main animation');
-            console.log('Debug info:', {
-                pixelManager: !!window.pixelCharacterManager,
-                characters: !!window.pixelCharacterManager?.characters,
-                hasMain: window.pixelCharacterManager?.characters?.has('main')
-            });
+            // Console error removed
+            // Debug info logged
 
             // 초기화가 안된 경우 약간 기다렸다가 재시도
             setTimeout(() => {
                 if (window.pixelCharacterManager?.characters?.has('main')) {
-                    console.log('🔄 Retrying main animation after delay...');
+                    // Console log removed
                     window.pixelCharacterManager.playMainAnimation(() => {
                         this.isAnimationLocked = false;
                         this.goToSection(2);
                     });
                 } else {
-                    console.error('❌ Still cannot start main animation, unlocking manually');
+                    // Console error removed
                     this.isAnimationLocked = false;
                     this.goToSection(2);
                 }
@@ -638,7 +630,15 @@ class ManualScrollManager {
         if (currentSectionIndex === 7 &&
             window.pixelCharacterManager &&
             (window.pixelCharacterManager.isWreathPlaying || window.pixelCharacterManager.isInformationPlaying)) {
-            console.log('🌿🚫 Blocking character movement during wreath or information animation');
+            // Console log removed
+            return;
+        }
+
+        // Section-9에서 idle-wow 애니메이션 중에는 캐릭터 움직임 차단
+        if (currentSectionIndex === 9 &&
+            window.pixelCharacterManager &&
+            window.pixelCharacterManager.isIdleWowPlaying) {
+            console.log('🎉🚫 Blocking character movement during idle-wow animation');
             return;
         }
 
@@ -654,18 +654,18 @@ class ManualScrollManager {
 
         // Section-7만 특별히 로그 추가
         if (currentSectionIndex === 7) {
-            console.log(`🟡 Section-7 progress: ${this[sectionKey].toFixed(3)} (${(this[sectionKey] * 100).toFixed(1)}%)`);
+            // Console log removed
         }
 
         // 포털 시스템: 아래로 1.5 이상이면 다음 섹션으로, 위로 -0.2 이하면 이전 섹션으로
         if (this[sectionKey] >= 1.5) {
             if (currentSectionIndex === 7) {
-                console.log(`🚪 Section-7 portal triggered at ${this[sectionKey].toFixed(3)} (${(this[sectionKey] * 100).toFixed(1)}%)`);
+                // Console log removed
             }
             this.triggerPortalTransition(currentSectionIndex, 'down');
             return;
         } else if (this[sectionKey] <= -0.2 && currentSectionIndex >= 1) {
-            console.log(`🚪 Character reached top portal (-20%) - moving to Section-${currentSectionIndex - 1}`);
+            // Console log removed
 
             // Section-1에서 위로 가는 경우 특별 처리 (Section-0로 바로 전환)
             if (currentSectionIndex === 1) {
@@ -707,17 +707,17 @@ class ManualScrollManager {
         // 경계 체크 (실제 존재하는 섹션인지 확인)
         const targetSectionExists = this.sections.some(section => section.id === `section-${targetSection}`);
         if (!targetSectionExists) {
-            console.log(`🚫 Cannot move ${direction} from section ${fromSection} to non-existent section ${targetSection}`);
+            // Console log removed
             return;
         }
 
         // Section-1로 위로 가려고 하면 애니메이션 재실행 방지
         if (targetSection === 1 && direction === 'up') {
-            console.log('🚫 Cannot move up to Section-1 (animation replay prevention)');
+            // Console log removed
             return;
         }
 
-        console.log(`🌀 Portal transition triggered - Section-${fromSection} → Section-${targetSection} (${direction})`);
+        // Console log removed
 
         // 캐릭터 숨기기
         if (window.pixelCharacterManager) {
@@ -806,7 +806,7 @@ class ManualScrollManager {
         };
 
         this.momentumAnimation = requestAnimationFrame(animate);
-        console.log(`🚀 Momentum scroll started with velocity: ${this.touchVelocity.toFixed(3)}`);
+        // Console log removed
     }
 
     // 현재 상태 정보
@@ -826,7 +826,7 @@ class ManualScrollManager {
     lockScroll(reason = 'unknown') {
         this.scrollLocked = true;
         this.lockReason = reason;
-        console.log(`🔒 Scroll locked: ${reason}`);
+        // Console log removed
 
         // 진행 중인 관성 애니메이션 중단
         if (this.momentumAnimation) {
@@ -839,7 +839,7 @@ class ManualScrollManager {
     unlockScroll(reason = 'unknown') {
         this.scrollLocked = false;
         this.lockReason = '';
-        console.log(`🔓 Scroll unlocked: ${reason}`);
+        // Console log removed
     }
 }
 

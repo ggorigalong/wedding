@@ -68,13 +68,13 @@ class SimplePixelCharacterManager {
         const hasQuerySection = urlParams.get('section') !== null;
 
         if (!hasQuerySection && window.manualScrollManager && window.manualScrollManager.currentSection !== 0) {
-            console.log('🔄 No query string detected, forcing start from section0 for proper initialization');
+            // Console log removed
             window.manualScrollManager.goToSection(0);
         } else if (hasQuerySection) {
-            console.log(`🔗 Query string detected: section=${urlParams.get('section')}, maintaining current section`);
+            // Console log removed
         }
 
-        console.log(`🎮 Simple Pixel Character System initialized (${this.isMobile ? 'Mobile' : 'Desktop'} mode)`);
+        // Console log removed
     }
 
     createContainer() {
@@ -209,11 +209,11 @@ class SimplePixelCharacterManager {
         this.preloadCriticalAnimations()
             .then(() => {
                 this.isLoadingCriticalAssets = false;
-                console.log('✅ Critical assets loading completed');
+                // Console log removed
             })
             .catch(err => {
                 this.isLoadingCriticalAssets = false;
-                console.warn('⚠️ Critical image preloading failed:', err);
+                // Console warn removed
             });
         */
 
@@ -221,19 +221,19 @@ class SimplePixelCharacterManager {
         /*
         setTimeout(() => {
             this.preloadAllBackgroundAssets().catch(err =>
-                console.warn('⚠️ Background assets preloading failed:', err)
+                // Background assets preloading failed
             );
         }, 100);
         */
 
         this.isLoadingCriticalAssets = false;
 
-        console.log('🔧 Unified character system initialized (IMG tag method)');
+        // Console log removed
     }
 
     // 각 애니메이션의 IMG 태그들 미리 생성 (깜빡임 방지)
     async createFrameImages() {
-        console.log('🖼️ Creating IMG tags for all animations...');
+        // Console log removed
 
         for (const [animationName, config] of Object.entries(this.animationStates)) {
             const frameImageArray = [];
@@ -264,7 +264,7 @@ class SimplePixelCharacterManager {
                 await new Promise((resolve) => {
                     img.onload = resolve;
                     img.onerror = () => {
-                        console.warn(`⚠️ Failed to load: ${imagePath}`);
+                        // Console warn removed
                         resolve(); // 에러가 있어도 계속 진행
                     };
                 });
@@ -273,19 +273,19 @@ class SimplePixelCharacterManager {
                 this.mainCharacter.element.appendChild(img);
                 frameImageArray.push(img);
 
-                console.log(`📥 Loaded frame: ${imagePath} (${i}/${config.frameCount})`);
+                // Console log removed
             }
 
             // 애니메이션별로 IMG 태그 배열 저장
             this.frameImages.set(animationName, frameImageArray);
         }
 
-        console.log('✅ All IMG tags created and loaded');
+        // Console log removed
     }
 
     // 중요 애니메이션만 프리로드 (로딩창에 포함)
     async preloadCriticalAnimations() {
-        console.log('📥 Starting critical image preloading...');
+        // Console log removed
         const loadPromises = [];
 
         for (const animationName of this.criticalAnimations) {
@@ -305,7 +305,7 @@ class SimplePixelCharacterManager {
                         resolve();
                     };
                     img.onerror = () => {
-                        console.warn(`❌ Failed to preload critical: ${imagePath}`);
+                        // Console warn removed
                         resolve();
                     };
                     img.src = imagePath;
@@ -316,12 +316,12 @@ class SimplePixelCharacterManager {
         }
 
         await Promise.all(loadPromises);
-        console.log('✅ Critical animation images preloaded');
+        // Console log removed
     }
 
     // 모든 백그라운드 애셋 로드 (animationStates + addCharacter 기반)
     async preloadAllBackgroundAssets() {
-        console.log('📥 Starting complete background asset preloading...');
+        // Console log removed
 
         // 1. animationStates 기반 애니메이션들
         await this.preloadBackgroundAnimations();
@@ -329,12 +329,12 @@ class SimplePixelCharacterManager {
         // 2. addCharacter 기반 애니메이션들 (rabbit, leafs, lee-back 등)
         await this.preloadAddCharacterAssets();
 
-        console.log('✅ All background assets preloaded');
+        // Console log removed
     }
 
     // animationStates 기반 애니메이션을 백그라운드에서 로드
     async preloadBackgroundAnimations() {
-        console.log('📥 Starting animationStates background preloading...');
+        // Console log removed
         const loadPromises = [];
 
         for (const animationName of this.backgroundAnimations) {
@@ -354,7 +354,7 @@ class SimplePixelCharacterManager {
                         resolve();
                     };
                     img.onerror = () => {
-                        console.warn(`❌ Failed to preload background: ${imagePath}`);
+                        // Console warn removed
                         resolve();
                     };
                     img.src = imagePath;
@@ -365,12 +365,12 @@ class SimplePixelCharacterManager {
         }
 
         await Promise.all(loadPromises);
-        console.log('✅ AnimationStates background images preloaded');
+        // Console log removed
     }
 
     // addCharacter 기반 애니메이션을 백그라운드에서 로드
     async preloadAddCharacterAssets() {
-        console.log('📥 Starting addCharacter assets preloading...');
+        // Console log removed
         const loadPromises = [];
 
         // addCharacter 기반 애니메이션 리스트
@@ -391,11 +391,11 @@ class SimplePixelCharacterManager {
                 const promise = new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => {
-                        console.log(`✅ Preloaded: ${imagePath}`);
+                        // Console log removed
                         resolve();
                     };
                     img.onerror = () => {
-                        console.warn(`❌ Failed to preload: ${imagePath}`);
+                        // Console warn removed
                         resolve();
                     };
                     img.src = imagePath;
@@ -406,7 +406,7 @@ class SimplePixelCharacterManager {
         }
 
         await Promise.all(loadPromises);
-        console.log('✅ AddCharacter assets preloaded');
+        // Console log removed
     }
 
     async setupCharacters() {
@@ -511,7 +511,7 @@ class SimplePixelCharacterManager {
             visible: false,
             loop: false,  // 1회만 재생
             onComplete: () => {
-                console.log('🌿🎯 WREATH ONCOMPLETE CALLED!');
+                // Console log removed
                 this.onWreathAnimationComplete();
             }
         });
@@ -638,11 +638,11 @@ class SimplePixelCharacterManager {
             currentAnimation: 'lee-idle-back', // 현재 상태 추적
             onComplete: () => {
                 // idle 상태에서는 루프, run 상태에서도 루프
-                console.log('🎵 LeeBack animation cycle completed');
+                // Console log removed
             }
         });
 
-        console.log('🎮 Characters setup: main (spreadsheet), ha-idle(png), ha-run(png), rabbit-idle (png), information-idle (png), rabbit-hurt (png), hit-rabbit (png), hit-idle (png), ha-idle-flowers (png), ha-run-flowers (png), leafs (png), lee-back (unified));')
+        // Console log removed')
 
 
         // 갤러리 트리거 관련 초기화
@@ -654,17 +654,17 @@ class SimplePixelCharacterManager {
 
     // 통합 캐릭터 애니메이션 전환
     switchUnifiedAnimation(animationName) {
-        console.log(`🎭 switchUnifiedAnimation called: ${animationName}`);
-        console.log(`🔧 Available animations:`, Object.keys(this.animationStates));
+        // Console log removed
+        // Console log removed
 
         if (!this.animationStates[animationName]) {
-            console.warn(`🚫 Animation not found: ${animationName}`);
+            // Console warn removed
             return;
         }
 
         // 현재 애니메이션이 같으면 건너뛰기
         if (this.mainCharacter.currentAnimation === animationName) {
-            console.log(`⏭️ Same animation already playing: ${animationName}`);
+            // Console log removed
             return;
         }
 
@@ -684,12 +684,12 @@ class SimplePixelCharacterManager {
         this.mainCharacter.isActive = true;
         this.mainCharacter.element.style.opacity = '1';
 
-        console.log(`✅ Character activated: opacity=${this.mainCharacter.element.style.opacity}, isActive=${this.mainCharacter.isActive}`);
+        // Console log removed
 
         // 애니메이션 시작
         this.startUnifiedAnimation();
 
-        console.log(`🎭 Unified character: switching to ${animationName}`);
+        // Console log removed
     }
 
 
@@ -710,10 +710,10 @@ class SimplePixelCharacterManager {
         }
 
         if (animation.isSpreadsheetBased) {
-            console.log(`🎬 Starting spreadsheet animation: ${this.mainCharacter.currentAnimation} with dynamic durations`);
+            // Console log removed
         } else {
             const effectiveFrameRate = this.isMobile ? Math.max(8, animation.frameRate * 0.75) : animation.frameRate;
-            console.log(`🎬 Starting animation: ${this.mainCharacter.currentAnimation} at ${effectiveFrameRate}fps (${this.isMobile ? 'Mobile' : 'Desktop'})`);
+            // Console log removed
         }
 
         // 시작 전에 모든 다른 애니메이션 숨기기
@@ -724,7 +724,7 @@ class SimplePixelCharacterManager {
         }
 
         const updateFrame = (currentTime) => {
-            console.log(`🎯 updateFrame called: animation=${this.mainCharacter.currentAnimation}, frame=${this.mainCharacter.currentFrame}, isSpreadsheet=${animation.isSpreadsheetBased}`);
+            // Console log removed
 
             // 스프레드시트 기반 애니메이션의 경우 현재 프레임 duration 계산
             let currentFrameDuration = frameDuration;
@@ -764,7 +764,7 @@ class SimplePixelCharacterManager {
                     currentImg.style.opacity = '1';
                 }
             } else {
-                console.warn(`⚠️ No frame images found for: ${this.mainCharacter.currentAnimation}`);
+                // Console warn removed
             }
 
             // 자막 시스템은 startSpreadsheetAnimation에서 처리됨 (구버전 코드 비활성화)
@@ -798,7 +798,7 @@ class SimplePixelCharacterManager {
 
     // 통합 캐릭터 숨기기 (IMG 태그 방식) - ending 애니메이션용 강화
     hideUnifiedCharacter() {
-        console.log('👻 Hiding unified character for ending animation');
+        // Console log removed
         this.mainCharacter.element.style.opacity = '0';
         this.mainCharacter.element.style.display = 'none';
         this.mainCharacter.element.style.visibility = 'hidden';
@@ -816,48 +816,34 @@ class SimplePixelCharacterManager {
             });
         }
 
-        console.log(`👻 Unified character completely hidden for ending: opacity=0, display=none, isActive=${this.mainCharacter.isActive}`);
+        // Console log removed
     }
 
     // 통합 캐릭터 보이기 (IMG 태그 방식)
     showUnifiedCharacter() {
-        console.log('👀 Showing unified character');
-        console.log('🔍 DEBUG - mainCharacter element:', this.mainCharacter.element);
-        console.log('🔍 DEBUG - mainCharacter element style:', {
-            opacity: this.mainCharacter.element.style.opacity,
-            visibility: this.mainCharacter.element.style.visibility,
-            display: this.mainCharacter.element.style.display,
-            position: this.mainCharacter.element.style.position,
-            top: this.mainCharacter.element.style.top,
-            left: this.mainCharacter.element.style.left,
-            zIndex: this.mainCharacter.element.style.zIndex
-        });
+        // Console log removed
+        // Console log removed
+        // DEBUG - mainCharacter element style logged
 
         this.mainCharacter.element.style.opacity = '1';
         this.mainCharacter.element.style.visibility = 'visible';
         this.mainCharacter.element.style.display = 'block'; // display 복원
         this.mainCharacter.isActive = true;
 
-        console.log(`👀 Unified character shown: opacity=${this.mainCharacter.element.style.opacity}, isActive=${this.mainCharacter.isActive}`);
-        console.log('🔍 DEBUG - After showing:', {
-            opacity: this.mainCharacter.element.style.opacity,
-            visibility: this.mainCharacter.element.style.visibility,
-            display: this.mainCharacter.element.style.display,
-            childrenCount: this.mainCharacter.element.children.length,
-            computedStyles: window.getComputedStyle(this.mainCharacter.element).display
-        });
+        // Console log removed
+        // DEBUG - After showing logged
     }
 
     // 통합 캐릭터 위치 업데이트
     updateUnifiedCharacterPosition() {
         this.mainCharacter.element.style.top = `${this.characterY}%`;
-        console.log(`📍 Unified character position updated: ${this.characterY}%`);
+        // Console log removed
     }
 
     // 메인 애니메이션 스프레드시트 데이터 로드 (JSON 파일에서)
     async loadMainAnimationSpreadsheetData() {
         try {
-            console.log('📊 Loading section1 spreadsheet data from JSON...');
+            // Console log removed
             this.isLoadingSection1Data = true;
 
             // 로딩 시작 시간 기록
@@ -884,14 +870,14 @@ class SimplePixelCharacterManager {
 
             for (const path of jsonPaths) {
                 try {
-                    console.log('🌐 Attempting to load JSON from:', path);
+                    // Console log removed
                     response = await fetch(path);
                     if (response.ok) {
                         jsonUrl = path;
                         break;
                     }
                 } catch (e) {
-                    console.log(`❌ Failed to load from ${path}:`, e.message);
+                    // Console log removed
                 }
             }
 
@@ -899,10 +885,10 @@ class SimplePixelCharacterManager {
                 throw new Error(`Failed to load JSON from all paths`);
             }
 
-            console.log('✅ Successfully loaded JSON from:', jsonUrl);
+            // Console log removed
 
             const jsonData = await response.json();
-            console.log('✅ JSON data loaded:', jsonData);
+            // Console log removed
 
             // JSON 형식을 우리 스프레드시트 형식으로 변환
             const frames = [];
@@ -922,11 +908,11 @@ class SimplePixelCharacterManager {
 
             // frameTags를 이용한 애니메이션 시퀀스 생성
             const frameTags = jsonData.meta.frameTags || [];
-            console.log('📋 Available frameTags:', frameTags);
+            // Console log removed
 
             // 전체 프레임 범위 확인
             const totalFrames = frames.length;
-            console.log(`📊 Total frames available: ${totalFrames} (0-${totalFrames-1})`);
+            // Console log removed
 
             // 애니메이션 시퀀스 계산 - 순차적으로 처리
             const animationSequence = [];
@@ -940,7 +926,7 @@ class SimplePixelCharacterManager {
                     const to = tag.to;
                     const repeatCount = parseInt(tag.repeat) || 1;
 
-                    console.log(`🏷️ Tag "${tag.name}": frames ${from}-${to}, repeat ${repeatCount} times`);
+                    // Console log removed
 
                     taggedSegments.push({
                         from: from,
@@ -958,7 +944,7 @@ class SimplePixelCharacterManager {
                     // 태그 시작 전까지의 누락된 프레임들 추가
                     while (currentFrame < segment.from) {
                         animationSequence.push(currentFrame);
-                        console.log(`🔍 Adding sequential frame: ${currentFrame}`);
+                        // Console log removed
                         currentFrame++;
                     }
 
@@ -976,18 +962,18 @@ class SimplePixelCharacterManager {
                 // 마지막 태그 이후 남은 프레임들 추가
                 while (currentFrame < totalFrames) {
                     animationSequence.push(currentFrame);
-                    console.log(`🔍 Adding final sequential frame: ${currentFrame}`);
+                    // Console log removed
                     currentFrame++;
                 }
             } else {
                 // 태그가 없으면 모든 프레임을 순서대로 재생
-                console.log('⚠️ No frameTags found, using all frames in order');
+                // Console log removed
                 for (let i = 0; i < totalFrames; i++) {
                     animationSequence.push(i);
                 }
             }
 
-            console.log(`🎬 Animation sequence: [${animationSequence.slice(0, 20).join(', ')}${animationSequence.length > 20 ? '...' : ''}] (total: ${animationSequence.length} frames)`);
+            // Console log removed
 
             const spreadsheetData = {
                 frames: frames,
@@ -1002,8 +988,8 @@ class SimplePixelCharacterManager {
                 }
             };
 
-            console.log(`📊 Converted ${frames.length} frames from JSON to spreadsheet format`);
-            console.log('🎬 Total duration:', spreadsheetData.totalDuration + 'ms');
+            // Console log removed
+            // Console log removed
 
             // 메인 캐릭터에 데이터 설정
             await this.loadSpreadsheetData('main', spreadsheetData);
@@ -1013,7 +999,7 @@ class SimplePixelCharacterManager {
             const remainingTime = Math.max(0, minimumLoadingTime - loadingElapsed);
 
             if (remainingTime > 0) {
-                console.log(`⏳ Ensuring minimum loading time: ${remainingTime}ms remaining`);
+                // Console log removed
                 await new Promise(resolve => setTimeout(resolve, remainingTime));
             }
 
@@ -1030,18 +1016,18 @@ class SimplePixelCharacterManager {
                 this.showDirectScrollGuide();
             }
 
-            console.log('✅ Section1 data loading completed!');
+            // Console log removed
 
         } catch (error) {
-            console.error('❌ Failed to load section1 spreadsheet data:', error);
-            console.log('⚠️ Falling back to empty data - animation will use fallback method');
+            // Console error removed
+            // Console log removed
 
             // 에러 발생 시에도 최소 로딩 시간 보장
             const loadingElapsed = Date.now() - loadingStartTime;
             const remainingTime = Math.max(0, minimumLoadingTime - loadingElapsed);
 
             if (remainingTime > 0) {
-                console.log(`⏳ Ensuring minimum loading time even after error: ${remainingTime}ms remaining`);
+                // Console log removed
                 await new Promise(resolve => setTimeout(resolve, remainingTime));
             }
 
@@ -1062,7 +1048,7 @@ class SimplePixelCharacterManager {
     // Ending 애니메이션 스프레드시트 데이터 로드 (ending.json에서)
     async loadEndingAnimationData() {
         try {
-            console.log('📊 Loading ending spreadsheet data from JSON...');
+            // Console log removed
 
             // 여러 경로로 시도 (section1과 동일한 패턴)
             const jsonPaths = [
@@ -1076,15 +1062,15 @@ class SimplePixelCharacterManager {
 
             for (const path of jsonPaths) {
                 try {
-                    console.log(`🔍 Trying ending.json path: ${path}`);
+                    // Console log removed
                     response = await fetch(path);
                     if (response.ok) {
                         loadedPath = path;
-                        console.log(`✅ Successfully loaded from: ${path}`);
+                        // Console log removed
                         break;
                     }
                 } catch (e) {
-                    console.log(`❌ Failed to load from ${path}:`, e.message);
+                    // Console log removed
                     continue;
                 }
             }
@@ -1094,7 +1080,7 @@ class SimplePixelCharacterManager {
             }
 
             const jsonData = await response.json();
-            console.log(`📥 Raw ending JSON loaded:`, jsonData);
+            // Console log removed
 
             // JSON 데이터를 스프레드시트 형태로 변환
             const frames = [];
@@ -1116,11 +1102,11 @@ class SimplePixelCharacterManager {
 
             // frameTags를 이용한 애니메이션 시퀀스 생성 (section1과 동일)
             const frameTags = jsonData.meta.frameTags || [];
-            console.log('📋 Available ending frameTags:', frameTags);
+            // Console log removed
 
             // 전체 프레임 범위 확인
             const totalFrames = frames.length;
-            console.log(`📊 Total ending frames available: ${totalFrames} (0-${totalFrames-1})`);
+            // Console log removed
 
             // 애니메이션 시퀀스 계산 - 순차적으로 처리
             const animationSequence = [];
@@ -1134,7 +1120,7 @@ class SimplePixelCharacterManager {
                     const to = tag.to;
                     const repeatCount = parseInt(tag.repeat) || 1;
 
-                    console.log(`🏷️ Ending Tag "${tag.name}": frames ${from}-${to}, repeat ${repeatCount} times`);
+                    // Console log removed
 
                     taggedSegments.push({
                         from: from,
@@ -1152,7 +1138,7 @@ class SimplePixelCharacterManager {
                     // 태그 시작 전까지의 누락된 프레임들 추가
                     while (currentFrame < segment.from) {
                         animationSequence.push(currentFrame);
-                        console.log(`🔍 Adding sequential ending frame: ${currentFrame}`);
+                        // Console log removed
                         currentFrame++;
                     }
 
@@ -1170,18 +1156,18 @@ class SimplePixelCharacterManager {
                 // 마지막 태그 이후 남은 프레임들 추가
                 while (currentFrame < totalFrames) {
                     animationSequence.push(currentFrame);
-                    console.log(`🔍 Adding final sequential ending frame: ${currentFrame}`);
+                    // Console log removed
                     currentFrame++;
                 }
             } else {
                 // 태그가 없으면 모든 프레임을 순서대로 재생
-                console.log('⚠️ No ending frameTags found, using all frames in order');
+                // Console log removed
                 for (let i = 0; i < totalFrames; i++) {
                     animationSequence.push(i);
                 }
             }
 
-            console.log(`🎬 Ending animation sequence: [${animationSequence.slice(0, 20).join(', ')}${animationSequence.length > 20 ? '...' : ''}] (total: ${animationSequence.length} frames)`);
+            // Console log removed
 
             const spreadsheetData = {
                 frames: frames,
@@ -1200,22 +1186,22 @@ class SimplePixelCharacterManager {
                 }
             };
 
-            console.log(`📊 Converted ${frames.length} ending frames from JSON to spreadsheet format`);
-            console.log('🎬 Total ending duration:', spreadsheetData.totalDuration + 'ms');
+            // Console log removed
+            // Console log removed
 
             // Ending 캐릭터에 데이터 설정
             await this.loadSpreadsheetData('ending', spreadsheetData);
 
-            console.log('✅ Ending data loading completed!');
+            // Console log removed
 
         } catch (error) {
-            console.error('❌ Failed to load ending spreadsheet data:', error);
-            console.log('⚠️ Ending animation will not be available');
+            // Console error removed
+            // Console log removed
         }
     }
     async loadHitRabbitSpreadsheetData() {
         try {
-            console.log('📊 Loading hit-rabbit spreadsheet data from JSON...');
+            // Console log removed
 
             // 여러 경로로 시도 (정확한 경로)
             const jsonPaths = [
@@ -1229,15 +1215,15 @@ class SimplePixelCharacterManager {
 
             for (const path of jsonPaths) {
                 try {
-                    console.log(`🔍 Trying rabbit-hit.json path: ${path}`);
+                    // Console log removed
                     response = await fetch(path);
                     if (response.ok) {
                         loadedPath = path;
-                        console.log(`✅ Successfully loaded from: ${path}`);
+                        // Console log removed
                         break;
                     }
                 } catch (e) {
-                    console.log(`❌ Failed to load from ${path}:`, e.message);
+                    // Console log removed
                     continue;
                 }
             }
@@ -1247,7 +1233,7 @@ class SimplePixelCharacterManager {
             }
 
             const jsonData = await response.json();
-            console.log(`📥 Raw hit-rabbit JSON loaded:`, jsonData);
+            // Console log removed
 
             // JSON 데이터를 스프레드시트 형태로 변환
             const frames = [];
@@ -1269,11 +1255,11 @@ class SimplePixelCharacterManager {
 
             // frameTags를 이용한 애니메이션 시퀀스 생성 (section1과 동일)
             const frameTags = jsonData.meta.frameTags || [];
-            console.log('📋 Available hit-rabbit frameTags:', frameTags);
+            // Console log removed
 
             // 전체 프레임 범위 확인
             const totalFrames = frames.length;
-            console.log(`📊 Total hit-rabbit frames available: ${totalFrames} (0-${totalFrames-1})`);
+            // Console log removed
 
             // 애니메이션 시퀀스 계산 - 순차적으로 처리
             const animationSequence = [];
@@ -1287,7 +1273,7 @@ class SimplePixelCharacterManager {
                     const to = tag.to;
                     const repeatCount = parseInt(tag.repeat) || 1;
 
-                    console.log(`🏷️ Hit-rabbit Tag "${tag.name}": frames ${from}-${to}, repeat ${repeatCount} times`);
+                    // Console log removed
 
                     taggedSegments.push({
                         from: from,
@@ -1305,7 +1291,7 @@ class SimplePixelCharacterManager {
                     // 태그 시작 전까지의 누락된 프레임들 추가
                     while (currentFrame < segment.from) {
                         animationSequence.push(currentFrame);
-                        console.log(`🔍 Adding sequential hit-rabbit frame: ${currentFrame}`);
+                        // Console log removed
                         currentFrame++;
                     }
 
@@ -1323,18 +1309,18 @@ class SimplePixelCharacterManager {
                 // 마지막 태그 이후 남은 프레임들 추가
                 while (currentFrame < totalFrames) {
                     animationSequence.push(currentFrame);
-                    console.log(`🔍 Adding final sequential hit-rabbit frame: ${currentFrame}`);
+                    // Console log removed
                     currentFrame++;
                 }
             } else {
                 // 태그가 없으면 모든 프레임을 순서대로 재생
-                console.log('⚠️ No hit-rabbit frameTags found, using all frames in order');
+                // Console log removed
                 for (let i = 0; i < totalFrames; i++) {
                     animationSequence.push(i);
                 }
             }
 
-            console.log(`🎬 Hit-rabbit animation sequence: [${animationSequence.slice(0, 20).join(', ')}${animationSequence.length > 20 ? '...' : ''}] (total: ${animationSequence.length} frames)`);
+            // Console log removed
 
             const spreadsheetData = {
                 frames: frames,
@@ -1353,24 +1339,24 @@ class SimplePixelCharacterManager {
                 }
             };
 
-            console.log(`📊 Converted ${frames.length} hit-rabbit frames from JSON to spreadsheet format`);
-            console.log('🎬 Total hit-rabbit duration:', spreadsheetData.totalDuration + 'ms');
+            // Console log removed
+            // Console log removed
 
             // Hit-rabbit 캐릭터에 데이터 설정
             await this.loadSpreadsheetData('hit-rabbit', spreadsheetData);
 
-            console.log('✅ Hit-rabbit data loading completed!');
+            // Console log removed
 
         } catch (error) {
-            console.error('❌ Failed to load hit-rabbit spreadsheet data:', error);
-            console.log('⚠️ Hit-rabbit animation will not be available');
+            // Console error removed
+            // Console log removed
         }
     }
 
     // Information 애니메이션 스프레드시트 데이터 로드 (information.json에서)
     async loadInformationSpreadsheetData() {
         try {
-            console.log('📊 Loading information spreadsheet data from JSON...');
+            // Console log removed
 
             // 여러 경로로 시도 (정확한 경로)
             const jsonPaths = [
@@ -1384,15 +1370,15 @@ class SimplePixelCharacterManager {
 
             for (const path of jsonPaths) {
                 try {
-                    console.log(`🔍 Trying information.json path: ${path}`);
+                    // Console log removed
                     response = await fetch(path);
                     if (response.ok) {
                         loadedPath = path;
-                        console.log(`✅ Successfully loaded from: ${path}`);
+                        // Console log removed
                         break;
                     }
                 } catch (e) {
-                    console.log(`❌ Failed to load from ${path}:`, e.message);
+                    // Console log removed
                     continue;
                 }
             }
@@ -1402,7 +1388,7 @@ class SimplePixelCharacterManager {
             }
 
             const jsonData = await response.json();
-            console.log(`📥 Raw information JSON loaded:`, jsonData);
+            // Console log removed
 
             // JSON 데이터를 스프레드시트 형태로 변환
             const frames = [];
@@ -1424,11 +1410,11 @@ class SimplePixelCharacterManager {
 
             // frameTags를 이용한 애니메이션 시퀀스 생성 (rabbit과 동일)
             const frameTags = jsonData.meta.frameTags || [];
-            console.log('📋 Available information frameTags:', frameTags);
+            // Console log removed
 
             // 전체 프레임 범위 확인
             const totalFrames = frames.length;
-            console.log(`📊 Total information frames available: ${totalFrames} (0-${totalFrames-1})`);
+            // Console log removed
 
             // 애니메이션 시퀀스 계산 - 순차적으로 처리 (rabbit과 동일)
             const animationSequence = [];
@@ -1442,7 +1428,7 @@ class SimplePixelCharacterManager {
                     const to = tag.to;
                     const repeatCount = parseInt(tag.repeat) || 1;
 
-                    console.log(`🏷️ Information Tag "${tag.name}": frames ${from}-${to}, repeat ${repeatCount} times`);
+                    // Console log removed
 
                     taggedSegments.push({
                         from: from,
@@ -1460,7 +1446,7 @@ class SimplePixelCharacterManager {
                     // 태그 구간 이전의 프레임들 추가
                     while (currentFrame < segment.from) {
                         animationSequence.push(currentFrame);
-                        console.log(`🔍 Adding pre-segment information frame: ${currentFrame}`);
+                        // Console log removed
                         currentFrame++;
                     }
 
@@ -1469,7 +1455,7 @@ class SimplePixelCharacterManager {
                         for (let frame = segment.from; frame <= segment.to; frame++) {
                             if (frame < totalFrames) {
                                 animationSequence.push(frame);
-                                console.log(`🔁 Adding information tag frame: ${frame} (repeat ${repeat + 1}/${segment.repeat})`);
+                                // Console log removed
                             }
                         }
                     }
@@ -1481,18 +1467,18 @@ class SimplePixelCharacterManager {
                 // 마지막 태그 이후 남은 프레임들 추가
                 while (currentFrame < totalFrames) {
                     animationSequence.push(currentFrame);
-                    console.log(`🔍 Adding final sequential information frame: ${currentFrame}`);
+                    // Console log removed
                     currentFrame++;
                 }
             } else {
                 // 태그가 없으면 모든 프레임을 순서대로 재생
-                console.log('⚠️ No information frameTags found, using all frames in order');
+                // Console log removed
                 for (let i = 0; i < totalFrames; i++) {
                     animationSequence.push(i);
                 }
             }
 
-            console.log(`🎬 Information animation sequence: [${animationSequence.slice(0, 20).join(', ')}${animationSequence.length > 20 ? '...' : ''}] (total: ${animationSequence.length} frames)`);
+            // Console log removed
 
             const spreadsheetData = {
                 frames: frames,
@@ -1511,17 +1497,17 @@ class SimplePixelCharacterManager {
                 }
             };
 
-            console.log(`📊 Converted ${frames.length} information frames from JSON to spreadsheet format`);
-            console.log('🎬 Total information duration:', spreadsheetData.totalDuration + 'ms');
+            // Console log removed
+            // Console log removed
 
             // Information 캐릭터에 데이터 설정
             await this.loadSpreadsheetData('information', spreadsheetData);
 
-            console.log('✅ Information data loading completed!');
+            // Console log removed
 
         } catch (error) {
-            console.error('❌ Failed to load information spreadsheet data:', error);
-            console.log('⚠️ Information animation will not be available');
+            // Console error removed
+            // Console log removed
         }
     }
 
@@ -1529,7 +1515,7 @@ class SimplePixelCharacterManager {
     showDirectLoadingMessage() {
         // HTML의 초기 로딩 스크린이 이미 있으므로 그것을 유지
         // 추가적인 DOM 조작 불필요
-        console.log('⏳ Using initial loading screen from HTML');
+        // Console log removed
     }
 
     // 직접 로딩 메시지 제거
@@ -1667,33 +1653,33 @@ class SimplePixelCharacterManager {
             const animateFrame = () => {
                 this.updateFrameWithoutLoop(character);
                 frameCount++;
-                console.log(`🎬 ${character.id}: Frame ${frameCount}/${character.frameCount}`);
+                // Console log removed
 
                 if (frameCount >= character.frameCount) {
                     // 애니메이션 완료
-                    console.log(`🏁 ${character.id}: Animation completed (${frameCount} frames)`);
-                    console.log(`🔍 ${character.id}: onComplete exists? ${!!character.onComplete}, type: ${typeof character.onComplete}`);
+                    // Console log removed
+                    // Console log removed
 
                     if (character.onComplete && typeof character.onComplete === 'function') {
-                        console.log(`📞 ${character.id}: Calling onComplete callback`);
+                        // Console log removed
                         try {
                             character.onComplete();
-                            console.log(`✅ ${character.id}: onComplete callback executed successfully`);
+                            // Console log removed
                         } catch (error) {
-                            console.error(`❌ ${character.id}: onComplete callback error:`, error);
+                            // Console error removed
                         }
                     } else {
-                        console.log(`⚠️ ${character.id}: No onComplete callback found`);
+                        // Console log removed
                     }
 
                     if (character.loop !== false) {
                         // loop가 true거나 undefined면 반복
-                        console.log(`🔄 ${character.id}: Looping animation`);
+                        // Console log removed
                         character.currentFrame = 0;
                         frameCount = 0;
                         character.animationTimeout = setTimeout(animateFrame, frameInterval);
                     } else {
-                        console.log(`⏹️ ${character.id}: Animation stopped (no loop)`);
+                        // Console log removed
                     }
                 } else {
                     character.animationTimeout = setTimeout(animateFrame, frameInterval);
@@ -1707,36 +1693,27 @@ class SimplePixelCharacterManager {
 
     // 스프레드시트 기반 애니메이션 시작
     startSpreadsheetAnimation(character) {
-        console.log(`🎬 startSpreadsheetAnimation called for: ${character.id}`);
+        // Console log removed
 
         if (!character.spreadsheetData || !character.spreadsheetData.frames) {
-            console.error('❌ Spreadsheet data not loaded for character:', character.id);
+            // Console error removed
             return;
         }
 
-        console.log(`✅ Spreadsheet data found for ${character.id}:`, {
-            frameCount: character.spreadsheetData.frames.length,
-            sequenceLength: character.spreadsheetData.animationSequence.length,
-            totalDuration: character.spreadsheetData.totalDuration
-        });
+        // Spreadsheet data found and logged
 
         // 스프라이트시트 이미지 미리 로드
         const spritesheetImg = new Image();
         const firstFrame = character.spreadsheetData.frames[0];
 
         spritesheetImg.onload = () => {
-            console.log(`✅ Spritesheet loaded: ${firstFrame.image}`);
+            // Console log removed
             this.playSpritesheetFrames(character, spritesheetImg);
         };
 
         spritesheetImg.onerror = () => {
-            console.error('❌ Failed to load spritesheet image:', firstFrame.image);
-            console.error('❌ Image load error details:', {
-                src: spritesheetImg.src,
-                naturalWidth: spritesheetImg.naturalWidth,
-                naturalHeight: spritesheetImg.naturalHeight,
-                complete: spritesheetImg.complete
-            });
+            // Console error removed
+            // Image load error details logged
         };
 
         spritesheetImg.src = firstFrame.image;
@@ -1752,22 +1729,22 @@ class SimplePixelCharacterManager {
         const animationSequence = character.spreadsheetData.animationSequence || [];
 
         if (animationSequence.length === 0) {
-            console.error('❌ No animation sequence found!');
+            // Console error removed
             return;
         }
 
-        console.log(`🎬 Starting animation with sequence of ${animationSequence.length} frames`);
+        // Console log removed
 
         const playNextFrame = (sequenceIndex) => {
             // 시퀀스 완료 확인
             if (sequenceIndex >= animationSequence.length) {
                 // 애니메이션 완료
                 character.isActive = false;
-                console.log(`✅ Spreadsheet animation completed: ${character.id} (${animationSequence.length} frames played)`);
+                // Console log removed
 
                 // 자막이 있는 캐릭터 애니메이션 완료 시 자막 숨기기
                 if (window.subtitleManager && (character.id === 'main' || character.id === 'hit-rabbit' || character.id === 'information' || character.id === 'ending')) {
-                    console.log(`🎬 ${character.id} animation completed - hiding subtitles`);
+                    // Console log removed
                     window.subtitleManager.clearAllSubtitles();
                 }
 
@@ -1790,7 +1767,7 @@ class SimplePixelCharacterManager {
             const frameData = character.spreadsheetData.frames[frameIndex];
 
             if (!frameData) {
-                console.error(`❌ Frame ${frameIndex} not found!`);
+                // Console error removed
                 return;
             }
 
@@ -1816,29 +1793,29 @@ class SimplePixelCharacterManager {
                     if (character.id === 'main') {
                         // 현재 프레임의 태그 찾기
                         const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
-                        console.log(`🎬 Subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                        // Console log removed
 
                         // 자막 체크 및 표시
                         window.subtitleManager.checkSubtitle('main', 'section-1', currentTag, frameIndex);
                     } else if (character.id === 'hit-rabbit') {
                         // hit-rabbit 캐릭터도 태그 기반으로 자막 처리
                         const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
-                        console.log(`🎬 Hit-rabbit subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                        // Console log removed
                         window.subtitleManager.checkSubtitle('hit-rabbit', 'section', currentTag, frameIndex);
                     } else if (character.id === 'information') {
                         // information 캐릭터도 태그 기반으로 자막 처리
                         const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
-                        console.log(`🎬 Information subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                        // Console log removed
                         window.subtitleManager.checkSubtitle('information', 'section', currentTag, frameIndex);
                     } else if (character.id === 'ending') {
                         // ending 캐릭터도 태그 기반으로 자막 처리
                         const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
-                        console.log(`🎬 Ending subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                        // Console log removed
                         window.subtitleManager.checkSubtitle('ending', 'section', currentTag, frameIndex);
                     }
                 }
             } else {
-                console.error(`❌ No img element found for ${character.id}!`);
+                // Console error removed
                 this.onInformationAnimationComplete();
                 return;
             }
@@ -1857,15 +1834,10 @@ class SimplePixelCharacterManager {
                 character.img.style.display = 'block';
                 character.img.style.opacity = '1';
                 character.img.style.visibility = 'visible';
-                console.log(`🎬 ENDING IMG SET:`, {
-                    src: character.img.src.substring(0, 50) + '...',
-                    display: character.img.style.display,
-                    opacity: character.img.style.opacity,
-                    parentOpacity: character.element.style.opacity
-                });
+                // Ending image set logged
             }
 
-            console.log(`🎬 Sequence ${sequenceIndex + 1}/${animationSequence.length} - Frame ${frameIndex}: sprite(${frameData.spriteX},${frameData.spriteY},${frameData.spriteWidth}x${frameData.spriteHeight}) (${frameData.duration}ms)`);
+            // Console log removed
 
             // 다음 프레임 스케줄링
             character.animationTimeout = setTimeout(() => {
@@ -1878,19 +1850,19 @@ class SimplePixelCharacterManager {
 
     updateFrame(character) {
         if (!character.isPngSequence) {
-            console.log(`⚠️ updateFrame called on non-PNG character: ${character.id}`);
+            // Console log removed
             return;
         }
 
         if (!character.img) {
-            console.error(`❌ No img element found for character: ${character.id}`);
+            // Console error removed
             return;
         }
 
         const frameNumber = character.currentFrame + 1; // 1부터 시작
         const framePath = `${character.framePrefix}${frameNumber}.png`;
 
-        console.log(`🖼️ Setting frame ${frameNumber} for ${character.id}: ${framePath}`);
+        // Console log removed
         character.img.src = framePath;
 
         character.currentFrame = (character.currentFrame + 1) % character.frameCount;
@@ -1899,35 +1871,35 @@ class SimplePixelCharacterManager {
     // Loop 처리 없이 프레임 업데이트 (새로운 startAnimation에서 사용)
     updateFrameWithoutLoop(character) {
         if (!character.isPngSequence) {
-            console.log(`⚠️ updateFrameWithoutLoop called on non-PNG character: ${character.id}`);
+            // Console log removed
             return;
         }
 
         if (!character.img) {
-            console.error(`❌ No img element found for character: ${character.id}`);
+            // Console error removed
             return;
         }
 
         const frameNumber = character.currentFrame + 1; // 1부터 시작
         const framePath = `${character.framePrefix}${frameNumber}.png`;
 
-        console.log(`🖼️ Setting frame ${frameNumber} for ${character.id}: ${framePath}`);
+        // Console log removed
         character.img.src = framePath;
 
         character.currentFrame++; // 프레임 증가 (startAnimation에서 frameCount도 별도 증가)
     }
 
     stopAnimation(character) {
-        console.log(`🛑 stopAnimation called for: ${character.id}`);
+        // Console log removed
         if (character.animationInterval) {
             clearInterval(character.animationInterval);
             character.animationInterval = null;
-            console.log(`🛑 Cleared animationInterval for: ${character.id}`);
+            // Console log removed
         }
         if (character.animationTimeout) {
             clearTimeout(character.animationTimeout);
             character.animationTimeout = null;
-            console.log(`🛑 Cleared animationTimeout for: ${character.id}`);
+            // Console log removed
         }
         character.isActive = false;
     }
@@ -1936,17 +1908,17 @@ class SimplePixelCharacterManager {
     async loadSpreadsheetData(characterId, spreadsheetData) {
         const character = this.characters.get(characterId);
         if (!character) {
-            console.error(`❌ Character not found: ${characterId}`);
+            // Console error removed
             return;
         }
 
         if (!character.isSpreadsheetBased) {
-            console.error(`❌ Character ${characterId} is not spreadsheet-based`);
+            // Console error removed
             return;
         }
 
         character.spreadsheetData = spreadsheetData;
-        console.log(`✅ Spreadsheet data loaded for ${characterId}:`, spreadsheetData);
+        // Console log removed
 
         return character;
     }
@@ -1955,58 +1927,58 @@ class SimplePixelCharacterManager {
     switchToState(newState) {
         // hit-rabbit 실행 중에만 상태 변경 무시 (hit-idle은 스크롤로 전환 가능)
         if (this.isHitRabbitPlaying) {
-            console.log(`🚫 State change blocked during hit-rabbit animation: ${newState}`);
+            // Console log removed
             return;
         }
 
         // 토끼 관련 상태 요청은 별도 처리
         if (newState.startsWith('rabbit-') || newState === 'hit-rabbit') {
-            console.log(`🟢 Rabbit-related state change ignored in switchToState: ${newState}`);
+            // Console log removed
             return;
         }
 
         // 실제 사용할 애니메이션 계산
         let actualAnimation = newState;
-        console.log(`🌸 Animation check: hasLeafsFlowerDouble=${this.hasLeafsFlowerDouble}, hasDoubleFlower=${this.hasDoubleFlower}, hasFlower=${this.hasFlower}, leafsTriggered=${this.galleryLeafsTriggered}, newState=${newState}, section=${this.currentSection}`);
+        // Console log removed
 
         // idle-wow 완료 후에는 idle-wow-normal이 최우선 (leafsflowerdouble 차단)
         if (this.hasIdleWowCompleted && newState === 'ha-idle') {
             actualAnimation = 'ha-idle-wow-normal';
-            console.log(`✨ Using idle-wow-normal (blocks leafsflowerdouble): ${actualAnimation}`);
+            // Console log removed
         } else if (this.hasIdleWowCompleted && this.hasLeafsFlowerDouble && newState === 'ha-run') {
             actualAnimation = 'ha-run-flowers'; // idle-wow 완료 후에도 run은 leafsflowerdouble 유지
-            console.log(`✨ Using leafsflowerdouble run (idle-wow completed): ${actualAnimation}`);
+            // Console log removed
         } else if (this.hasDoubleFlower && newState === 'ha-idle') {
             actualAnimation = 'ha-idle-doubleflower';
-            console.log(`🌸🌸 Using doubleflower idle: ${actualAnimation}`);
+            // Console log removed
         } else if (this.hasDoubleFlower && newState === 'ha-run') {
             actualAnimation = 'ha-run-doubleflower';
-            console.log(`🌸🌸 Using doubleflower run: ${actualAnimation}`);
+            // Console log removed
         } else if (this.galleryLeafsTriggered && newState === 'ha-idle') {
             actualAnimation = 'ha-idle-leafs';
-            console.log(`🍃 Using leafs idle: ${actualAnimation}`);
+            // Console log removed
         } else if (this.galleryLeafsTriggered && newState === 'ha-run') {
             actualAnimation = 'ha-run-leafs';
-            console.log(`🍃 Using leafs run: ${actualAnimation}`);
+            // Console log removed
         } else if (this.hasLeafsFlowerDouble && newState === 'ha-idle') {
             actualAnimation = 'ha-idle-flowers';
-            console.log(`🌸✨ Using leafsflowerdouble idle: ${actualAnimation}`);
+            // Console log removed
         } else if (this.hasLeafsFlowerDouble && newState === 'ha-run') {
             actualAnimation = 'ha-run-flowers';
-            console.log(`🌸✨ Using leafsflowerdouble run: ${actualAnimation}`);
+            // Console log removed
         } else if (this.hasFlower && newState === 'ha-idle') {
             actualAnimation = 'ha-idle-flowers';
-            console.log(`🌸 Using flower idle: ${actualAnimation}`);
+            // Console log removed
         } else if (this.hasFlower && newState === 'ha-run') {
             actualAnimation = 'ha-run-flowers';
-            console.log(`🌸 Using flower run: ${actualAnimation}`);
+            // Console log removed
         } else {
             // ha-run 기본 케이스 처리
             if (newState === 'ha-run' && !this.hasFlower && !this.galleryLeafsTriggered && !this.hasLeafsFlowerDouble) {
                 actualAnimation = 'ha-run';
-                console.log(`🏃‍♀️ Using ha-run animation: ${actualAnimation}`);
+                // Console log removed
             } else {
-                console.log(`🎭 Using normal animation: ${actualAnimation}`);
+                // Console log removed
             }
         }
 
@@ -2015,7 +1987,7 @@ class SimplePixelCharacterManager {
             this.isHitIdlePlaying = false;
             this.hasFlower = true;
             this.characterY = 50; // 위치 보존
-            console.log('🌸 Hit-idle transition: flower item acquired! Position preserved at 50%');
+            // Console log removed
 
             // 꽃 모드로 재계산
             if (newState === 'ha-idle') {
@@ -2027,7 +1999,7 @@ class SimplePixelCharacterManager {
 
         // 'main' 애니메이션은 스프레드시트 기반이므로 기존 시스템 사용
         if (newState === 'main') {
-            console.log('🎬 Main animation uses spreadsheet system, not unified character');
+            // Console log removed
             // 기존 main 애니메이션 시스템으로 처리 (스프레드시트 기반)
             return;
         }
@@ -2038,19 +2010,19 @@ class SimplePixelCharacterManager {
         } else {
             // 통합 캐릭터가 초기화되지 않았으면 건너뛰기
             if (!this.mainCharacter || !this.animationStates[actualAnimation]) {
-                console.warn(`🚫 Unified character not ready or animation not found: ${actualAnimation}`);
+                // Console warn removed
                 return;
             }
             this.switchUnifiedAnimation(actualAnimation);
             this.updateUnifiedCharacterPosition();
-            console.log(`🎭 Unified character activated for Section-${this.currentSection}: ${actualAnimation}`);
+            // Console log removed
         }
 
         // 기존 개별 캐릭터들 숨기기 (토끼, lee-back, wreath, information 캐릭터들 제외)
         this.characters.forEach((char, id) => {
             if (id.startsWith('rabbit-') || id === 'lee-back' || id.startsWith('wreath') || id === 'information-idle') return; // 토끼, lee-back, wreath, information-idle 캐릭터들은 별도 관리
             if (id === 'information' && this.isInformationPlaying) {
-                console.log(`🛡️ Protecting information animation from stopAnimation during state switch`);
+                // Console log removed
                 return; // Information 애니메이션 진행 중에는 보호
             }
             this.stopAnimation(char);
@@ -2058,22 +2030,22 @@ class SimplePixelCharacterManager {
         });
 
         this.currentState = newState;
-        console.log(`🔧 Unified character switched to: ${actualAnimation}`);
+        // Console log removed
     }
 
     // 메인 애니메이션 재생 (Section-1) - 스프레드시트 기반
     playMainAnimation(callback) {
-        console.log('🎬 Starting main animation (Section-1) - Spreadsheet based');
+        // Console log removed
 
         const mainChar = this.characters.get('main');
 
         if (!mainChar) {
-            console.error('❌ Main character not found! Character system not initialized.');
+            // Console error removed
             return;
         }
 
         if (!mainChar.spreadsheetData) {
-            console.error('❌ Main animation spreadsheet data not loaded! Loading fallback...');
+            // Console error removed
             // 폴백: 기존 PNG 시퀀스 방식으로 전환
             this.loadFallbackMainAnimation();
             return;
@@ -2091,7 +2063,7 @@ class SimplePixelCharacterManager {
         mainChar.isActive = true;
         this.startAnimation(mainChar);
 
-        console.log('🎬 Main character activated and animation started');
+        // Console log removed
 
         // 스프레드시트 기반에서는 애니메이션 완료 콜백이 startSpreadsheetAnimation에서 처리됨
         // 별도의 setTimeout 불필요
@@ -2109,11 +2081,11 @@ class SimplePixelCharacterManager {
             mainChar.frameRate = 12;
             mainChar.framePadding = 0;
 
-            console.log('⚠️ Using fallback PNG sequence animation');
+            // Console log removed
 
             // 폴백 시에는 기존 타이머 방식 사용
             setTimeout(() => {
-                console.log('🎉 Main animation completed (fallback)');
+                // Console log removed
                 if (this.mainAnimationCallback) {
                     this.mainAnimationCallback();
                     this.mainAnimationCallback = null;
@@ -2124,8 +2096,8 @@ class SimplePixelCharacterManager {
 
     // 모든 섹션에서 사용할 통합 메서드
     switchToSectionState(sectionIndex, startHeight) {
-        console.log(`🎯 Switching to Section-${sectionIndex} state (starting from ${startHeight}%)`);
-        console.log(`🎯 Previous section: ${this.currentSection} → New section: ${sectionIndex}`);
+        // Console log removed
+        // Console log removed
 
         // 섹션 전환 타이머 정리
         if (this.sectionTransitionTimer) {
@@ -2137,9 +2109,9 @@ class SimplePixelCharacterManager {
         if (sectionIndex === 2) {
             this.characterY = 60; // Section-2는 60% 위치에서 시작
             this.updateUnifiedCharacterPosition(); // DOM 위치 즉시 업데이트
-            console.log('🎯 Section-2 character positioned at 60% (equivalent to 0.68 progress)');
+            // Console log removed
             this.showUnifiedCharacter();
-            console.log('👀 Unified character shown after section1 animation completion');
+            // Console log removed
         } else {
             this.characterY = startHeight;
         }
@@ -2148,19 +2120,19 @@ class SimplePixelCharacterManager {
 
         // Section-7 특별 처리: wreath 애니메이션
         if (sectionIndex === 7) {
-            console.log(`🌿🔍 Section-7 entered: wreathTriggered=${this.wreathTriggered}, isWreathPlaying=${this.isWreathPlaying}`);
+            // Console log removed
             if (!this.wreathTriggered && !this.isWreathPlaying) {
-                console.log(`🌿⚡ Starting wreath animation now!`);
+                // Console log removed
                 this.startWreathAnimation();
                 return; // wreath 애니메이션이 시작되면 다른 상태 전환 건너뛰기
             } else {
-                console.log(`🌿⏸️ Wreath animation already triggered or playing, skipping`);
+                // Console log removed
             }
         }
 
         // 스크롤 중이면 run, 아니면 idle로 시작
         const initialState = this.isScrolling ? 'ha-run' : 'ha-idle';
-        console.log(`🏃 Starting Section-${sectionIndex} in ${initialState} state (isScrolling: ${this.isScrolling})`);
+        // Console log removed
         this.switchToState(initialState);
     }
 
@@ -2175,13 +2147,13 @@ class SimplePixelCharacterManager {
 
     // 토끼 상태로 전환 (Section-5 전용) - 일반 캐릭터와 동시 표시
     switchToRabbitState() {
-        console.log('🟢 Switching to rabbit state (Section-5)');
+        // Console log removed
         this.currentSection = 5;
 
         // Section-5 초기화
         this.hitRabbitTriggered = false;
         this.isHitRabbitPlaying = false;
-        console.log('🟢 Section-5 hit-rabbit state reset');
+        // Console log removed
 
         // Section-5에서는 Ha 캐릭터(ha-idleha-run도 함께 표시
         const startHeight = -25; // 화면 위 바깥에서 시작
@@ -2194,7 +2166,7 @@ class SimplePixelCharacterManager {
         // 토끼은 별도로 70vh에 고정하여 표시
         this.showRabbitCharacter();
 
-        console.log(`🟢 Section-5 started: main character=${mainState}, rabbit=active`);
+        // Console log removed
     }
 
     // 토끼 캐릭터 별도 표시 (항상 idle 상태)
@@ -2213,24 +2185,19 @@ class SimplePixelCharacterManager {
             }
         }
 
-        console.log(`🟢 Rabbit character shown: rabbit-idle (always idle)`);
+        // Console log removed
     }
 
     // Information idle 캐릭터 표시 (information 애니메이션 완료 후)
     showInformationIdle() {
-        console.log(`🔍 DEBUG: showInformationIdle() called`);
-        console.log(`🔍 DEBUG: this.characters has:`, Array.from(this.characters.keys()));
+        // Console log removed
+        // Console log removed
 
         const informationIdleChar = this.characters.get('information-idle');
-        console.log(`🔍 DEBUG: informationIdleChar found:`, !!informationIdleChar);
+        // Console log removed
 
         if (informationIdleChar && informationIdleChar.element) {
-            console.log(`🔍 DEBUG: informationIdleChar config:`, {
-                id: 'information-idle',
-                framePrefix: informationIdleChar.framePrefix,
-                frameCount: informationIdleChar.frameCount,
-                isPngSequence: informationIdleChar.isPngSequence
-            });
+            // Information idle character config logged
 
             informationIdleChar.element.style.opacity = '1';
             informationIdleChar.element.style.top = '60%'; // information과 동일한 위치
@@ -2242,16 +2209,16 @@ class SimplePixelCharacterManager {
                 this.startAnimation(informationIdleChar);
             }
         } else {
-            console.error(`❌ information-idle character not found or no element!`);
+            // Console error removed
         }
 
-        console.log(`🌿 Information idle character shown: information-idle (looping idle)`);
+        // Console log removed
     }
 
     // 캐릭터 숨기기 (포털 전환 시) - 실제로는 숨기지 않고 정리만
     hideCharacter() {
-        console.log('👻 Preparing for section transition (not actually hiding)');
-        console.log(`👻 Current section: ${this.currentSection}, character state: ${this.currentState}`);
+        // Console log removed
+        // Console log removed
         // this.switchToState('hidden'); // 제거: 실제로 숨기지 않음
 
         // Section-5에서 나갈 때 토끼도 숨기기
@@ -2277,20 +2244,20 @@ class SimplePixelCharacterManager {
         }
 
         // 스크롤 상태 유지 (포털 전환 후 올바른 상태로 시작하기 위해)
-        console.log(`👻 Preserving scroll state: isScrolling=${this.isScrolling}`);
+        // Console log removed
     }
 
     // 통합된 섹션 움직임 처리 (모든 섹션에서 사용)
     updateSectionMovement(delta, yProgress, sectionIndex, startHeight) {
         // 현재 섹션과 다른 섹션의 움직임은 무시 (포털 전환 중 보호)
         if (sectionIndex !== this.currentSection) {
-            console.log(`⚠️ Ignoring movement for Section-${sectionIndex} (current: Section-${this.currentSection})`);
+            // Console log removed
             return;
         }
 
         // Section-7에서 화환 애니메이션 중에는 모든 움직임/스크롤 무시
         if (sectionIndex === 7 && this.isWreathPlaying) {
-            console.log('🌿🚫 Blocking all scroll movement during wreath animation');
+            // Console log removed
             return;
         }
 
@@ -2312,7 +2279,7 @@ class SimplePixelCharacterManager {
                 this.skipPositionUpdate = true; // 이번 프레임에서 위치 업데이트 스킵
                 this.isHitIdlePlaying = false;
                 this.hasFlower = true; // 꽃 아이템 획득!
-                console.log('🌸 Hit-idle stopped for scroll, flower item acquired! Position preserved at 50%');
+                // Console log removed
             }
 
             if (sectionIndex === 5) {
@@ -2325,7 +2292,7 @@ class SimplePixelCharacterManager {
                 }
                 // wreath 애니메이션 중에는 ha 캐릭터 상태 전환 금지
                 if (this.isWreathPlaying) {
-                    console.log('🌿 Blocking ha character state change during wreath animation');
+                    // Console log removed
                     return; // ha 상태 전환 건너뛰기
                 }
                 // wreath 애니메이션 완료 후에는 다른 섹션처럼 run 상태로 전환
@@ -2357,7 +2324,7 @@ class SimplePixelCharacterManager {
                 }
             }
         } else {
-            console.log('⏭️ Skipping position update to preserve hit-idle position');
+            // Console log removed
             this.skipPositionUpdate = false; // 다음 프레임에서는 정상 업데이트
         }
 
@@ -2367,9 +2334,9 @@ class SimplePixelCharacterManager {
 
             // 화면 바깥으로 나갔을 때 시각적 표시
             if (this.characterY > 100) {
-                console.log(`🚪 Character exiting screen (Section-${sectionIndex}): ${this.characterY.toFixed(1)}%`);
+                // Console log removed
             } else if (this.characterY < 0) {
-                console.log(`🔝 Character above screen (Section-${sectionIndex}): ${this.characterY.toFixed(1)}%`);
+                // Console log removed
             }
         }
 
@@ -2391,23 +2358,23 @@ class SimplePixelCharacterManager {
             }
 
             // 메인 캐릭터가 60vh 도달 체크 (hit-rabbit 트리거)
-            console.log(`🎯 Section-5 update: characterY=${this.characterY.toFixed(1)}, triggered=${this.hitRabbitTriggered}, playing=${this.isHitRabbitPlaying}`);
+            // Console log removed
             this.checkHitRabbitTrigger();
         } else if (sectionIndex === 6) {
             // Section-6에서 갤러리 leafs 트리거 체크
             this.checkGalleryLeafsTrigger();
         } else if (sectionIndex === 7) {
             // Section-7에서 wreath 충돌 감지 체크 (wreath-idle 활성화 후)
-            console.log(`🌿🎯 Section-7 update: characterY=${this.characterY.toFixed(1)}, wreathTriggered=${this.wreathTriggered}, informationTriggered=${this.informationTriggered}`);
+            // Console log removed
             this.checkWreathCollisionTrigger();
             // Section-7에서 location-container 통과 시 doubleflower 트리거 체크
             this.checkLocationDoubleFlowerTrigger();
         } else if (sectionIndex === 8) {
             // Section-8 체크
-            console.log('🏛️ Section-8 detected! sectionIndex:', sectionIndex);
+            // Console log removed
         } else if (sectionIndex === 9) {
             // Section-9: leeBack 상태 업데이트 (위치 + 애니메이션)
-            console.log('🎵 Section-9 detected! Updating leeBack state and position');
+            // Console log removed
             this.updateLeeBackState(yProgress);
 
             // Ha가 20vh(characterY = 20) 도달 시 idle-wow 트리거 체크
@@ -2418,7 +2385,7 @@ class SimplePixelCharacterManager {
         }
 
 
-        console.log(`🏃 Section-${sectionIndex} Character Y: ${this.characterY.toFixed(1)}% (progress: ${(yProgress * 100).toFixed(1)}%)`);
+        // Console log removed
 
         // 스크롤 정지 감지 타이머 (화면 밖에서는 타이머 안 걸림)
         if (yProgress < 1.2) {
@@ -2429,12 +2396,12 @@ class SimplePixelCharacterManager {
             this.scrollTimeout = setTimeout(() => {
                 // 타이머 실행 시점에 섹션이 바뀌었으면 무시 (포털 전환 보호)
                 if (sectionIndex !== this.currentSection) {
-                    console.log(`⚠️ Ignoring timeout for Section-${sectionIndex} (current: Section-${this.currentSection})`);
+                    // Console log removed
                     return;
                 }
 
                 this.isScrolling = false;
-                console.log(`😴 Section-${sectionIndex} Scroll stopped - switching to idle`);
+                // Console log removed
 
                 if (sectionIndex === 5) {
                     // Section-5: 메인 캐릭터만 idle 상태 (토끼은 항상 idle 유지)
@@ -2442,19 +2409,19 @@ class SimplePixelCharacterManager {
                 } else if (sectionIndex === 9) {
                     // Section-9: idle-wow 재생 중이면 Ha 처리 무시, LeeBack은 별도 처리
                     if (this.isIdleWowPlaying) {
-                        console.log('🎉 Section-9 scroll stopped - idle-wow playing, ignoring Ha transition');
+                        // Console log removed
 
                         // LeeBack은 독립적으로 idle로 전환
                         const leeBack = this.characters.get('lee-back');
                         if (leeBack) {
                             this.switchLeeBackAnimation(leeBack, 'lee-idle-back');
-                            console.log('🎵 LeeBack set to idle (independent of idle-wow)');
+                            // Console log removed
                         }
                         return;
                     }
 
                     // Section-9: 일반 상태 - Lee와 LeeBack 모두 idle로 전환
-                    console.log('🎵 Section-9 scroll stopped - Ha to idle, LeeBack to idle');
+                    // Console log removed
 
                     // Ha가 idle-wow 완료 상태라면 직접 wow-normal 사용
                     if (this.hasIdleWowCompleted) {
@@ -2473,7 +2440,7 @@ class SimplePixelCharacterManager {
                 } else if (sectionIndex === 7) {
                     // Section-7: wreath 재생 중이면 idle 전환 금지
                     if (this.isWreathPlaying) {
-                        console.log('🌿 Blocking ha idle transition during wreath animation');
+                        // Console log removed
                         return;
                     }
                     this.switchToState('ha-idle');
@@ -2502,7 +2469,7 @@ class SimplePixelCharacterManager {
             this.stopAnimation(rabbitHurtChar);
         }
 
-        console.log(`🟢 Rabbit characters (idle/hurt) hidden`);
+        // Console log removed
     }
 
     // Information idle 캐릭터 숨기기 (Section-7에서 나갈 때)
@@ -2514,7 +2481,7 @@ class SimplePixelCharacterManager {
             this.stopAnimation(informationIdleChar);
         }
 
-        console.log(`🔍 Information idle character hidden`);
+        // Console log removed
     }
 
     // 토끼 상태 업데이트 (Section-5 전용)
@@ -2544,7 +2511,7 @@ class SimplePixelCharacterManager {
             }
         }
 
-        console.log(`🟢 Rabbit state updated to: ${newState}`);
+        // Console log removed
     }
 
     // 토끼 위치 유지 (Section-5에서 호출, 항상 idle 상태)
@@ -2566,11 +2533,11 @@ class SimplePixelCharacterManager {
         if (this.currentSection !== 5) return;
         if (this.hitRabbitTriggered || this.isHitRabbitPlaying) return;
 
-        console.log(`🔍 Checking hit-rabbit trigger: characterY=${this.characterY.toFixed(1)}, section=${this.currentSection}`);
+        // Console log removed
 
         // 메인 캐릭터가 60vh 도달했는지 체크 (더 낮은 임계값으로 테스트)
         if (this.characterY >= 50) { // 60vh → 50vh로 임시 변경 (테스트용)
-            console.log('💥 Hit-rabbit triggered at 50vh! (test threshold)');
+            // Console log removed
             this.triggerHitRabbitAnimation();
         }
     }
@@ -2580,11 +2547,11 @@ class SimplePixelCharacterManager {
         if (this.currentSection !== 9) return;
         if (this.idleWowTriggered || this.isIdleWowPlaying) return;
 
-        console.log(`🔍 Checking idle-wow trigger: characterY=${this.characterY.toFixed(1)}, section=${this.currentSection}`);
+        // Console log removed
 
         // Ha가 20vh(characterY = 20) 도달했는지 체크
         if (this.characterY >= 20) {
-            console.log('🎉 Idle-wow triggered at 20vh from top!');
+            // Console log removed
             this.triggerIdleWowAnimation();
         }
     }
@@ -2596,12 +2563,12 @@ class SimplePixelCharacterManager {
 
         // 디버깅을 위해 더 자세한 로그 추가
         if (this.characterY >= 45) { // 45vh부터 로그 시작
-            console.log(`🔍 Ending trigger check: characterY=${this.characterY.toFixed(1)}vh, section=${this.currentSection}, triggered=${this.endingTriggered}, playing=${this.isEndingPlaying}`);
+            // Console log removed
         }
 
         // Ha가 50vh(characterY = 50) 도달했는지 체크
         if (this.characterY >= 50) {
-            console.log('🎬 ENDING TRIGGERED at 50vh!');
+            // Console log removed
             this.triggerEndingAnimation();
         }
     }
@@ -2628,7 +2595,7 @@ class SimplePixelCharacterManager {
                 char.element.style.opacity = '0';
                 char.element.style.display = 'none';
                 char.element.style.visibility = 'hidden';
-                console.log(`👻 Hidden Ha character: ${charId}`);
+                // Console log removed
             }
         });
 
@@ -2639,22 +2606,22 @@ class SimplePixelCharacterManager {
             leeBack.element.style.opacity = '0';
             leeBack.element.style.display = 'none';
             leeBack.element.style.visibility = 'hidden';
-            console.log('👻 Hidden LeeBack character');
+            // Console log removed
         }
 
         // Ending 애니메이션 데이터가 로드되었는지 확인
         const endingChar = this.characters.get('ending');
         if (!endingChar) {
-            console.error('❌ Ending character not found');
+            // Console error removed
             return;
         }
 
         if (!endingChar.spreadsheetData) {
-            console.log('🔄 Ending data not loaded, loading now...');
+            // Console log removed
             this.loadEndingAnimationData().then(() => {
                 this.startEndingAnimation();
             }).catch(error => {
-                console.error('❌ Failed to load ending data:', error);
+                // Console error removed
                 // 실패 시 스크롤 잠금 해제
                 if (window.manualScrollManager) {
                     window.manualScrollManager.unlockScroll('ending animation failed');
@@ -2664,14 +2631,14 @@ class SimplePixelCharacterManager {
             this.startEndingAnimation();
         }
 
-        console.log('🎬 Ending animation started, scroll locked');
+        // Console log removed
     }
 
     // Ending 애니메이션 시작
     startEndingAnimation() {
         const endingChar = this.characters.get('ending');
         if (!endingChar) {
-            console.error('❌ Ending character not found');
+            // Console error removed
             return;
         }
 
@@ -2693,22 +2660,17 @@ class SimplePixelCharacterManager {
             endingChar.img = endingChar.element.querySelector('img');
         }
 
-        console.log('🎬 Starting ending animation...', {
-            hasSpreadsheetData: !!endingChar.spreadsheetData,
-            hasImg: !!endingChar.img,
-            visible: endingChar.visible,
-            elementStyle: endingChar.element.style.cssText
-        });
+        // Starting ending animation
 
         // 스프레드시트 애니메이션 시작
         this.startSpreadsheetAnimation(endingChar);
 
-        console.log('🎬 Ending animation playing...');
+        // Console log removed
     }
 
     // Ending 애니메이션 완료 처리
     onEndingAnimationComplete() {
-        console.log('🎬 Ending animation completed!');
+        // Console log removed
 
         this.isEndingPlaying = false;
 
@@ -2719,7 +2681,7 @@ class SimplePixelCharacterManager {
             endingChar.visible = true;
             endingChar.element.style.display = 'block';
             endingChar.element.style.opacity = '1';
-            console.log('🎬 Ending character remains visible at final frame');
+            // Console log removed
         }
 
         // ending.jpg 이미지를 화면에 cover로 표시
@@ -2730,7 +2692,7 @@ class SimplePixelCharacterManager {
             window.manualScrollManager.unlockScroll('ending animation completed');
         }
 
-        console.log('🎬 Ending animation completed, scroll unlocked, ending image displayed');
+        // Console log removed
     }
 
     // ending.jpg 이미지를 화면에 cover로 표시
@@ -2761,7 +2723,7 @@ class SimplePixelCharacterManager {
         // body에 추가 (최상위 레이어)
         document.body.appendChild(endingImg);
 
-        console.log('🎬 Ending cover image displayed');
+        // Console log removed
     }
 
     // Hit-rabbit 애니메이션 실행
@@ -2776,7 +2738,7 @@ class SimplePixelCharacterManager {
 
         // 통합 캐릭터 (ha-idleha-run 숨기기
         this.hideUnifiedCharacter();
-        console.log(`🫥 Unified character hidden for hit-rabbit`);
+        // Console log removed
 
         // rabbit-idle 숨기기 (hit-rabbit 시작 시)
         this.hideRabbitCharacter();
@@ -2795,7 +2757,7 @@ class SimplePixelCharacterManager {
                 try {
                     await this.loadHitRabbitSpreadsheetData();
                 } catch (error) {
-                    console.error("❌ Failed to load hit-rabbit data:", error);
+                    // Console error removed
                     if (window.manualScrollManager) {
                         window.manualScrollManager.unlockScroll("hit-rabbit animation failed");
                     }
@@ -2805,7 +2767,7 @@ class SimplePixelCharacterManager {
             this.startSpreadsheetAnimation(hitRabbitChar);
         }
 
-        console.log('💥 Hit-rabbit animation started, scroll locked');
+        // Console log removed
     }
 
     // Idle-wow 애니메이션 실행
@@ -2819,19 +2781,16 @@ class SimplePixelCharacterManager {
         }
 
         // 통합 캐릭터가 활성화되어 있는지 확인
-        console.log('🎯 Current unified character:', {
-            'isActive': this.mainCharacter?.isActive,
-            'currentAnimation': this.mainCharacter?.currentAnimation
-        });
+        // Current unified character logged
 
         if (this.mainCharacter?.isActive) {
             // 위치 유지하면서 idle-wow 애니메이션으로 전환 (Lee만)
             this.switchToIdleWow();
         } else {
-            console.log('❌ No active unified character found for idle-wow transition');
+            // Console log removed
         }
 
-        console.log('🎉 Idle-wow animation started, scroll locked');
+        // Console log removed
     }
 
     // Ha 캐릭터를 idle-wow로 전환 (통합 캐릭터 시스템)
@@ -2848,12 +2807,12 @@ class SimplePixelCharacterManager {
         // idle-wow 애니메이션으로 전환 (통합 시스템 사용)
         this.switchUnifiedAnimation('ha-idle-wow');
 
-        console.log('🎉 Switched to idle-wow animation via unified character system (Phase 1: 1~15)');
+        // Console log removed
     }
 
     // Idle-wow 애니메이션 완료 처리 (통합 캐릭터 시스템)
     onIdleWowAnimationComplete() {
-        console.log('🎉 Idle-wow animation completed via unified system!');
+        // Console log removed
 
         this.isIdleWowPlaying = false;
         this.hasIdleWowCompleted = true; // idle-wow 완료 상태로 설정
@@ -2866,7 +2825,7 @@ class SimplePixelCharacterManager {
         // 먼저 idle-wow-normal로 전환 (leafsflowerdouble는 나중에)
         this.switchUnifiedAnimation('ha-idle-wow-normal');
 
-        console.log('🎉 Idle-wow completed, switched to idle-wow-normal mode');
+        // Console log removed
     }
 
     // 자막 시스템용 헬퍼 함수: 현재 frameIndex가 어떤 frameTag에 속하는지 찾기
@@ -2892,7 +2851,7 @@ class SimplePixelCharacterManager {
         if (this.idleWowPhase === 1) {
             // Phase 1: 1~15 프레임 완료 체크
             if (this.mainCharacter.currentFrame >= 15) {
-                console.log('🎉 Phase 1 complete (1~15), starting Phase 2 (11~15 x5)');
+                // Console log removed
                 this.idleWowPhase = 2;
                 this.idleWowRepeatCount = 0;
                 this.mainCharacter.currentFrame = 10; // 11번째 프레임 (index 10)
@@ -2901,11 +2860,11 @@ class SimplePixelCharacterManager {
             // Phase 2: 11~15 프레임 반복 (5회)
             if (this.mainCharacter.currentFrame >= 15) {
                 this.idleWowRepeatCount++;
-                console.log(`🔄 Repeat ${this.idleWowRepeatCount}/5 complete (11~15)`);
+                // Console log removed
 
                 if (this.idleWowRepeatCount >= 2) {
                     // 5회 반복 완료 → 애니메이션 종료
-                    console.log('🎉 All repeats complete! Ending idle-wow animation');
+                    // Console log removed
                     this.onIdleWowAnimationComplete();
                     return; // 애니메이션 종료
                 } else {
@@ -2934,7 +2893,7 @@ class SimplePixelCharacterManager {
 
             // 6번째 프레임에서 rabbit을 rabbit-hurt로 전환
             if (frameCount === 6) {
-                console.log('💥 Frame 6 reached - switching rabbit to hurt animation');
+                // Console log removed
                 this.switchRabbitToHurt();
 
         // 스크롤 잠금 해제
@@ -2963,7 +2922,7 @@ class SimplePixelCharacterManager {
 
     // Hit-rabbit 애니메이션 완료 처리
     onHitRabbitAnimationComplete() {
-        console.log('💥 Hit-rabbit animation completed, starting ha-idle-flowers');
+        // Console log removed
         this.isHitRabbitPlaying = false;
 
         // Hit-rabbit 애니메이션 숨기기
@@ -2993,15 +2952,15 @@ class SimplePixelCharacterManager {
 
         // 통합 캐릭터 다시 보이기
         this.showUnifiedCharacter();
-        console.log('👀 Unified character restored after hit-rabbit');
+        // Console log removed
 
         // 꽃 모드 플래그 설정
         this.hasLeafsFlowerDouble = true;
-        console.log('🌸✨ LeafsFlowerDouble flag activated for flowers mode!');
+        // Console log removed
 
         // 현재 스크롤 상태에 따라 적절한 애니메이션 직접 호출 (groom 패턴)
         const initialFlowerAnimation = this.isScrolling ? 'ha-run-flowers' : 'ha-idle-flowers';
-        console.log(`🌸 Direct unified animation: ${initialFlowerAnimation}`);
+        // Console log removed
         this.switchUnifiedAnimation(initialFlowerAnimation);
         this.updateUnifiedCharacterPosition();
 
@@ -3013,7 +2972,7 @@ class SimplePixelCharacterManager {
 
     // Wreath 애니메이션 완료 처리
     onWreathAnimationComplete() {
-        console.log('🌿 Wreath animation completed, starting wreath-idle');
+        // Console log removed
         this.isWreathPlaying = false; // 메인 wreath 애니메이션 완료
 
         // Wreath 애니메이션 숨기기
@@ -3030,7 +2989,7 @@ class SimplePixelCharacterManager {
             wreathIdleChar.element.style.opacity = '1';
             wreathIdleChar.isActive = true;
             this.startAnimation(wreathIdleChar);
-            console.log('🌿 Wreath-idle animation started at fixed position');
+            // Console log removed
         }
 
         // 통합 캐릭터 다시 보이기 (다른 애니메이션들과 동일한 패턴)
@@ -3042,10 +3001,10 @@ class SimplePixelCharacterManager {
 
         // 현재 스크롤 상태에 따라 적절한 애니메이션 시작 (다른 애니메이션 완료 함수와 동일한 패턴)
         const initialAnimation = this.isScrolling ? 'ha-run' : 'ha-idle';
-        console.log(`🌿 Starting initial animation: ${initialAnimation}`);
+        // Console log removed
         this.switchToState(initialAnimation);
 
-        console.log('🌿✨ Wreath-idle started, unified character restored at top (-25%) with animation!');
+        // Console log removed
 
         // wreath-idle 활성화 완료 - updateViewportCharacterPosition에서 충돌 감지가 처리됨
     }
@@ -3053,11 +3012,11 @@ class SimplePixelCharacterManager {
     // Wreath 애니메이션 시작
     startWreathAnimation() {
         if (this.wreathTriggered || this.isWreathPlaying) {
-            console.log('🌿 Wreath animation already triggered or playing');
+            // Console log removed
             return;
         }
 
-        console.log('🌿 Starting wreath animation in Section-7');
+        // Console log removed
         this.wreathTriggered = true;
         this.isWreathPlaying = true;
 
@@ -3074,29 +3033,23 @@ class SimplePixelCharacterManager {
 
         // Wreath 애니메이션 시작
         const wreathChar = this.characters.get('wreath');
-        console.log('🌿 Wreath character found:', !!wreathChar);
+        // Console log removed
 
         if (wreathChar) {
-            console.log('🌿 Wreath character config:', {
-                frameCount: wreathChar.frameCount,
-                frameRate: wreathChar.frameRate,
-                loop: wreathChar.loop,
-                framePrefix: wreathChar.framePrefix,
-                hasOnComplete: !!wreathChar.onComplete
-            });
+            // Wreath character config logged
 
             wreathChar.element.style.opacity = '1';
             wreathChar.isActive = true;
             this.startAnimation(wreathChar);
-            console.log('🌿 Wreath animation started');
+            // Console log removed
         } else {
-            console.error('❌ Wreath character not found!');
+            // Console error removed
         }
     }
 
     // 토끼을 hurt 애니메이션으로 전환 (hit-rabbit 6프레임에서)
     switchRabbitToHurt() {
-        console.log('🔧 switchRabbitToHurt called');
+        // Console log removed
 
         // 기존 rabbit-idle 숨기기 (이미 숨겨져 있지만 확실히)
         const rabbitIdleChar = this.characters.get('rabbit-idle');
@@ -3104,12 +3057,12 @@ class SimplePixelCharacterManager {
             rabbitIdleChar.element.style.opacity = '0';
             rabbitIdleChar.isActive = false;
             this.stopAnimation(rabbitIdleChar);
-            console.log('🚫 rabbit-idle hidden');
+            // Console log removed
         }
 
         // rabbit-hurt 애니메이션 표시 (반복 실행)
         const rabbitHurtChar = this.characters.get('rabbit-hurt');
-        console.log('🔍 rabbitHurtChar found:', !!rabbitHurtChar);
+        // Console log removed
 
         if (rabbitHurtChar) {
             // 이전 애니메이션 정지
@@ -3128,29 +3081,12 @@ class SimplePixelCharacterManager {
             rabbitHurtChar.visible = true;
             rabbitHurtChar.currentFrame = 0;  // 첫 프레임부터 시작
 
-            console.log('🤕 Starting rabbit-hurt animation (loop) with:', {
-                frameCount: rabbitHurtChar.frameCount,
-                framePrefix: rabbitHurtChar.framePrefix,
-                hasImg: !!rabbitHurtChar.img,
-                loop: rabbitHurtChar.loop,
-                element: !!rabbitHurtChar.element,
-                x: rabbitHurtChar.x,
-                y: rabbitHurtChar.y,
-                elementStyles: {
-                    opacity: rabbitHurtChar.element.style.opacity,
-                    display: rabbitHurtChar.element.style.display,
-                    visibility: rabbitHurtChar.element.style.visibility,
-                    position: rabbitHurtChar.element.style.position,
-                    left: rabbitHurtChar.element.style.left,
-                    top: rabbitHurtChar.element.style.top,
-                    transform: rabbitHurtChar.element.style.transform
-                }
-            });
+            // Starting rabbit-hurt animation (loop)
 
             // 반복 애니메이션 시작
             this.startAnimation(rabbitHurtChar);
         } else {
-            console.error('❌ rabbit-hurt character not found!');
+            // Console error removed
         }
 
         // 꽃 애니메이션으로 자동 전환되도록 플래그 설정
@@ -3159,11 +3095,11 @@ class SimplePixelCharacterManager {
 
     // 꽃 애니메이션 모드로 전환 (기존 LeafsFlowerDouble 로직 사용)
     switchToFlowersMode() {
-        console.log('🌸 switchToFlowersMode called - activating LeafsFlowerDouble flag');
+        // Console log removed
 
         // hasLeafsFlowerDouble 플래그 설정 (기존 로직과 동일)
         this.hasLeafsFlowerDouble = true;
-        console.log('🌸✨ LeafsFlowerDouble flag activated for flowers mode!');
+        // Console log removed
 
         // 기존 ha 캐릭터들 모두 숨기기 (개별 캐릭터와 flowers 모두)
         const basicHaChars = ['ha-idle', 'ha-run', 'ha-idle-wow', 'ha-idle-flowers', 'ha-run-flowers'];
@@ -3173,40 +3109,25 @@ class SimplePixelCharacterManager {
                 char.element.style.opacity = '0';
                 char.isActive = false;
                 this.stopAnimation(char);
-                console.log(`🚫 Hidden ha character: ${charId}`);
+                // Console log removed
             }
         });
 
         // 현재 스크롤 상태에 따라 적절한 초기 애니메이션 결정
         const initialFlowerState = this.isScrolling ? 'ha-run' : 'ha-idle';
-        console.log(`🌸 Initial flower state based on scroll: isScrolling=${this.isScrolling} -> ${initialFlowerState}`);
+        // Console log removed
 
         // 적절한 초기 상태로 전환 (스크롤 상태 반영)
-        console.log(`🔄 Starting flowers mode with: ${initialFlowerState} -> ${initialFlowerState}-flowers`);
+        // Console log removed
         this.switchToState(initialFlowerState);
 
         // 디버깅을 위해 flowers 캐릭터 상태 확인
         const haIdleFlowers = this.characters.get('ha-idle-flowers');
         const haRunFlowers = this.characters.get('ha-run-flowers');
 
-        console.log('🌸 Debug - ha-flowers characters state:', {
-            'ha-idle-flowers': {
-                exists: !!haIdleFlowers,
-                opacity: haIdleFlowers?.element?.style?.opacity,
-                visible: haIdleFlowers?.visible,
-                isActive: haIdleFlowers?.isActive
-            },
-            'ha-run-flowers': {
-                exists: !!haRunFlowers,
-                opacity: haRunFlowers?.element?.style?.opacity,
-                visible: haRunFlowers?.visible,
-                isActive: haRunFlowers?.isActive
-            },
-            hasLeafsFlowerDouble: this.hasLeafsFlowerDouble,
-            currentState: this.currentState
-        });
+        // Debug - ha-flowers characters state logged
 
-        console.log('🌸 Flowers mode activation completed - now auto-switching based on scroll');
+        // Console log removed
     }
 
     // 토끼을 idle로 복원 (hit-rabbit 완료 후)
@@ -3221,19 +3142,13 @@ class SimplePixelCharacterManager {
 
         // 일반 토끼 idle 다시 표시
         this.showRabbitCharacter();
-        console.log('😌 Rabbit restored to idle animation');
+        // Console log removed
     }
 
     // 한 번만 재생하는 애니메이션 (rabbit-hurt용)
     startSinglePlayAnimation(character) {
-        console.log(`🎬 startSinglePlayAnimation called for: ${character.id}`);
-        console.log(`📊 Character details:`, {
-            id: character.id,
-            frameCount: character.frameCount,
-            framePrefix: character.framePrefix,
-            frameRate: character.frameRate,
-            hasImg: !!character.img
-        });
+        // Console log removed
+        // Character details logged
 
         if (character.animationInterval || character.animationTimeout) {
             this.stopAnimation(character);
@@ -3246,13 +3161,13 @@ class SimplePixelCharacterManager {
         let frameCount = 0;
 
         const animateFrame = () => {
-            console.log(`🎯 Updating frame ${frameCount + 1}/${character.frameCount} for ${character.id}`);
+            // Console log removed
             this.updateFrame(character);
             frameCount++;
 
             // 모든 프레임 재생 완료 시 정지 (반복 없음)
             if (frameCount >= character.frameCount) {
-                console.log(`🛑 ${character.framePrefix} animation completed (single play, ${frameCount} frames shown)`);
+                // Console log removed
                 // 마지막 프레임에서 정지, 숨기지 않음
                 return;
             } else {
@@ -3261,14 +3176,14 @@ class SimplePixelCharacterManager {
         };
 
         // 첫 프레임 즉시 표시
-        console.log(`🚀 Showing first frame for ${character.id}`);
+        // Console log removed
         this.updateFrame(character);
         frameCount++;
 
         if (frameCount < character.frameCount) {
             character.animationTimeout = setTimeout(animateFrame, frameInterval);
         } else {
-            console.log(`⚠️ Only one frame to show for ${character.id}`);
+            // Console log removed
         }
     }
 
@@ -3311,7 +3226,7 @@ class SimplePixelCharacterManager {
         });
 
         const sectionName = textElementId === 'groom-text' ? 'Section-3 (초대장)' : 'Section-4 (신부)';
-        console.log(`✏️ ${sectionName} Text animation: showing ${blocksToShow}/${totalBlocks} blocks (${(progress * 100).toFixed(1)}% progress)`);
+        // Console log removed
     }
 
     // 호환성을 위한 기존 메서드들
@@ -3326,12 +3241,12 @@ class SimplePixelCharacterManager {
     // 호환성을 위한 기존 메서드들 (더이상 사용하지 않음)
     updateCharacterByManualScroll(progress) {
         // 새로운 시스템에서는 updateCharacterMovement 사용
-        console.log('📢 Deprecated method called - use updateCharacterMovement instead');
+        // Console log removed
     }
 
     handleSectionTransition(targetSection) {
         // 새로운 시스템에서는 playMainAnimation 또는 switchToIdleState 사용
-        console.log('📢 Deprecated method called - use playMainAnimation or switchToIdleState');
+        // Console log removed
         this.currentSection = targetSection;
     }
 
@@ -3386,8 +3301,8 @@ class SimplePixelCharacterManager {
         const characterYPercent = this.characterY;
 
         if (Math.abs(characterYPercent - targetY) <= 5) {
-            console.log(`🍃 Gallery leafs trigger activated! Character Y: ${characterYPercent}%, Target Y: ${targetY}%, Center X: ${centerX}%`);
-        console.log(`🍃 Gallery grid rect: left=${gridRect.left}px, width=${gridRect.width}px, center=${gridRect.left + gridRect.width / 2}px`);
+            // Console log removed
+        // Console log removed
             this.triggerGalleryLeafs(centerX, targetY);
             this.switchToLeafsAnimations();
         }
@@ -3413,7 +3328,7 @@ class SimplePixelCharacterManager {
         // 캐릭터가 location-container를 지나갔는지 체크
         const characterYPercent = this.characterY;
         if (characterYPercent > targetY) {
-            console.log(`🌸🌸 Location container passed! Character Y: ${characterYPercent}%, Container bottom: ${targetY}%`);
+            // Console log removed
             this.switchToDoubleFlowerFromLocation();
         }
     }
@@ -3431,7 +3346,7 @@ class SimplePixelCharacterManager {
         }
 
         if (newAnimation && currentAnimation !== newAnimation) {
-            console.log(`🌿 Switching animation: ${currentAnimation} → ${newAnimation}`);
+            // Console log removed
             this.switchUnifiedAnimation(newAnimation);
         }
     }
@@ -3442,7 +3357,7 @@ class SimplePixelCharacterManager {
 
         const leafsChar = this.characters.get('leafs');
         if (!leafsChar) {
-            console.error('❌ Leafs character not found!');
+            // Console error removed
             return;
         }
 
@@ -3456,8 +3371,8 @@ class SimplePixelCharacterManager {
         leafsChar.element.style.visibility = 'visible';
         leafsChar.isActive = true;
 
-        console.log(`🍃 Leafs animation started at center position: (${leftPx}px, ${topPx}px)`);
-        console.log(`🍃 Screen: ${window.innerWidth}x${window.innerHeight}, Center X: ${window.innerWidth / 2}px`);
+        // Console log removed
+        // Console log removed
 
         // 애니메이션 시작
         this.startAnimation(leafsChar);
@@ -3466,7 +3381,7 @@ class SimplePixelCharacterManager {
         setTimeout(() => {
             leafsChar.element.style.opacity = '0';
             leafsChar.isActive = false;
-            console.log('🍃 Leafs animation completed');
+            // Console log removed
         }, 875);
     }
 
@@ -3474,11 +3389,11 @@ class SimplePixelCharacterManager {
 
     // 픽셀 캐릭터에서 직접 leafsflowerdouble로 전환
     switchToLeafsFlowerDoubleFromPixel() {
-        console.log('🌸 Switching to leafsflowerdouble from pixel manager');
+        // Console log removed
 
         // leafsflowerdouble 플래그 설정
         this.hasLeafsFlowerDouble = true;
-        console.log('🌸✨ LeafsFlowerDouble flag activated!');
+        // Console log removed
 
         // 현재 상태 다시 적용하여 새 애니메이션으로 전환
         if (this.currentState === 'ha-idle' || this.currentState === 'ha-run') {
@@ -3486,19 +3401,19 @@ class SimplePixelCharacterManager {
             this.switchToState(currentState);
         }
 
-        console.log('🌸 LeafsFlowerDouble upgrade completed');
+        // Console log removed
     }
 
     switchToDoubleFlowerFromLocation() {
-        console.log('🌸🌸 Switching to doubleflower from location');
+        // Console log removed
         this.hasDoubleFlower = true;
-        console.log('🌸🌸 DoubleFlower flag activated!');
+        // Console log removed
 
         if (this.currentState === 'ha-idle' || this.currentState === 'ha-run') {
             const currentState = this.currentState;
             this.switchToState(currentState);
         }
-        console.log('🌸🌸 DoubleFlower upgrade completed');
+        // Console log removed
     }
 
     // Enemy Hit 전용 애니메이션 함수 (기존 함수 유지)
@@ -3541,7 +3456,7 @@ class SimplePixelCharacterManager {
         const leeBack = this.characters.get('lee-back');
 
         if (!leeBack || !leeBack.element) {
-            console.log('🎵 leeBack character not found');
+            // Console log removed
             return;
         }
 
@@ -3552,7 +3467,7 @@ class SimplePixelCharacterManager {
             leeBack.element.style.visibility = 'visible';
             leeBack.element.style.display = 'block';
             this.startAnimation(leeBack);
-            console.log('🎵 leeBack character activated');
+            // Console log removed
         }
 
         // LeeBack Y 위치 계산 (Lee와 완전히 동일한 로직, 방향만 반대)
@@ -3579,7 +3494,7 @@ class SimplePixelCharacterManager {
 
         this.switchLeeBackAnimation(leeBack, targetAnimation);
 
-        console.log(`🎵 LeeBack Y: ${this.leeBackY.toFixed(1)}% (progress: ${(yProgress * 100).toFixed(1)}%), animation=${targetAnimation}`);
+        // Console log removed
     }
 
     // LeeBack 애니메이션 전환 (하나의 캐릭터에서)
@@ -3610,7 +3525,7 @@ class SimplePixelCharacterManager {
 
         // 애니메이션 재시작
         this.startAnimation(leeBack);
-        console.log(`🎵 LeeBack switched to: ${targetAnimation}`);
+        // Console log removed
     }
 
     // 현재 상태 정보
@@ -3635,11 +3550,11 @@ class SimplePixelCharacterManager {
             return;
         }
 
-        console.log(`🔍 Checking wreath collision trigger: characterY=${this.characterY.toFixed(1)}, section=${this.currentSection}`);
+        // Console log removed
 
         // 메인 캐릭터가 20vh 도달했는지 체크
         if (this.characterY >= 15 && this.characterY <= 25) { // 20vh ± 5vh 여유
-            console.log('💥 Wreath collision triggered at 20vh!');
+            // Console log removed
             this.triggerInformationAnimation();
         }
     }
@@ -3683,12 +3598,7 @@ class SimplePixelCharacterManager {
                 informationChar.img = informationChar.element.querySelector('img');
             }
 
-            console.log('🌿 Starting information animation...', {
-                hasSpreadsheetData: !!informationChar.spreadsheetData,
-                hasImg: !!informationChar.img,
-                visible: informationChar.visible,
-                elementStyle: informationChar.element.style.cssText
-            });
+            // Starting information animation
 
             // 애니메이션 시작 (hit-rabbit과 동일)
             // Load information spreadsheet data first
@@ -3696,7 +3606,7 @@ class SimplePixelCharacterManager {
                 try {
                     await this.loadInformationSpreadsheetData();
                 } catch (error) {
-                    console.error("❌ Failed to load information data:", error);
+                    // Console error removed
                     if (window.manualScrollManager) {
                         window.manualScrollManager.unlockScroll("information animation failed");
                     }
@@ -3706,13 +3616,13 @@ class SimplePixelCharacterManager {
             this.startSpreadsheetAnimation(informationChar);
         }
 
-        console.log('💥 Information animation started, scroll locked');
+        // Console log removed
     }
 
 
     // Information 애니메이션 완료 처리 (rabbit 방식)
     onInformationAnimationComplete() {
-        console.log('🌿🎉 Information animation completed');
+        // Console log removed
         this.isInformationPlaying = false;
 
         // Information 캐릭터 숨기기
@@ -3721,7 +3631,7 @@ class SimplePixelCharacterManager {
             informationChar.element.style.opacity = '0';
             informationChar.isActive = false;
             this.stopAnimation(informationChar);
-            console.log('🌿 Information character hidden');
+            // Console log removed
         }
 
         // Information-idle 애니메이션 시작 (rabbit-idle과 동일한 방식) - location에서만
@@ -3736,7 +3646,7 @@ class SimplePixelCharacterManager {
 
         // 현재 스크롤 상태에 따라 적절한 애니메이션 시작 (rabbit 패턴과 동일)
         const initialAnimation = this.isScrolling ? 'ha-run' : 'ha-idle';
-        console.log(`🌿 Starting initial animation: ${initialAnimation}`);
+        // Console log removed
         this.switchToState(initialAnimation);
 
         // 스크롤 잠금 해제 (rabbit 방식과 동일)
@@ -3744,7 +3654,7 @@ class SimplePixelCharacterManager {
             window.manualScrollManager.unlockScroll('information animation complete');
         }
 
-        console.log('🌿✨ Information animation complete, unified character restored with animation!');
+        // Console log removed
 
         // Location 정보 표시 (애니메이션 완료 후)
         this.showLocationInfo();
@@ -3762,9 +3672,9 @@ class SimplePixelCharacterManager {
         if (toast) {
             toast.classList.add('show');
             this.currentToast = toastId; // 현재 토스트 추적
-            console.log(`🍞 Toast ${toastId} shown`);
+            // Console log removed
         } else {
-            console.error(`❌ Toast ${toastId} not found!`);
+            // Console error removed
         }
     }
 
@@ -3779,7 +3689,7 @@ class SimplePixelCharacterManager {
                 this.currentToast = null;
             }
 
-            console.log(`🍞 Toast ${toastId} hidden`);
+            // Console log removed
 
             // Remove hide class after animation
             setTimeout(() => {
@@ -3806,12 +3716,12 @@ class SimplePixelCharacterManager {
 
         if (locationHeader) {
             locationHeader.classList.add('fade-in-active');
-            console.log('🌿📍 Location header shown');
+            // Console log removed
         }
 
         if (locationMain) {
             locationMain.classList.add('fade-in-active');
-            console.log('🌿📍 Location main shown (final state)');
+            // Console log removed
         }
 
         // Container 안의 notices도 표시
@@ -3819,36 +3729,28 @@ class SimplePixelCharacterManager {
             const beforeComputed = window.getComputedStyle(wreathNotice);
             wreathNotice.classList.add('fade-in-active');
             const afterComputed = window.getComputedStyle(wreathNotice);
-            console.log('🔍 Container wreath notice:', {
-                before: { opacity: beforeComputed.opacity, display: beforeComputed.display },
-                after: { opacity: afterComputed.opacity, display: afterComputed.display },
-                className: wreathNotice.className
-            });
+            // Container wreath notice logged
         } else {
-            console.log('❌ Container wreath notice not found');
+            // Console log removed
         }
 
         if (parkingNotice) {
             const beforeComputed = window.getComputedStyle(parkingNotice);
             parkingNotice.classList.add('fade-in-active');
             const afterComputed = window.getComputedStyle(parkingNotice);
-            console.log('🔍 Container parking notice:', {
-                before: { opacity: beforeComputed.opacity, display: beforeComputed.display },
-                after: { opacity: afterComputed.opacity, display: afterComputed.display },
-                className: parkingNotice.className
-            });
+            // Container parking notice logged
         } else {
-            console.log('❌ Container parking notice not found');
+            // Console log removed
         }
     }
 
     // 화환 안내 토스트 표시 (walk-up 완료 시) - 자막으로 대체됨
     // showWreathNotice() {
     //     if (this.wreathNoticeShown) {
-    //         console.log('🌿💐 Wreath notice already shown, skipping');
+    //         // Console log removed
     //         return;
     //     }
-    //     console.log('🌿💐 Showing wreath notice toast');
+    //     // Console log removed
     //     this.wreathNoticeShown = true;
     //     this.showToast('wreath-notice-toast');
     // }
@@ -3856,17 +3758,17 @@ class SimplePixelCharacterManager {
     // 주차 안내 토스트 표시 (CarBurn 시작 시) - 자막으로 대체됨
     // showParkingNotice() {
     //     if (this.parkingNoticeShown) {
-    //         console.log('🅿️🚗 Parking notice already shown, skipping');
+    //         // Console log removed
     //         return;
     //     }
-    //     console.log('🅿️🚗 Showing parking notice toast');
+    //     // Console log removed
     //     this.parkingNoticeShown = true;
     //     this.showToast('parking-notice-toast');
     // }
 
     // Information 애니메이션 후 상태 복원
     restoreAfterInformation() {
-        console.log('🌿🔄 Restoring state after information animation');
+        // Console log removed
 
         // 기존 상태에 따라 캐릭터 복원
         if (this.currentState === 'ha-idle') {
@@ -3876,7 +3778,7 @@ class SimplePixelCharacterManager {
         }
 
         // wreath-idle은 다시 표시하지 않음 (일회성 트리거)
-        console.log('🌿✅ State restoration completed');
+        // Console log removed
     }
 }
 

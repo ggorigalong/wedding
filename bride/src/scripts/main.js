@@ -410,6 +410,15 @@ import('./simplePixelCharacter.js').then(async module => {
     console.log('Simple pixel character system not available:', err);
 });
 
+// 자막 시스템 import
+import('./subtitleManager.js').then(module => {
+    const SubtitleManager = module.default;
+    window.subtitleManager = new SubtitleManager();
+    console.log('✅ Subtitle system ready');
+}).catch(err => {
+    console.log('Subtitle system not available:', err);
+});
+
 // 픽셀 캐릭터 초기화 (간소화됨)
 function initPixelCharacters() {
     // 새로운 시스템에서는 자동으로 초기화됨

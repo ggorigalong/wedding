@@ -24,6 +24,13 @@ class SimplePixelCharacterManager {
         this.hasIdleWowCompleted = false; // idle-wow 완료 여부 (idle-wow-normal 상태용)
         this.endingTriggered = false; // ending 애니메이션 트리거 여부
         this.isEndingPlaying = false; // ending 애니메이션 재생 중 여부
+        this.wreathTriggered = false; // wreath 애니메이션 트리거 여부
+        this.isWreathPlaying = false; // wreath 애니메이션 재생 중 여부
+        this.informationTriggered = false; // information 애니메이션 트리거 여부
+        this.isInformationPlaying = false; // information 애니메이션 재생 중 여부
+        this.wreathNoticeShown = false; // wreath 토스트 표시 여부
+        this.parkingNoticeShown = false; // parking 토스트 표시 여부
+        this.currentToast = null; // 현재 활성 토스트
         this.skipPositionUpdate = false; // 위치 업데이트 스킵 플래그
         this.isLoadingSection1Data = false; // section1.json 로딩 중 여부
         this.isLoadingCriticalAssets = false; // 중요 애셋 로딩 중 여부
@@ -516,6 +523,60 @@ class SimplePixelCharacterManager {
             y: '50%', // hit-slime과 동일한 위치
             visible: false,
             loop: true // 반복 실행
+        });
+
+        // Wreath 애니메이션 (1회 재생)
+        this.addCharacter('wreath', {
+            isPngSequence: true,
+            framePrefix: 'groom/animation/wreath/wreath',
+            frameCount: 37, // wreath1~wreath37
+            frameRate: 12,  // 12fps로 적당한 속도
+            scale: 2,
+            x: '50%',
+            y: '20%',
+            visible: false,
+            loop: false,  // 1회만 재생
+            onComplete: () => {
+                console.log('🌿🎯 WREATH ONCOMPLETE CALLED!');
+                this.onWreathAnimationComplete();
+            }
+        });
+
+        // Wreath-idle 애니메이션 (무한 반복)
+        this.addCharacter('wreath-idle', {
+            isPngSequence: true,
+            framePrefix: 'groom/animation/wreath-idle/wreath',
+            frameCount: 8, // wreath38~wreath45
+            frameRate: 8,  // 8fps로 천천히
+            scale: 2,
+            x: '50%',
+            y: '20%',
+            visible: false,
+            loop: true  // 무한 반복
+        });
+
+        // Information 애니메이션 (Section-7 충돌 감지시)
+        this.addCharacter('information', {
+            isSpreadsheetBased: true,
+            spreadsheetData: null,
+            scale: 2,
+            x: '50%',
+            y: '60%',
+            visible: false,
+            loop: false
+        });
+
+        // Information idle 애니메이션 (information 완료 후 사용)
+        this.addCharacter('information-idle', {
+            isPngSequence: true,
+            framePrefix: 'groom/animation/information-idle/information-idle',
+            frameCount: 10, // ha-idle1~ha-idle14
+            frameRate: 8,  // 8fps로 천천히
+            scale: 2,
+            x: '50%',
+            y: '60%', // information과 동일한 위치
+            visible: false,
+            loop: true // 무한 반복
         });
 
         // Lee idle-flower 애니메이션 (꽃 아이템 획득 후)
@@ -1176,7 +1237,9 @@ class SimplePixelCharacterManager {
     }
 
     startAnimation(character) {
+        console.log(`🎬🔧 startAnimation called for ${character.id}, existing interval: ${!!character.animationInterval}, existing timeout: ${!!character.animationTimeout}`);
         if (character.animationInterval || character.animationTimeout) {
+            console.log(`🛑 ${character.id}: Stopping existing animation before starting new one`);
             this.stopAnimation(character);
         }
 
@@ -1186,12 +1249,52 @@ class SimplePixelCharacterManager {
         if (character.isSpreadsheetBased) {
             this.startSpreadsheetAnimation(character);
         } else {
-            // 기존 PNG 시퀀스 방식
+            // PNG 시퀀스 방식 - loop와 onComplete 지원
             const frameInterval = 1000 / character.frameRate;
-            character.animationInterval = setInterval(() => {
-                this.updateFrame(character);
-            }, frameInterval);
-            this.updateFrame(character); // 첫 프레임 즉시 표시
+            let frameCount = 0;
+
+            const animateFrame = () => {
+                this.updateFrameWithoutLoop(character);
+                frameCount++;
+                console.log(`🎬 ${character.id}: Frame ${frameCount}/${character.frameCount}`);
+
+                if (frameCount >= character.frameCount) {
+                    // 애니메이션 완료
+                    console.log(`🏁 ${character.id}: Animation completed (${frameCount} frames)`);
+                    console.log(`🔍 ${character.id}: onComplete exists? ${!!character.onComplete}, type: ${typeof character.onComplete}`);
+
+                    if (character.onComplete && typeof character.onComplete === 'function') {
+                        console.log(`📞 ${character.id}: Calling onComplete callback`);
+                        try {
+                            character.onComplete();
+                            console.log(`✅ ${character.id}: onComplete callback executed successfully`);
+                        } catch (error) {
+                            console.error(`❌ ${character.id}: onComplete callback error:`, error);
+                        }
+                    } else {
+                        console.log(`⚠️ ${character.id}: No onComplete callback found`);
+                    }
+
+                    if (character.loop !== false) {
+                        // loop가 true거나 undefined면 반복
+                        console.log(`🔄 ${character.id}: Looping animation`);
+                        character.currentFrame = 0;
+                        frameCount = 0;
+                        character.animationTimeout = setTimeout(animateFrame, frameInterval);
+                    } else {
+                        console.log(`⏹️ ${character.id}: Animation stopped (no loop)`);
+                    }
+                } else {
+                    console.log(`⏰ ${character.id}: Scheduling next frame (${frameCount + 1}/${character.frameCount}) in ${frameInterval}ms`);
+                    character.animationTimeout = setTimeout(() => {
+                        console.log(`🔄 ${character.id}: Executing scheduled frame ${frameCount + 1}`);
+                        animateFrame();
+                    }, frameInterval);
+                }
+            };
+
+            // 첫 프레임 즉시 시작
+            animateFrame();
         }
     }
 
@@ -1206,7 +1309,7 @@ class SimplePixelCharacterManager {
 
         console.log(`✅ Spreadsheet data found for ${character.id}:`, {
             frameCount: character.spreadsheetData.frames.length,
-            sequenceLength: character.spreadsheetData.animationSequence.length,
+            sequenceLength: character.spreadsheetData.animationSequence?.length || 'N/A',
             totalDuration: character.spreadsheetData.totalDuration
         });
 
@@ -1255,6 +1358,8 @@ class SimplePixelCharacterManager {
                     this.mainAnimationCallback = null;
                 } else if (character.id === 'ending') {
                     this.onEndingAnimationComplete();
+                } else if (character.id === 'information') {
+                    this.onInformationAnimationComplete();
                 }
                 return;
             }
@@ -1299,6 +1404,15 @@ class SimplePixelCharacterManager {
 
             console.log(`🎬 Sequence ${sequenceIndex + 1}/${animationSequence.length} - Frame ${frameIndex}: sprite(${frameData.spriteX},${frameData.spriteY},${frameData.spriteWidth}x${frameData.spriteHeight}) (${frameData.duration}ms)`);
 
+            // 자막 시스템 통합 (information 캐릭터)
+            if (window.subtitleManager && character.id === 'information') {
+                // information 캐릭터도 태그 기반으로 자막 처리
+                console.log("ㅣㅆ발:", character.spreadsheetData, frameIndex)
+                const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                console.log(`🎬 Information subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                window.subtitleManager.checkSubtitle('information', 'section', currentTag, frameIndex);
+            }
+
             // 다음 프레임 스케줄링
             character.animationTimeout = setTimeout(() => {
                 playNextFrame(sequenceIndex + 1);
@@ -1318,12 +1432,47 @@ class SimplePixelCharacterManager {
         character.currentFrame = (character.currentFrame + 1) % character.frameCount;
     }
 
+    // Loop 처리 없이 프레임 업데이트 (새로운 startAnimation에서 사용)
+    updateFrameWithoutLoop(character) {
+        if (!character.isPngSequence) {
+            console.log(`⚠️ updateFrameWithoutLoop called on non-PNG character: ${character.id}`);
+            return;
+        }
+
+        if (!character.img) {
+            console.error(`❌ No img element found for character: ${character.id}`);
+            return;
+        }
+
+        const frameNumber = character.currentFrame + 1; // 1부터 시작
+        const framePath = `${character.framePrefix}${frameNumber}.png`;
+
+        console.log(`🖼️ Setting frame ${frameNumber} for ${character.id}: ${framePath}`);
+        character.img.src = framePath;
+
+        character.currentFrame++; // 프레임 증가 (startAnimation에서 frameCount도 별도 증가)
+    }
+
     stopAnimation(character) {
+        console.log(`🛑🔧 stopAnimation called for ${character.id}, existing interval: ${!!character.animationInterval}, existing timeout: ${!!character.animationTimeout}`);
+
+        // wreath/information 애니메이션 중에는 해당 캐릭터들 보호
+        if (character.id.startsWith('wreath') && this.isWreathPlaying) {
+            console.log(`🌿🛡️ Protecting wreath character ${character.id} during animation`);
+            return;
+        }
+        if (character.id.startsWith('information') && this.isInformationPlaying) {
+            console.log(`📋🛡️ Protecting information character ${character.id} during animation`);
+            return;
+        }
+
+        console.trace(`🛑📍 stopAnimation call stack for ${character.id}:`);
         if (character.animationInterval) {
             clearInterval(character.animationInterval);
             character.animationInterval = null;
         }
         if (character.animationTimeout) {
+            console.log(`🗑️ ${character.id}: Clearing animationTimeout`);
             clearTimeout(character.animationTimeout);
             character.animationTimeout = null;
         }
@@ -1432,9 +1581,14 @@ class SimplePixelCharacterManager {
             console.log(`🎭 Unified character activated for Section-${this.currentSection}: ${actualAnimation}`);
         }
 
-        // 기존 개별 캐릭터들 숨기기 (슬라임과 song 캐릭터들 제외)
+        // 기존 개별 캐릭터들 숨기기 (슬라임, song, wreath, information-idle 캐릭터들 제외)
         this.characters.forEach((char, id) => {
             if (id.startsWith('slime-') || id.startsWith('song-')) return; // 슬라임과 song 캐릭터들은 별도 관리
+            if (id.startsWith('wreath') || id === 'information-idle') return; // wreath와 information-idle은 항상 보호
+            if (id === 'information' && this.isInformationPlaying) {
+                console.log(`🛡️ Protecting information animation from stopAnimation during state switch`);
+                return; // Information 애니메이션 진행 중에는 보호
+            }
             this.stopAnimation(char);
             char.element.style.opacity = '0';
         });
@@ -1504,6 +1658,45 @@ class SimplePixelCharacterManager {
         }
     }
 
+    // 이전 섹션의 특수 상태 정리
+    cleanupPreviousSection(previousSection) {
+        if (previousSection === 7) {
+            // Section-7에서 벗어날 때 wreath 관련 상태 강제 정리
+            if (this.isWreathPlaying || (this.wreathTriggered && !this.isInformationPlaying)) {
+                console.log('🧹 Section-7 cleanup: Wreath sequence was interrupted, forcing completion');
+
+                // wreath 관련 애니메이션들 정리
+                const wreathChar = this.characters.get('wreath');
+                const wreathIdleChar = this.characters.get('wreath-idle');
+
+                if (wreathChar) {
+                    wreathChar.element.style.opacity = '0';
+                    this.stopAnimation(wreathChar);
+                }
+                if (wreathIdleChar) {
+                    wreathIdleChar.element.style.opacity = '0';
+                    this.stopAnimation(wreathIdleChar);
+                }
+
+                // 상태 플래그 리셋 (완료된 것으로 처리)
+                this.isWreathPlaying = false;
+                this.wreathTriggered = true; // 트리거는 유지하여 재실행 방지
+
+                // 메인 캐릭터 위치 정상화
+                this.characterY = -25;
+                this.updateUnifiedCharacterPosition();
+                this.showUnifiedCharacter();
+
+                // 신부 측과 동일하게 스크롤 잠금 대신 애니메이션 보호 로직 사용
+
+                console.log('🧹 Section-7 cleanup completed: character position reset to -25%');
+            }
+
+            // Section-7에서 나갈 때 information-idle도 숨기기
+            this.hideInformationIdle();
+        }
+    }
+
     // 모든 섹션에서 사용할 통합 메서드
     switchToSectionState(sectionIndex, startHeight) {
         console.log(`🎯 Switching to Section-${sectionIndex} state (starting from ${startHeight}%)`);
@@ -1526,7 +1719,25 @@ class SimplePixelCharacterManager {
             this.characterY = startHeight;
         }
 
+        // Section 변경 시 이전 섹션의 특수 상태 정리
+        if (this.currentSection !== sectionIndex) {
+            this.cleanupPreviousSection(this.currentSection);
+        }
+
         this.currentSection = sectionIndex;
+
+        // Section-7 특별 처리: wreath 애니메이션
+        if (sectionIndex === 7) {
+            console.log(`🌿🔍 Section-7 entered: wreathTriggered=${this.wreathTriggered}, isWreathPlaying=${this.isWreathPlaying}`);
+            if (!this.wreathTriggered && !this.isWreathPlaying) {
+                console.log(`🌿⚡ Starting wreath animation now!`);
+                this.startWreathAnimation();
+                return; // wreath 애니메이션이 시작되면 다른 상태 전환 건너뛰기
+            } else {
+                console.log(`🌿⏸️ Wreath animation already triggered or playing, skipping all Section-7 logic`);
+                return; // wreath 관련 상태에서는 모든 섹션 로직 건너뛰기
+            }
+        }
 
         // 스크롤 중이면 run, 아니면 idle로 시작
         const initialState = this.isScrolling ? 'lee-run' : 'lee-idle';
@@ -1597,6 +1808,11 @@ class SimplePixelCharacterManager {
             this.hideSlimeCharacter();
         }
 
+        // Section-7에서 나갈 때 information-idle도 숨기기
+        if (this.currentSection === 7) {
+            this.hideInformationIdle();
+        }
+
         // 모든 타이머 정리
         if (this.scrollTimeout) {
             clearTimeout(this.scrollTimeout);
@@ -1618,6 +1834,18 @@ class SimplePixelCharacterManager {
         // 현재 섹션과 다른 섹션의 움직임은 무시 (포털 전환 중 보호)
         if (sectionIndex !== this.currentSection) {
             console.log(`⚠️ Ignoring movement for Section-${sectionIndex} (current: Section-${this.currentSection})`);
+            return;
+        }
+
+        // Section-7에서 wreath 애니메이션 중에는 모든 움직임/스크롤 무시
+        if (sectionIndex === 7 && this.isWreathPlaying) {
+            console.log('🌿🚫 Blocking all scroll movement during wreath animation');
+            return;
+        }
+
+        // wreath 또는 information 애니메이션 중에는 상태 전환 무시
+        if (this.isWreathPlaying || this.isInformationPlaying) {
+            console.log(`🌿⏸️ Ignoring section movement during wreath/information animation (wreath: ${this.isWreathPlaying}, info: ${this.isInformationPlaying})`);
             return;
         }
 
@@ -1711,6 +1939,10 @@ class SimplePixelCharacterManager {
         } else if (sectionIndex === 6) {
             // Section-6에서 갤러리 leafs 트리거 체크
             this.checkGalleryLeafsTrigger();
+        } else if (sectionIndex === 7) {
+            // Section-7에서 wreath 충돌 감지 체크 (wreath-idle 활성화 후)
+            console.log(`🌿🎯 Section-7 update: characterY=${this.characterY.toFixed(1)}, wreathTriggered=${this.wreathTriggered}, informationTriggered=${this.informationTriggered}`);
+            this.checkWreathCollisionTrigger();
         } else if (sectionIndex === 8) {
             // Section-8 체크
             console.log('🏛️ Section-8 detected! sectionIndex:', sectionIndex);
@@ -2825,6 +3057,430 @@ class SimplePixelCharacterManager {
         // 애니메이션 재시작
         this.startAnimation(song);
         console.log(`🎵 Song switched to: ${targetAnimation}`);
+    }
+
+    // Wreath 애니메이션 시작
+    startWreathAnimation() {
+        if (this.wreathTriggered || this.isWreathPlaying) {
+            console.log('🌿 Wreath animation already triggered or playing');
+            return;
+        }
+        console.log('🌿 Starting wreath animation in Section-7');
+        this.wreathTriggered = true;
+        this.isWreathPlaying = true;
+        // 기존 캐릭터들 숨기기
+        this.characters.forEach((char, id) => {
+            if (!id.startsWith('wreath')) {
+                char.element.style.opacity = '0';
+                this.stopAnimation(char);
+            }
+        });
+        // 통합 캐릭터도 숨기기 (다른 애니메이션들과 동일한 패턴)
+        this.hideUnifiedCharacter();
+        // Wreath 애니메이션 시작
+        const wreathChar = this.characters.get('wreath');
+        console.log('🌿 Wreath character found:', !!wreathChar);
+        if (wreathChar) {
+            console.log('🌿 Wreath character config:', {
+                frameCount: wreathChar.frameCount,
+                frameRate: wreathChar.frameRate,
+                loop: wreathChar.loop,
+                framePrefix: wreathChar.framePrefix,
+                hasOnComplete: !!wreathChar.onComplete
+            });
+            wreathChar.element.style.opacity = '1';
+            wreathChar.isActive = true;
+            this.startAnimation(wreathChar);
+            console.log('🌿 Wreath animation started');
+        } else {
+            console.error('❌ Wreath character not found!');
+        }
+    }
+
+    // Wreath 애니메이션 완료 처리
+    onWreathAnimationComplete() {
+        console.log('🌿 Wreath animation completed, starting wreath-idle');
+        this.isWreathPlaying = false; // 메인 wreath 애니메이션 완료
+        // Wreath 애니메이션 숨기기
+        const wreathChar = this.characters.get('wreath');
+        if (wreathChar) {
+            wreathChar.element.style.opacity = '0';
+            wreathChar.isActive = false;
+            this.stopAnimation(wreathChar);
+        }
+        // Wreath-idle 애니메이션 시작 (고정 위치에서 계속)
+        const wreathIdleChar = this.characters.get('wreath-idle');
+        if (wreathIdleChar) {
+            wreathIdleChar.element.style.opacity = '1';
+            wreathIdleChar.isActive = true;
+            this.startAnimation(wreathIdleChar);
+            console.log('🌿 Wreath-idle animation started at fixed position');
+        }
+        // 통합 캐릭터 다시 보이기 (다른 애니메이션들과 동일한 패턴)
+        this.showUnifiedCharacter();
+
+        // 화환 완료 후에는 메인 캐릭터를 최상단에서 시작하도록 위치 설정 (bride side와 동일)
+        this.characterY = -25;
+        this.updateUnifiedCharacterPosition();
+
+        // 현재 스크롤 상태에 따라 적절한 애니메이션 시작 (다른 애니메이션 완료 함수와 동일한 패턴)
+        const initialAnimation = this.isScrolling ? 'main' : 'main';
+        console.log(`🌿 Starting initial animation: ${initialAnimation}`);
+        this.switchToState(initialAnimation);
+
+        console.log('🌿✨ Wreath-idle started, unified character restored at top (-25%) with animation!');
+        // wreath-idle 활성화 완료 - updateViewportCharacterPosition에서 충돌 감지가 처리됨
+    }
+
+    // Wreath 충돌 감지 트리거 체크 (Section-7에서만)
+    checkWreathCollisionTrigger() {
+        if (this.currentSection !== 7) return;
+        if (this.informationTriggered || this.isInformationPlaying) return;
+        // wreath-idle이 활성화되어야 충돌 감지 시작
+        const wreathIdleChar = this.characters.get('wreath-idle');
+        if (!wreathIdleChar || !wreathIdleChar.isActive) {
+            return;
+        }
+        console.log(`🔍 Checking wreath collision trigger: characterY=${this.characterY.toFixed(1)}, section=${this.currentSection}`);
+        // 메인 캐릭터가 20vh 도달했는지 체크
+        if (this.characterY >= 15 && this.characterY <= 25) { // 20vh ± 5vh 여유
+            console.log('💥 Wreath collision triggered at 20vh!');
+            this.triggerInformationAnimation();
+        }
+    }
+
+    // Information 애니메이션 실행 (rabbit 방식)
+    async triggerInformationAnimation() {
+        this.informationTriggered = true;
+        this.isInformationPlaying = true;
+        // 토스트 플래그 리셋
+        this.wreathNoticeShown = false;
+        this.parkingNoticeShown = false;
+        // 스크롤 잠금 (rabbit 방식과 동일)
+        if (window.manualScrollManager) {
+            window.manualScrollManager.lockScroll('information animation');
+        }
+        // 통합 캐릭터 숨기기 (rabbit 방식과 동일)
+        this.hideUnifiedCharacter();
+        // wreath-idle 숨기기
+        const wreathIdleChar = this.characters.get('wreath-idle');
+        if (wreathIdleChar) {
+            wreathIdleChar.element.style.opacity = '0';
+            wreathIdleChar.isActive = false;
+        }
+        // Information 애니메이션 표시 및 실행 (hit-rabbit과 동일한 방식)
+        const informationChar = this.characters.get('information');
+        if (informationChar) {
+            informationChar.element.style.opacity = '1';
+            informationChar.element.style.top = '50%';
+            informationChar.element.style.left = '50%';
+            informationChar.element.style.transform = 'translate(-50%, -50%) scale(2)';
+            informationChar.isActive = true;
+            // 스프레드시트 애니메이션을 위한 img 요소 확인 (ending과 동일한 방식)
+            if (!informationChar.img) {
+                informationChar.img = informationChar.element.querySelector('img');
+            }
+            console.log('🌿 Starting information animation...', {
+                hasSpreadsheetData: !!informationChar.spreadsheetData,
+                hasImg: !!informationChar.img,
+                visible: informationChar.visible,
+                elementStyle: informationChar.element.style.cssText
+            });
+            // 애니메이션 시작 (hit-rabbit과 동일)
+            // Load information spreadsheet data first
+            if (!informationChar.spreadsheetData) {
+                try {
+                    await this.loadInformationSpreadsheetData();
+                } catch (error) {
+                    console.error("❌ Failed to load information data:", error);
+                    if (window.manualScrollManager) {
+                        window.manualScrollManager.unlockScroll("information animation failed");
+                    }
+                    return;
+                }
+            }
+            this.startSpreadsheetAnimation(informationChar);
+        }
+        console.log('💥 Information animation started, scroll locked');
+    }
+
+    // Information 애니메이션 스프레드시트 데이터 로드 (information.json에서)
+    async loadInformationSpreadsheetData() {
+        try {
+            console.log('📊 Loading information spreadsheet data from JSON...');
+            // 여러 경로로 시도 (정확한 경로)
+            const jsonPaths = [
+                'public/groom/animation/information/information.json',
+                'groom/animation/information/information.json',
+                './groom/animation/information/information.json',
+                'animation/information/information.json'
+            ];
+            let response = null;
+            let loadedPath = null;
+            for (const path of jsonPaths) {
+                try {
+                    console.log(`🔍 Trying information.json path: ${path}`);
+                    response = await fetch(path);
+                    if (response.ok) {
+                        loadedPath = path;
+                        console.log(`✅ Successfully loaded from: ${path}`);
+                        break;
+                    }
+                } catch (e) {
+                    console.log(`❌ Failed to load from ${path}:`, e.message);
+                    continue;
+                }
+            }
+            if (!response || !response.ok) {
+                throw new Error('Could not load information.json from any path');
+            }
+            const jsonData = await response.json();
+            console.log('✅ Information JSON data loaded:', jsonData);
+
+            // JSON 형식을 우리 스프레드시트 형식으로 변환 (bride side와 동일)
+            const frames = [];
+            const frameKeys = Object.keys(jsonData.frames);
+            for (let i = 0; i < frameKeys.length; i++) {
+                const key = frameKeys[i];
+                const frameInfo = jsonData.frames[key];
+                frames.push({
+                    image: `public/groom/animation/information/${jsonData.meta.image}`, // 정확한 경로
+                    duration: frameInfo.duration,
+                    spriteX: frameInfo.frame.x,
+                    spriteY: frameInfo.frame.y,
+                    spriteWidth: frameInfo.frame.w,
+                    spriteHeight: frameInfo.frame.h
+                });
+            }
+
+            console.log(`📊 Converted ${frames.length} information frames from JSON to spreadsheet format`);
+            console.log('🎬 Total information duration:', frames.reduce((total, frame) => total + frame.duration, 0) + 'ms');
+
+            // frameTags를 이용한 애니메이션 시퀀스 생성 (section1/ending과 동일한 방식)
+            const frameTags = jsonData.meta.frameTags || [];
+            console.log('📋 Available information frameTags:', frameTags);
+
+            // 애니메이션 시퀀스 계산 (frameTags에 따른 repeat 적용)
+            const animationSequence = [];
+
+            frameTags.forEach(tag => {
+                const from = tag.from;
+                const to = tag.to;
+                const repeatCount = parseInt(tag.repeat) || 1;
+
+                console.log(`🏷️ Information Tag "${tag.name}": frames ${from}-${to}, repeat ${repeatCount} times`);
+
+                // 해당 태그의 프레임 범위를 repeat만큼 반복
+                for (let r = 0; r < repeatCount; r++) {
+                    for (let f = from; f <= to; f++) {
+                        animationSequence.push(f);
+                    }
+                }
+            });
+
+            // 애니메이션 시퀀스가 없으면 모든 프레임을 순서대로 재생
+            if (animationSequence.length === 0) {
+                console.log('⚠️ No information frameTags found, using all frames in order');
+                for (let i = 0; i < frames.length; i++) {
+                    animationSequence.push(i);
+                }
+            }
+
+            console.log(`🎬 Information animation sequence: [${animationSequence.slice(0, 20).join(', ')}${animationSequence.length > 20 ? '...' : ''}] (total: ${animationSequence.length} frames)`);
+
+            const spreadsheetData = {
+                frames: frames,
+                animationSequence: animationSequence,
+                totalDuration: frames.reduce((total, frame) => total + frame.duration, 0),
+                metadata: {
+                    name: 'Information Animation',
+                    frameCount: frames.length,
+                    sequenceLength: animationSequence.length,
+                    spritesheet: jsonData.meta.image,
+                    frameTags: frameTags
+                }
+            };
+
+            // information 캐릭터에 데이터 할당
+            const informationChar = this.characters.get('information');
+            if (informationChar) {
+                informationChar.spreadsheetData = spreadsheetData;
+                console.log('🎬 Information spreadsheet data assigned to character');
+            }
+            return spreadsheetData;
+        } catch (error) {
+            console.error('❌ Failed to load information spreadsheet data:', error);
+            throw error;
+        }
+    }
+
+    // Information 애니메이션 완료 처리 (rabbit 방식)
+    onInformationAnimationComplete() {
+        console.log('🌿🎉 Information animation completed');
+        this.isInformationPlaying = false;
+        // Information 캐릭터 숨기기
+        const informationChar = this.characters.get('information');
+        if (informationChar) {
+            informationChar.element.style.opacity = '0';
+            informationChar.isActive = false;
+            this.stopAnimation(informationChar);
+            console.log('🌿 Information character hidden');
+        }
+        // Information-idle 애니메이션 시작 (rabbit-idle과 동일한 방식) - location에서만
+        if (this.currentSection === 7) {
+            this.showInformationIdle();
+        }
+        // Location 전체 정보 표시는 애니메이션 완료 콜백에서 직접 호출됨
+        // 통합 캐릭터 다시 보이기 (rabbit 방식과 동일)
+        this.showUnifiedCharacter();
+        // 현재 스크롤 상태에 따라 적절한 애니메이션 시작 (rabbit 패턴과 동일)
+        const initialAnimation = this.isScrolling ? 'lee-run' : 'lee-idle';
+        console.log(`🌿 Starting initial animation: ${initialAnimation}`);
+        this.switchToState(initialAnimation);
+        // 스크롤 잠금 해제 (rabbit 방식과 동일)
+        if (window.manualScrollManager) {
+            window.manualScrollManager.unlockScroll('information animation complete');
+        }
+        console.log('🌿✨ Information animation complete, unified character restored with animation!');
+        // Location 정보 표시 (애니메이션 완료 후)
+        this.showLocationInfo();
+    }
+
+    // 자막 시스템용 헬퍼 함수: 현재 frameIndex가 어떤 frameTag에 속하는지 찾기
+    getCurrentFrameTag(spreadsheetData, frameIndex) {
+        if (!spreadsheetData || !spreadsheetData.metadata || !spreadsheetData.metadata.frameTags) {
+            console.log("개씨발")
+            return null;
+        }
+
+        const frameTags = spreadsheetData.metadata.frameTags;
+
+        // 각 태그의 from-to 범위와 현재 frameIndex 비교
+        for (const tag of frameTags) {
+            if (frameIndex >= tag.from && frameIndex <= tag.to) {
+                return tag.name;
+            }
+        }
+        console.log("미친씨발")
+
+        return null; // 어떤 태그에도 속하지 않는 경우
+    }
+
+    // Information idle 캐릭터 표시 (information 애니메이션 완료 후)
+    showInformationIdle() {
+        console.log(`🔍 DEBUG: showInformationIdle() called`);
+        console.log(`🔍 DEBUG: this.characters has:`, Array.from(this.characters.keys()));
+        const informationIdleChar = this.characters.get('information-idle');
+        console.log(`🔍 DEBUG: informationIdleChar found:`, !!informationIdleChar);
+        if (informationIdleChar && informationIdleChar.element) {
+            console.log(`🔍 DEBUG: informationIdleChar config:`, {
+                id: 'information-idle',
+                framePrefix: informationIdleChar.framePrefix,
+                frameCount: informationIdleChar.frameCount,
+                isPngSequence: informationIdleChar.isPngSequence
+            });
+            informationIdleChar.element.style.opacity = '1';
+            informationIdleChar.element.style.top = '60%'; // information과 동일한 위치
+            informationIdleChar.element.style.left = '50%';
+            informationIdleChar.isActive = true;
+            // 애니메이션 시작 (PNG 시퀀스)
+            if (informationIdleChar.isPngSequence) {
+                this.startAnimation(informationIdleChar);
+            }
+        } else {
+            console.error(`❌ information-idle character not found or no element!`);
+        }
+        console.log(`🌿 Information idle character shown: information-idle (looping idle)`);
+    }
+
+    // Information idle 캐릭터 숨기기 (Section-7에서 나갈 때)
+    hideInformationIdle() {
+        const informationIdleChar = this.characters.get('information-idle');
+        if (informationIdleChar && informationIdleChar.element) {
+            informationIdleChar.element.style.opacity = '0';
+            informationIdleChar.isActive = false;
+            this.stopAnimation(informationIdleChar);
+            console.log(`🌿 Information idle character hidden: information-idle`);
+        }
+    }
+
+    // Location 정보 표시 (애니메이션 완료 후)
+    showLocationInfo() {
+        // 모든 토스트 숨기기
+        this.hideAllToasts();
+        const locationHeader = document.getElementById('location-header');
+        const locationMain = document.getElementById('location-main');
+        const wreathNotice = document.getElementById('wreath-notice');
+        const parkingNotice = document.getElementById('parking-notice');
+        if (locationHeader) {
+            locationHeader.classList.add('fade-in-active');
+            console.log('🌿📍 Location header shown');
+        }
+        if (locationMain) {
+            locationMain.classList.add('fade-in-active');
+            console.log('🌿📍 Location main shown (final state)');
+        }
+        // Container 안의 notices도 표시
+        if (wreathNotice) {
+            const beforeComputed = window.getComputedStyle(wreathNotice);
+            wreathNotice.classList.add('fade-in-active');
+            const afterComputed = window.getComputedStyle(wreathNotice);
+            console.log('🔍 Container wreath notice:', {
+                before: { opacity: beforeComputed.opacity, display: beforeComputed.display },
+                after: { opacity: afterComputed.opacity, display: afterComputed.display },
+                className: wreathNotice.className
+            });
+        } else {
+            console.log('❌ Container wreath notice not found');
+        }
+        if (parkingNotice) {
+            const beforeComputed = window.getComputedStyle(parkingNotice);
+            parkingNotice.classList.add('fade-in-active');
+            const afterComputed = window.getComputedStyle(parkingNotice);
+            console.log('🔍 Container parking notice:', {
+                before: { opacity: beforeComputed.opacity, display: beforeComputed.display },
+                after: { opacity: afterComputed.opacity, display: afterComputed.display },
+                className: parkingNotice.className
+            });
+        } else {
+            console.log('❌ Container parking notice not found');
+        }
+    }
+
+    // Toast message system
+    showToast(toastId) {
+        // 이전 토스트가 있다면 숨기기
+        if (this.currentToast) {
+            this.hideToast(this.currentToast);
+        }
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.classList.add('show');
+            this.currentToast = toastId; // 현재 토스트 추적
+            console.log(`🍞 Toast ${toastId} shown`);
+        } else {
+            console.error(`❌ Toast ${toastId} not found!`);
+        }
+    }
+
+    hideToast(toastId) {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+            // 현재 토스트 추적 초기화
+            if (this.currentToast === toastId) {
+                this.currentToast = null;
+            }
+            console.log(`🍞 Toast ${toastId} hidden`);
+        }
+    }
+
+    hideAllToasts() {
+        // 활성 토스트 숨기기
+        if (this.currentToast) {
+            this.hideToast(this.currentToast);
+        }
     }
 
     // 현재 상태 정보

@@ -994,3 +994,31 @@ window.smoothScroll = smoothScroll;
 window.getGalleryDimensions = getGalleryDimensions;
 window.getGalleryImagePosition = getGalleryImagePosition;
 window.logGalleryImagePosition = logGalleryImagePosition;
+
+// 자막 시스템 초기화
+import('./subtitleManager.js').then(module => {
+    const SubtitleManager = module.default;
+    window.subtitleManager = new SubtitleManager();
+    console.log('✅ Subtitle system initialized');
+}).catch(err => {
+    console.log('Subtitle system not available:', err);
+});
+
+// 간소화된 픽셀 캐릭터 시스템
+import('./simplePixelCharacter.js').then(async module => {
+    const SimplePixelCharacterManager = module.default;
+    window.pixelCharacterManager = new SimplePixelCharacterManager();
+    await window.pixelCharacterManager.init();
+    console.log('✅ Pixel character system ready with spreadsheet data');
+}).catch(err => {
+    console.log('Pixel character system not available:', err);
+});
+
+// 새로운 수동 스크롤 시스템
+import('./manualScroll.js').then(module => {
+    const ManualScrollManager = module.default;
+    window.manualScrollManager = new ManualScrollManager();
+    window.manualScrollManager.init();
+}).catch(err => {
+    console.log('Manual scroll system not available:', err);
+});

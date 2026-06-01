@@ -325,8 +325,8 @@
    { "name": "HairSpin", "from": 10, "to": 13, "direction": "forward", "color": "#000000ff" },
    { "name": "Question", "from": 14, "to": 24, "direction": "forward", "color": "#000000ff" },
    { "name": "Left", "from": 25, "to": 28, "direction": "forward", "color": "#000000ff" },
-   { "name": "Empty", "from": 29, "to": 30, "direction": "forward", "repeat": "4", "color": "#000000ff" },
-   { "name": "EmptyWave", "from": 32, "to": 33, "direction": "forward", "repeat": "4", "color": "#000000ff" }
+   { "name": "Empty", "from": 29, "to": 30, "direction": "forward", "repeat": "5", "color": "#000000ff" },
+   { "name": "EmptyWave", "from": 32, "to": 33, "direction": "forward", "repeat": "10", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Layer 8", "opacity": 255, "blendMode": "normal" },

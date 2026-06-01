@@ -810,6 +810,14 @@ class ManualScrollManager {
 
     // 모든 섹션에서 캐릭터 Y축 이동 처리
     handleCharacterMovement(delta, currentSectionIndex) {
+        // Section-7에서 wreath 애니메이션 중에는 캐릭터 움직임 차단
+        if (currentSectionIndex === 7 &&
+            window.pixelCharacterManager &&
+            window.pixelCharacterManager.isWreathPlaying) {
+            console.log('🌿🚫 Blocking character movement during wreath animation');
+            return;
+        }
+
         // 섹션별로 개별 진행도 관리
         const sectionKey = `section${currentSectionIndex}ScrollProgress`;
         if (!this[sectionKey]) {

@@ -85,6 +85,13 @@
         </button>
     </div>
 
+    <!-- Subtitle Container -->
+    <div class="subtitle-container" id="subtitleContainer" style="display: none;">
+        <div class="subtitle-box" id="subtitleBox">
+            <div class="dialog-text" id="dialogText"></div>
+        </div>
+    </div>
+
     <!-- Main Hero Section -->
     <section id="section-0" class="hero">
         <img src="images/gallery/hero-text.png" alt="웨딩 텍스트" class="hero-text-overlay" loading="eager">
@@ -194,10 +201,13 @@
 
     <!-- Location Section -->
     <section id="section-7" class="location">
-        <div class="container">
-            <div class="section-subtitle">Location</div>
-            <h2 class="section-title">오시는길</h2>
-            <div class="location-info">
+        <div class="container" id="location-container">
+            <div class="location-header" id="location-header">
+                <div class="section-subtitle">Location</div>
+                <h2 class="section-title">오시는길</h2>
+            </div>
+            <div class="location-main" id="location-main">
+                <div class="location-info">
                 <h3 class="venue-name">용산 가족공원</h3>
                 <div class="address-container">
                     <address class="address">서울 용산구 용산동6가 168-6</address>
@@ -224,17 +234,6 @@
                     </div>
                 </div>
                 -->
-
-                <!-- 주차 안내 -->
-                <div class="transportation">
-                    <div class="transport-item">
-                        <img class="transport-icon" src="/icons/info-square-svgrepo-com.svg" alt="안내" style="filter: hue-rotate(30deg) saturate(1.5);">
-                        <div class="transport-info">
-                            <div class="transport-type">주차 안내</div>
-                            <div class="transport-details">공원 내 주차 공간이 매우 협소하오니,<br>가급적 대중교통을 이용해 주시면 감사하겠습니다.</div>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="transportation">
                     <div class="transport-item">
@@ -265,8 +264,35 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+
+
         </div>
+                    <!-- Information Notices -->
+                    <div class="information-section" id="wreath-notice">
+                        <div class="info-item">
+                            <svg class="info-icon" viewBox="0 0 24 24" fill="#ff6b6b" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                            </svg>
+                            <div class="info-text">
+                                <div class="info-type">화환 안내</div>
+                                <div class="info-details">공원 내 야외 예식 특성상 화환 반입이 제한됩니다.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="information-section" id="parking-notice">
+                        <div class="info-item">
+                            <svg class="info-icon" viewBox="0 0 24 24" fill="#ffc671" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                            </svg>
+                            <div class="info-text">
+                                <div class="info-type">주차 안내</div>
+                                <div class="info-details">공원 내 주차 공간이 매우 협소하오니, 가급적 대중교통을 이용해 주시면 감사하겠습니다.</div>
+                            </div>
+                        </div>
+                    </div>
+    </div>
     </section>
 
     <!-- Account Section -->
@@ -416,6 +442,7 @@
         window.KAKAO_MAP_API_KEY = '6b28d3fe635cd8540e6b76f7ec8833fb';
     </script>
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6b28d3fe635cd8540e6b76f7ec8833fb"></script>
+    <script type="module" src="groom/src/scripts/subtitleManager.js"></script>
     <script type="module" src="groom/src/scripts/main.js"></script>
 </body>
 </html>

@@ -248,6 +248,22 @@
     "duration": 200
    },
    "section1 31.aseprite": {
+    "frame": { "x": 6264, "y": 0, "w": 216, "h": 384 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 216, "h": 384 },
+    "sourceSize": { "w": 216, "h": 384 },
+    "duration": 200
+   },
+   "section1 32.aseprite": {
+    "frame": { "x": 6480, "y": 0, "w": 216, "h": 384 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 216, "h": 384 },
+    "sourceSize": { "w": 216, "h": 384 },
+    "duration": 200
+   },
+   "section1 33.aseprite": {
     "frame": { "x": 6696, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -255,7 +271,7 @@
     "sourceSize": { "w": 216, "h": 384 },
     "duration": 500
    },
-   "section1 32.aseprite": {
+   "section1 34.aseprite": {
     "frame": { "x": 6912, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -263,7 +279,7 @@
     "sourceSize": { "w": 216, "h": 384 },
     "duration": 100
    },
-   "section1 33.aseprite": {
+   "section1 35.aseprite": {
     "frame": { "x": 7128, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -271,7 +287,7 @@
     "sourceSize": { "w": 216, "h": 384 },
     "duration": 100
    },
-   "section1 34.aseprite": {
+   "section1 36.aseprite": {
     "frame": { "x": 7344, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -279,7 +295,7 @@
     "sourceSize": { "w": 216, "h": 384 },
     "duration": 100
    },
-   "section1 35.aseprite": {
+   "section1 37.aseprite": {
     "frame": { "x": 7560, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -287,7 +303,7 @@
     "sourceSize": { "w": 216, "h": 384 },
     "duration": 100
    },
-   "section1 36.aseprite": {
+   "section1 38.aseprite": {
     "frame": { "x": 7776, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -295,7 +311,7 @@
     "sourceSize": { "w": 216, "h": 384 },
     "duration": 100
    },
-   "section1 37.aseprite": {
+   "section1 39.aseprite": {
     "frame": { "x": 7992, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -303,7 +319,7 @@
     "sourceSize": { "w": 216, "h": 384 },
     "duration": 100
    },
-   "section1 38.aseprite": {
+   "section1 40.aseprite": {
     "frame": { "x": 8208, "y": 0, "w": 216, "h": 384 },
     "rotated": false,
     "trimmed": false,
@@ -325,8 +341,9 @@
    { "name": "HairSpin", "from": 10, "to": 13, "direction": "forward", "color": "#000000ff" },
    { "name": "Question", "from": 14, "to": 24, "direction": "forward", "color": "#000000ff" },
    { "name": "Left", "from": 25, "to": 28, "direction": "forward", "color": "#000000ff" },
-   { "name": "Empty", "from": 29, "to": 30, "direction": "forward", "repeat": "4", "color": "#000000ff" },
-   { "name": "EmptyWave", "from": 32, "to": 33, "direction": "forward", "repeat": "4", "color": "#000000ff" }
+   { "name": "Empty", "from": 29, "to": 30, "direction": "forward", "repeat": "2", "color": "#000000ff" },
+   { "name": "Empty2", "from": 31, "to": 32, "direction": "forward", "repeat": "6", "color": "#000000ff" },
+   { "name": "EmptyWave", "from": 34, "to": 35, "direction": "forward", "repeat": "10", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Layer 8", "opacity": 255, "blendMode": "normal" },

@@ -125,7 +125,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 52, "h": 36 },
     "sourceSize": { "w": 52, "h": 36 },
-    "duration": 100
+    "duration": 1000
    },
    "gun-2 16.gif": {
     "frame": { "x": 832, "y": 0, "w": 52, "h": 36 },
@@ -383,7 +383,7 @@
    { "name": "fear", "from": 25, "to": 26, "direction": "forward", "repeat": "10", "color": "#000000ff" },
    { "name": "gun-in", "from": 27, "to": 33, "direction": "forward", "color": "#000000ff" },
    { "name": "getflower", "from": 34, "to": 40, "direction": "forward", "color": "#000000ff" },
-   { "name": "Tag", "from": 41, "to": 45, "direction": "forward", "color": "#000000ff" }
+   { "name": "transfort", "from": 41, "to": 45, "direction": "forward", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Layer 3", "opacity": 255, "blendMode": "normal" },

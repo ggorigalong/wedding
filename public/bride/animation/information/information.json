@@ -389,7 +389,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 400, "h": 384 },
     "sourceSize": { "w": 400, "h": 384 },
-    "duration": 100
+    "duration": 2000
    },
    "Sprite-0064 49.": {
     "frame": { "x": 19600, "y": 0, "w": 400, "h": 384 },
@@ -688,10 +688,13 @@
   "size": { "w": 34000, "h": 384 },
   "scale": "1",
   "frameTags": [
+    { "name": "kick", "from": 0, "to": 10, "direction": "forward", "color": "#000000ff" },
+    { "name": "kick2", "from": 11, "to": 23, "direction": "forward", "color": "#000000ff" },
    { "name": "Breath", "from": 21, "to": 24, "direction": "forward", "repeat": "3", "color": "#000000ff" },
    { "name": "walk-up", "from": 25, "to": 30, "direction": "forward", "color": "#000000ff" },
+   { "name": "parking", "from": 31, "to": 43, "direction": "forward", "color": "#000000ff" },
    { "name": "takeoff-gun", "from": 44, "to": 48, "direction": "forward", "color": "#000000ff" },
-   { "name": "Blank", "from": 49, "to": 50, "direction": "forward", "repeat": "5", "color": "#000000ff" },
+   { "name": "Blank", "from": 49, "to": 50, "direction": "forward", "repeat": "10", "color": "#000000ff" },
    { "name": "CarCrash", "from": 51, "to": 64, "direction": "forward", "color": "#000000ff" },
    { "name": "CarBurn", "from": 65, "to": 74, "direction": "forward", "repeat": "3", "color": "#000000ff" }
   ],

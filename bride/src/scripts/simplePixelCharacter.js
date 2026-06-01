@@ -376,7 +376,7 @@ class SimplePixelCharacterManager {
         // addCharacter 기반 애니메이션 리스트
         const addCharacterAnimations = [
             'rabbit-idle', 'information-idle', 'rabbit-hurt', 'hit-rabbit',
-            'leafs', 'lee-back'
+            'leafs', 'lee-back', 'wreath', 'wreath-idle'
         ];
 
         for (const animationName of addCharacterAnimations) {
@@ -724,6 +724,8 @@ class SimplePixelCharacterManager {
         }
 
         const updateFrame = (currentTime) => {
+            console.log(`🎯 updateFrame called: animation=${this.mainCharacter.currentAnimation}, frame=${this.mainCharacter.currentFrame}, isSpreadsheet=${animation.isSpreadsheetBased}`);
+
             // 스프레드시트 기반 애니메이션의 경우 현재 프레임 duration 계산
             let currentFrameDuration = frameDuration;
             if (animation.isSpreadsheetBased && animation.spreadsheetData) {
@@ -764,6 +766,8 @@ class SimplePixelCharacterManager {
             } else {
                 console.warn(`⚠️ No frame images found for: ${this.mainCharacter.currentAnimation}`);
             }
+
+            // 자막 시스템은 startSpreadsheetAnimation에서 처리됨 (구버전 코드 비활성화)
 
             this.mainCharacter.currentFrame++;
 
@@ -1761,6 +1765,12 @@ class SimplePixelCharacterManager {
                 character.isActive = false;
                 console.log(`✅ Spreadsheet animation completed: ${character.id} (${animationSequence.length} frames played)`);
 
+                // 자막이 있는 캐릭터 애니메이션 완료 시 자막 숨기기
+                if (window.subtitleManager && (character.id === 'main' || character.id === 'hit-rabbit' || character.id === 'information' || character.id === 'ending')) {
+                    console.log(`🎬 ${character.id} animation completed - hiding subtitles`);
+                    window.subtitleManager.clearAllSubtitles();
+                }
+
                 // 애니메이션 완료 콜백 호출
                 if (character.id === 'main' && this.mainAnimationCallback) {
                     this.mainAnimationCallback();
@@ -1800,20 +1810,47 @@ class SimplePixelCharacterManager {
             if (character.img) {
                 character.img.src = canvas.toDataURL();
                 character.currentFrame = frameIndex;
+
+                // 자막 시스템 통합 (main, hit-rabbit, information 캐릭터)
+                if (window.subtitleManager) {
+                    if (character.id === 'main') {
+                        // 현재 프레임의 태그 찾기
+                        const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                        console.log(`🎬 Subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+
+                        // 자막 체크 및 표시
+                        window.subtitleManager.checkSubtitle('main', 'section-1', currentTag, frameIndex);
+                    } else if (character.id === 'hit-rabbit') {
+                        // hit-rabbit 캐릭터도 태그 기반으로 자막 처리
+                        const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                        console.log(`🎬 Hit-rabbit subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                        window.subtitleManager.checkSubtitle('hit-rabbit', 'section', currentTag, frameIndex);
+                    } else if (character.id === 'information') {
+                        // information 캐릭터도 태그 기반으로 자막 처리
+                        const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                        console.log(`🎬 Information subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                        window.subtitleManager.checkSubtitle('information', 'section', currentTag, frameIndex);
+                    } else if (character.id === 'ending') {
+                        // ending 캐릭터도 태그 기반으로 자막 처리
+                        const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                        console.log(`🎬 Ending subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                        window.subtitleManager.checkSubtitle('ending', 'section', currentTag, frameIndex);
+                    }
+                }
             } else {
                 console.error(`❌ No img element found for ${character.id}!`);
                 this.onInformationAnimationComplete();
                 return;
             }
 
-            // Information 애니메이션 특정 프레임 콜백
-            if (character.id === 'information') {
-                if (frameIndex === 30) { // walk-up 끝
-                    this.showWreathNotice();
-                } else if (frameIndex === 65) { // CarBurn 시작
-                    this.showParkingNotice();
-                }
-            }
+            // Information 애니메이션 특정 프레임 콜백 (토스트 제거 - 자막으로 대체)
+            // if (character.id === 'information') {
+            //     if (frameIndex === 30) { // walk-up 끝 - 화환 안내는 자막으로 대체
+            //         this.showWreathNotice();
+            //     } else if (frameIndex === 65) { // CarBurn 시작 - 주차 안내는 자막으로 대체
+            //         this.showParkingNotice();
+            //     }
+            // }
 
             // 이미지 표시 강제 확인 (ending 캐릭터인 경우)
             if (character.id === 'ending') {
@@ -2832,6 +2869,24 @@ class SimplePixelCharacterManager {
         console.log('🎉 Idle-wow completed, switched to idle-wow-normal mode');
     }
 
+    // 자막 시스템용 헬퍼 함수: 현재 frameIndex가 어떤 frameTag에 속하는지 찾기
+    getCurrentFrameTag(spreadsheetData, frameIndex) {
+        if (!spreadsheetData || !spreadsheetData.metadata || !spreadsheetData.metadata.frameTags) {
+            return null;
+        }
+
+        const frameTags = spreadsheetData.metadata.frameTags;
+
+        // 각 태그의 from-to 범위와 현재 frameIndex 비교
+        for (const tag of frameTags) {
+            if (frameIndex >= tag.from && frameIndex <= tag.to) {
+                return tag.name;
+            }
+        }
+
+        return null; // 어떤 태그에도 속하지 않는 경우
+    }
+
     // idle-wow 프레임 로직 처리: 1~15 → 11~15를 5회 반복
     handleIdleWowFrameLogic() {
         if (this.idleWowPhase === 1) {
@@ -3787,27 +3842,27 @@ class SimplePixelCharacterManager {
         }
     }
 
-    // 화환 안내 토스트 표시 (walk-up 완료 시)
-    showWreathNotice() {
-        if (this.wreathNoticeShown) {
-            console.log('🌿💐 Wreath notice already shown, skipping');
-            return;
-        }
-        console.log('🌿💐 Showing wreath notice toast');
-        this.wreathNoticeShown = true;
-        this.showToast('wreath-notice-toast');
-    }
+    // 화환 안내 토스트 표시 (walk-up 완료 시) - 자막으로 대체됨
+    // showWreathNotice() {
+    //     if (this.wreathNoticeShown) {
+    //         console.log('🌿💐 Wreath notice already shown, skipping');
+    //         return;
+    //     }
+    //     console.log('🌿💐 Showing wreath notice toast');
+    //     this.wreathNoticeShown = true;
+    //     this.showToast('wreath-notice-toast');
+    // }
 
-    // 주차 안내 토스트 표시 (CarBurn 시작 시)
-    showParkingNotice() {
-        if (this.parkingNoticeShown) {
-            console.log('🅿️🚗 Parking notice already shown, skipping');
-            return;
-        }
-        console.log('🅿️🚗 Showing parking notice toast');
-        this.parkingNoticeShown = true;
-        this.showToast('parking-notice-toast');
-    }
+    // 주차 안내 토스트 표시 (CarBurn 시작 시) - 자막으로 대체됨
+    // showParkingNotice() {
+    //     if (this.parkingNoticeShown) {
+    //         console.log('🅿️🚗 Parking notice already shown, skipping');
+    //         return;
+    //     }
+    //     console.log('🅿️🚗 Showing parking notice toast');
+    //     this.parkingNoticeShown = true;
+    //     this.showToast('parking-notice-toast');
+    // }
 
     // Information 애니메이션 후 상태 복원
     restoreAfterInformation() {

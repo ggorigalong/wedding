@@ -1510,3 +1510,79 @@ body:has(#initial-loading) {
     color: var(--text-secondary);
     line-height: 1.4;
 }
+
+/* ===== SUBTITLE SYSTEM ===== */
+.subtitle-container {
+    position: fixed;
+    bottom: 80px; /* 음악 플레이어 위에 위치 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    z-index: 1001; /* 음악 플레이어보다 위에 */
+    pointer-events: none;
+}
+
+.subtitle-box {
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.subtitle-box.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.subtitle-text {
+    color: white;
+    font-size: 16px;
+    line-height: 1.4;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+
+.dialog-text {
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 40px;
+    -webkit-text-fill-color: #FFFFFF;
+    -webkit-text-stroke: 0.5px #000;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+    .subtitle-container {
+        bottom: 100px; /* 모바일에서는 더 위로 */
+        width: 95%;
+    }
+
+
+    .dialog-text {
+        font-size: 36px;
+        -webkit-text-fill-color: #FFFFFF;
+        -webkit-text-stroke: 0.4px #000;
+    }
+
+    .subtitle-text {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .subtitle-container {
+        bottom: 110px;
+    }
+
+
+    .dialog-text {
+        font-size: 32px;
+        -webkit-text-fill-color: #FFFFFF;
+        -webkit-text-stroke: 0.3px #000;
+    }
+
+    .subtitle-text {
+        font-size: 13px;
+    }
+}

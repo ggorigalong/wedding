@@ -178,9 +178,10 @@
   "frameTags": [
    { "name": "Tag", "from": 0, "to": 2, "direction": "forward", "repeat": "3", "color": "#000000ff" },
    { "name": "Talk", "from": 3, "to": 4, "direction": "forward", "repeat": "8", "color": "#000000ff" },
-   { "name": "Tag", "from": 6, "to": 8, "direction": "forward", "color": "#000000ff" },
-   { "name": "Tag", "from": 9, "to": 10, "direction": "forward", "repeat": "3", "color": "#000000ff" },
-   { "name": "Tag", "from": 12, "to": 17, "direction": "forward", "color": "#000000ff" }
+   { "name": "Side", "from": 6, "to": 8, "direction": "forward", "color": "#000000ff" },
+   { "name": "Side", "from": 9, "to": 10, "direction": "forward", "repeat": "3", "color": "#000000ff" },
+   { "name": "Tag", "from": 12, "to": 17, "direction": "forward", "color": "#000000ff" },
+   { "name": "Mong", "from": 18, "to": 20, "direction": "forward", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Flattened", "opacity": 255, "blendMode": "normal" }

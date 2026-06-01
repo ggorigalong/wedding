@@ -125,7 +125,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 128 },
     "sourceSize": { "w": 100, "h": 128 },
-    "duration": 100
+    "duration": 1000
    },
    "wedding 16.aseprite": {
     "frame": { "x": 1600, "y": 0, "w": 100, "h": 128 },
@@ -133,7 +133,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 128 },
     "sourceSize": { "w": 100, "h": 128 },
-    "duration": 100
+    "duration": 1000
    },
    "wedding 17.aseprite": {
     "frame": { "x": 1700, "y": 0, "w": 100, "h": 128 },
@@ -403,9 +403,11 @@
    { "name": "Touch", "from": 1, "to": 4, "direction": "forward", "repeat": "3", "color": "#000000ff" },
    { "name": "Adjust", "from": 5, "to": 9, "direction": "forward", "repeat": "3", "color": "#000000ff" },
    { "name": "Touch2", "from": 11, "to": 14, "direction": "forward", "repeat": "3", "color": "#000000ff" },
+   { "name": "Touch3", "from": 15, "to": 15, "direction": "forward", "repeat": "1", "color": "#000000ff" },
+
    { "name": "Propose", "from": 16, "to": 19, "direction": "forward", "color": "#000000ff" },
-   { "name": "Tag", "from": 22, "to": 23, "direction": "forward", "repeat": "5", "color": "#000000ff" },
-   { "name": "Tag", "from": 25, "to": 28, "direction": "forward", "repeat": "5", "color": "#000000ff" },
+   { "name": "Tag1", "from": 22, "to": 23, "direction": "forward", "repeat": "5", "color": "#000000ff" },
+   { "name": "Tag2", "from": 25, "to": 28, "direction": "forward", "repeat": "5", "color": "#000000ff" },
    { "name": "GGoduck", "from": 32, "to": 34, "direction": "forward", "color": "#000000ff" },
    { "name": "jump", "from": 35, "to": 40, "direction": "forward", "color": "#000000ff" },
    { "name": "Idle", "from": 43, "to": 48, "direction": "forward", "repeat": "5", "color": "#000000ff" }

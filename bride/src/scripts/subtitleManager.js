@@ -1,0 +1,315 @@
+/**
+ * 🎬 SubtitleManager - 자막 시스템
+ *
+ * Spreadsheet 기반 애니메이션과 PNG 시퀀스 애니메이션에
+ * 동기화된 자막을 표시하는 시스템
+ */
+
+class SubtitleManager {
+    constructor() {
+        this.subtitles = {}; // 자막 데이터 저장소
+        this.currentSubtitle = null; // 현재 표시 중인 자막
+        this.isVisible = false; // 자막 표시 상태
+        this.lastCheckedState = null; // 마지막 체크된 상태 (프레임 포함)
+        this.lastCheckedStateKey = null; // 마지막 체크된 상태 키 (프레임 제외)
+
+        // DOM 요소들
+        this.container = null;
+        this.box = null;
+        this.dialogText = null;
+
+        this.init();
+    }
+
+    /**
+     * 초기화
+     */
+    init() {
+        console.log('🎬 SubtitleManager: Initializing...');
+
+        // DOM 요소 찾기
+        this.container = document.getElementById('subtitleContainer');
+        this.box = document.getElementById('subtitleBox');
+        this.dialogText = document.getElementById('dialogText');
+
+        if (!this.container || !this.box || !this.dialogText) {
+            console.error('❌ SubtitleManager: Required DOM elements not found');
+            return;
+        }
+
+        console.log('✅ SubtitleManager: Initialized successfully');
+
+        // 자막 데이터 로드
+        this.loadSubtitleData();
+    }
+
+    /**
+     * 자막 데이터 로드 (embedded 방식)
+     */
+    loadSubtitleData() {
+        // Section-1 자막 데이터 (애니메이션 태그 기반)
+        this.subtitles = {
+            'main': {
+                'section-1': {
+                    'Talk': {
+                        text: '오늘 저녁 뭐먹지?',
+                        style: 'normal'
+                    },
+                    // 다른 태그들도 추가 가능
+                    'Side': {
+                        text: '내 말 들었어?',
+                        style: 'normal'
+                    },
+                    'Mong': {
+                        text: '오...',
+                        style: 'normal'
+                    }
+                }
+            },
+            'hit-rabbit': {
+                'section': {
+                    'idle': {
+                        text: '엇! 부케다!',
+                        style: 'normal'
+                    },
+                    'request': {
+                        text: '이거 내껀데, 돌려줄래?',
+                        style: 'normal'
+                    },
+                    'deny': {
+                        text: '응~ 주운 사람이 임자죠?',
+                        style: 'normal'
+                    },
+                    'short-ready': {
+                        text: '응~ 주운 사람이 임자죠?',
+                        style: 'normal'
+                    },
+
+                    'fear': {
+                        text: '여기 있습니다요. ㅠㅠ',
+                        style: 'normal'
+                    },
+                    'gun-in': {
+                        text: '굿',
+                        style: 'normal'
+                    },
+                    'transfort': {
+
+                    }
+                }
+            },
+            'information': {
+                'section': {
+                   'kick': {
+                        text: '화한 둘 곳',
+                        style: 'normal'
+                   },
+                   'kick2': {
+                    text: '없어요!',
+                    style: 'normal'
+               },
+               'parking': {
+                    text: '차를~~ 어디에~~ 대지',
+                    style: 'normal'
+               },
+               'takeoff-gun': {
+                        text: '주차장 만차임요.',
+                    style: 'normal'
+               },
+               'Blank': {
+                    text: '넵! 알겠슴다!',
+                    style: 'normal'
+               }
+                }
+            },
+            'ending': {
+                'section': {
+                    'Touch': { text: '너도 토끼 만났어?', style: 'normal' },
+                    'Adjust': { text: '너도 토끼 만났어?', style: 'normal' },
+                    'Touch2': { text: '저는 액괴 만났는데용?', style: 'normal' },
+                    'Touch3': { text: '저는 액괴 만났는데용?', style: 'normal' },
+                    'Propose': { text: '그나저나 결혼 고?', style: 'normal' },
+                    'Tag1': { text: '으으으으음~', style: 'normal' },
+                    'Tag2': { text: '흐으으으음~ ㅋㅋㅋ', style: 'normal' },
+                    'GGoduck': { text: '고', style: 'normal' },
+                    'jump': { text: '끼얏후', style: 'normal' },
+                }
+            }
+          
+        };
+
+        console.log('📝 SubtitleManager: Subtitle data loaded', this.subtitles);
+    }
+
+    /**
+     * 애니메이션 상태에 따른 자막 체크
+     * @param {string} characterId - 캐릭터 ID (main, ha-idle 등)
+     * @param {string} sectionId - 섹션 ID (section-1, section-2 등)
+     * @param {string} currentTag - 현재 애니메이션 태그 (Talk, Side 등)
+     * @param {number} currentFrame - 현재 프레임 번호
+     */
+    checkSubtitle(characterId, sectionId, currentTag = null, currentFrame = null) {
+        // 상태 비교용 키 (프레임 번호 제외)
+        const currentStateKey = `${characterId}-${sectionId}-${currentTag}`;
+        const fullCurrentState = `${characterId}-${sectionId}-${currentTag}-${currentFrame}`;
+
+        // 같은 태그 상태에서는 중복 처리 방지
+        if (this.lastCheckedStateKey === currentStateKey) {
+            this.lastCheckedState = fullCurrentState;
+            return;
+        }
+
+        // 이전 상태에서 태그가 변경되었는지 확인
+        if (this.lastCheckedStateKey && this.lastCheckedStateKey !== currentStateKey) {
+            const previousState = this.lastCheckedStateKey.split('-');
+            const previousCharacterId = previousState[0] || null;
+            const previousSectionId = previousState[1] || null;
+            const previousTag = previousState[2] || null;
+
+            console.log(`🔄 SubtitleManager: State changed from ${previousCharacterId}/${previousSectionId}/${previousTag} to ${characterId}/${sectionId}/${currentTag} - hiding previous subtitle`);
+            this.hideSubtitle();
+        }
+
+        this.lastCheckedStateKey = currentStateKey;
+        this.lastCheckedState = fullCurrentState;
+
+        console.log(`🔍 SubtitleManager: Checking subtitle for ${characterId}/${sectionId}/${currentTag}/${currentFrame}`);
+
+        // 해당 캐릭터와 섹션의 자막 데이터 찾기
+        const characterData = this.subtitles[characterId];
+        if (!characterData) {
+            this.hideSubtitle();
+            return;
+        }
+
+        const sectionData = characterData[sectionId];
+        if (!sectionData) {
+            this.hideSubtitle();
+            return;
+        }
+
+        // 현재 태그에 해당하는 자막 찾기
+        if (currentTag && sectionData[currentTag]) {
+            const subtitleData = sectionData[currentTag];
+            this.showSubtitle(subtitleData);
+        } else {
+            this.hideSubtitle();
+        }
+    }
+
+    /**
+     * 자막 표시
+     * @param {Object} subtitleData - 자막 데이터 {text, style}
+     */
+    showSubtitle(subtitleData) {
+        if (!this.container || !this.box) return;
+
+        console.log('🎬 SubtitleManager: Showing subtitle', subtitleData);
+
+        // 이미 같은 자막이 표시 중이면 스킵
+        if (this.currentSubtitle &&
+            this.currentSubtitle.text === subtitleData.text) {
+            return;
+        }
+
+        this.currentSubtitle = subtitleData;
+
+        // 대사 텍스트만 설정
+        this.dialogText.textContent = subtitleData.text;
+
+        // 스타일 적용 (추후 확장 가능)
+        this.box.className = `subtitle-box visible ${subtitleData.style || 'normal'}`;
+
+        // 컨테이너 표시
+        this.container.style.display = 'block';
+        this.isVisible = true;
+
+        console.log('✅ SubtitleManager: Subtitle displayed successfully');
+    }
+
+    /**
+     * 자막 숨기기
+     */
+    hideSubtitle() {
+        if (!this.isVisible || !this.container || !this.box) return;
+
+        console.log('🚫 SubtitleManager: Hiding subtitle');
+
+        this.box.classList.remove('visible');
+        this.currentSubtitle = null;
+        this.isVisible = false;
+
+        // 애니메이션 완료 후 컨테이너 숨기기
+        setTimeout(() => {
+            if (!this.isVisible && this.container) {
+                this.container.style.display = 'none';
+            }
+        }, 300); // CSS transition 시간과 맞춤
+    }
+
+    /**
+     * 강제로 모든 자막 클리어 (섹션 전환 시 사용)
+     */
+    clearAllSubtitles() {
+        console.log('🧹 SubtitleManager: Clearing all subtitles');
+        this.lastCheckedState = null;
+        this.lastCheckedStateKey = null;
+        this.hideSubtitle();
+    }
+
+    /**
+     * 자막 데이터 동적 추가 (개발용)
+     * @param {string} characterId
+     * @param {string} sectionId
+     * @param {string} tag
+     * @param {Object} subtitleData
+     */
+    addSubtitle(characterId, sectionId, tag, subtitleData) {
+        if (!this.subtitles[characterId]) {
+            this.subtitles[characterId] = {};
+        }
+        if (!this.subtitles[characterId][sectionId]) {
+            this.subtitles[characterId][sectionId] = {};
+        }
+
+        this.subtitles[characterId][sectionId][tag] = subtitleData;
+        console.log(`➕ SubtitleManager: Added subtitle for ${characterId}/${sectionId}/${tag}`, subtitleData);
+    }
+
+    /**
+     * 테스트용 메서드 - 자막 강제 표시
+     */
+    testSubtitle() {
+        console.log('🧪 SubtitleManager: Testing subtitle display');
+        this.showSubtitle({
+            text: '테스트 자막입니다!',
+            style: 'normal'
+        });
+
+        // 3초 후 자동 숨김
+        setTimeout(() => {
+            this.hideSubtitle();
+        }, 3000);
+    }
+
+    /**
+     * Talk 태그 테스트용 메서드
+     */
+    testTalkSubtitle() {
+        console.log('🧪 SubtitleManager: Testing Talk subtitle');
+        this.checkSubtitle('main', 'section-1', 'Talk', 3);
+    }
+
+    /**
+     * Tag 태그 테스트용 메서드
+     */
+    testTagSubtitle() {
+        console.log('🧪 SubtitleManager: Testing Tag subtitle');
+        this.checkSubtitle('main', 'section-1', 'Tag', 0);
+    }
+}
+
+// 전역 export
+window.SubtitleManager = SubtitleManager;
+
+export default SubtitleManager;

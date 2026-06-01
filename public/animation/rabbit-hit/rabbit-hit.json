@@ -376,15 +376,15 @@
   "size": { "w": 2392, "h": 36 },
   "scale": "1",
   "frameTags": [
-   { "name": "idle", "from": 0, "to": 6, "direction": "forward", "repeat": "3", "color": "#000000ff" },
-   { "name": "request", "from": 7, "to": 11, "direction": "forward", "repeat": "1", "color": "#000000ff" },
-   { "name": "deny", "from": 12, "to": 15, "direction": "forward", "repeat": "1", "color": "#000000ff" },
-   { "name": "short-ready", "from": 16, "to": 22, "direction": "forward", "repeat": "1", "color": "#000000ff" },
-   { "name": "fear", "from": 25, "to": 26, "direction": "forward", "repeat": "10", "color": "#000000ff" },
-   { "name": "gun-in", "from": 27, "to": 33, "direction": "forward", "color": "#000000ff" },
-   { "name": "getflower", "from": 34, "to": 40, "direction": "forward", "color": "#000000ff" },
-   { "name": "idle", "from": 41, "to": 45, "direction": "forward", "color": "#000000ff" }
-  ],
+    { "name": "idle", "from": 0, "to": 6, "direction": "forward", "repeat": "3", "color": "#000000ff" },
+    { "name": "request", "from": 7, "to": 11, "direction": "forward", "repeat": "1", "color": "#000000ff" },
+    { "name": "deny", "from": 12, "to": 15, "direction": "forward", "repeat": "1", "color": "#000000ff" },
+    { "name": "short-ready", "from": 16, "to": 22, "direction": "forward", "repeat": "1", "color": "#000000ff" },
+    { "name": "fear", "from": 25, "to": 26, "direction": "forward", "repeat": "10", "color": "#000000ff" },
+    { "name": "gun-in", "from": 27, "to": 33, "direction": "forward", "color": "#000000ff" },
+    { "name": "getflower", "from": 34, "to": 40, "direction": "forward", "color": "#000000ff" },
+    { "name": "transfort", "from": 41, "to": 45, "direction": "forward", "color": "#000000ff" }
+   ],
   "layers": [
    { "name": "Layer 3", "opacity": 255, "blendMode": "normal" },
    { "name": "Layer", "opacity": 255, "blendMode": "normal" },

@@ -393,10 +393,6 @@ class ManualScrollManager {
             console.log(`📍 Section ${section.id} (index ${index}): translateY(${targetY}vh)`);
         });
 
-        // Section-8 접근시 특별 애니메이션
-        if (this.currentSection === 8) {
-            this.triggerSection8Animation();
-        }
 
         // Section-9 접근시 로그
         if (this.currentSection === 9) {
@@ -407,64 +403,6 @@ class ManualScrollManager {
         console.log(`🎯 Manual Scroll: currentSection = ${this.currentSection}, maxSections = ${this.maxSections}`);
     }
 
-    // Section-8 지진 및 enemy-hit 애니메이션
-    triggerSection8Animation() {
-        // 스크롤 잠금
-        this.scrollLocked = true;
-        this.lockReason = 'Section8 animation sequence';
-        console.log('🔒 Scroll locked for Section8 animation');
-
-        // enemy_run 애니메이션 트리거
-        const pixelManager = window.pixelCharacterManager ||
-                           window.SimplePixelCharacterManager ||
-                           document.querySelector('#pixel-character-container')?.__pixelManager;
-
-        if (pixelManager && pixelManager.triggerEnemyRun) {
-            pixelManager.triggerEnemyRun();
-        } else if (window.pixelCharacterManager) {
-            window.pixelCharacterManager.triggerEnemyRun();
-        } else {
-            // pixelCharacterManager가 없으면 임시 애니메이션 실행
-            this.createTemporaryEnemyRun();
-        }
-    }
-
-    // JavaScript 지진 효과
-    triggerEarthquakeEffect() {
-        const duration = 500;
-        const strength = 50;
-
-        const body = document.body;
-        const start = performance.now();
-
-        const shake = (now) => {
-            const elapsed = now - start;
-
-            if (elapsed < duration) {
-                const decay = 1 - elapsed / duration;
-
-                const x = Math.round((Math.random() - 0.5) * strength * decay);
-                const y = Math.round((Math.random() - 0.5) * strength * decay);
-
-                const rotate = (Math.random() - 0.5) * 2 * decay;
-
-                body.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
-
-                requestAnimationFrame(shake);
-            } else {
-                body.style.transform = "";
-                // 지진 완료 후 스크롤 잠금 해제
-                this.scrollLocked = false;
-                this.lockReason = '';
-                console.log('🔓 Scroll unlocked after Section8 animation complete');
-
-                // 캐릭터 애니메이션을 leafsflowerdouble 버전으로 변경
-                this.switchToLeafsFlowerDouble();
-            }
-        };
-
-        requestAnimationFrame(shake);
-    }
 
     // 캐릭터를 leafsflowerdouble 버전으로 전환
     switchToLeafsFlowerDouble() {
@@ -605,120 +543,6 @@ class ManualScrollManager {
         }, 500);
     }
 
-    // 임시 enemy-hit 애니메이션 (pixelCharacterManager 없을 때)
-    createTemporaryEnemyRun() {
-        console.log('🏃 Creating temporary enemy_run animation');
-
-        const enemyRunElement = document.createElement('img');
-        enemyRunElement.style.position = 'fixed';
-        enemyRunElement.style.left = '50%';
-        enemyRunElement.style.top = '10vh';
-        enemyRunElement.style.transform = 'translateX(-50%) scale(2)'; // 32px * 3 = 96px와 동일
-        enemyRunElement.style.imageRendering = 'pixelated';
-        enemyRunElement.style.imageRendering = '-moz-crisp-edges';
-        enemyRunElement.style.imageRendering = 'crisp-edges';
-        enemyRunElement.style.zIndex = '99999';
-        enemyRunElement.style.opacity = '1';
-        enemyRunElement.style.pointerEvents = 'none';
-
-        let currentFrame = 1;
-        const totalFrames = 6; // enemy_run1.png ~ enemy_run6.png
-        const frameInterval = 100; // 100ms 간격
-        let currentY = 10; // 10vh에서 시작
-
-        const animate = () => {
-            // 프레임 업데이트
-            const imagePath = `/animation/enemy_run/enemy_run${currentFrame}.png`;
-            enemyRunElement.src = imagePath;
-
-            // 위로 이동 (매 프레임마다 1vh씩 위로)
-            currentY -= 1;
-            enemyRunElement.style.top = `${currentY}vh`;
-
-            // 화면 위쪽으로 완전히 사라지면 enemy-hit 시퀀스 실행
-            if (currentY < -15) {
-                // enemy-run 애니메이션 제거
-                if (enemyRunElement.parentNode) {
-                    enemyRunElement.parentNode.removeChild(enemyRunElement);
-                }
-                // enemy-hit 시퀀스 실행
-                this.triggerEnemyHitSequenceTemp();
-                return;
-            }
-
-            // 다음 프레임으로
-            currentFrame++;
-            if (currentFrame > totalFrames) {
-                currentFrame = 1;
-            }
-
-            // 다음 프레임 스케줄링 (계속 반복)
-            setTimeout(animate, frameInterval);
-        };
-
-        document.body.appendChild(enemyRunElement);
-        animate(); // 첫 프레임 시작
-    }
-
-    // 임시 Enemy Hit 시퀀스 (pixelCharacterManager 없을 때)
-    triggerEnemyHitSequenceTemp() {
-        console.log('💥 Starting temporary enemy-hit sequence');
-
-        const positions = [
-            { top: '0vh', image: 1 },      // 화면 최상단
-            { top: '70vh', image: 2 },     // 70vh 위치
-            { top: '100vh', image: 3 }     // 화면 맨끝
-        ];
-
-        let currentIndex = 0;
-        const frameInterval = 25; // 더 빠른 프레임 (50ms)
-
-        const showNextHit = () => {
-            if (currentIndex >= positions.length) {
-                // 모든 enemy-hit 완료 후 지진 효과
-                console.log('💥 Enemy-hit sequence completed, starting earthquake');
-                this.triggerEarthquakeEffect();
-                return;
-            }
-
-            const pos = positions[currentIndex];
-            this.createEnemyHitElementTemp(pos.top, pos.image);
-            currentIndex++;
-
-            // 다음 hit을 스케줄링
-            setTimeout(showNextHit, frameInterval);
-        };
-
-        // 시퀀스 시작
-        showNextHit();
-    }
-
-    // 임시 개별 Enemy Hit 엘리먼트 생성
-    createEnemyHitElementTemp(topPosition, imageNumber) {
-        const enemyHitElement = document.createElement('img');
-        enemyHitElement.src = `/animation/enemy-hit/enemy-hit${imageNumber}.png`;
-        enemyHitElement.style.position = 'fixed';
-        enemyHitElement.style.left = '50%';
-        enemyHitElement.style.top = topPosition;
-        enemyHitElement.style.transform = 'translateX(-50%) scale(3)'; // 32px * 3 = 96px와 동일
-        enemyHitElement.style.imageRendering = 'pixelated';
-        enemyHitElement.style.imageRendering = '-moz-crisp-edges';
-        enemyHitElement.style.imageRendering = 'crisp-edges';
-        enemyHitElement.style.zIndex = '99999';
-        enemyHitElement.style.opacity = '1';
-        enemyHitElement.style.pointerEvents = 'none';
-
-        document.body.appendChild(enemyHitElement);
-
-        // 25ms 후 제거 (다음 hit이 나오기 전에 제거)
-        setTimeout(() => {
-            if (enemyHitElement.parentNode) {
-                enemyHitElement.parentNode.removeChild(enemyHitElement);
-            }
-        }, 25);
-
-        console.log(`💥 Enemy-hit${imageNumber} displayed at ${topPosition}`);
-    }
 
     // 캐릭터 위치 업데이트 (현재 섹션 내에서의 미세한 움직임)
     updateCharacterPosition() {

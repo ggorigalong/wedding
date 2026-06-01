@@ -248,7 +248,6 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     const initTestPanel = () => {
         if (window.pixelCharacterManager) {
             window.pixelTestPanel.init();
-            console.log('🎮 Pixel Test Panel initialized (Ctrl+P to toggle)');
         } else {
             setTimeout(initTestPanel, 100);
         }

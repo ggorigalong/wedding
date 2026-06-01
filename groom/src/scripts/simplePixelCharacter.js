@@ -1352,6 +1352,12 @@ class SimplePixelCharacterManager {
                 character.isActive = false;
                 console.log(`✅ Spreadsheet animation completed: ${character.id} (${animationSequence.length} frames played)`);
 
+                // 자막이 있는 캐릭터 애니메이션 완료 시 자막 숨기기
+                if (window.subtitleManager && (character.id === 'main' || character.id === 'hit-rabbit' || character.id === 'information' || character.id === 'ending')) {
+                    console.log(`🎬 ${character.id} animation completed - hiding subtitles`);
+                    window.subtitleManager.clearAllSubtitles();
+                }
+
                 // 애니메이션 완료 콜백 호출
                 if (character.id === 'main' && this.mainAnimationCallback) {
                     this.mainAnimationCallback();
@@ -1404,13 +1410,31 @@ class SimplePixelCharacterManager {
 
             console.log(`🎬 Sequence ${sequenceIndex + 1}/${animationSequence.length} - Frame ${frameIndex}: sprite(${frameData.spriteX},${frameData.spriteY},${frameData.spriteWidth}x${frameData.spriteHeight}) (${frameData.duration}ms)`);
 
-            // 자막 시스템 통합 (information 캐릭터)
-            if (window.subtitleManager && character.id === 'information') {
-                // information 캐릭터도 태그 기반으로 자막 처리
-                console.log("ㅣㅆ발:", character.spreadsheetData, frameIndex)
-                const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
-                console.log(`🎬 Information subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
-                window.subtitleManager.checkSubtitle('information', 'section', currentTag, frameIndex);
+            // 자막 시스템 통합 (main, hit-rabbit, information, ending 캐릭터)
+            if (window.subtitleManager) {
+                if (character.id === 'main') {
+                    // 현재 프레임의 태그 찾기
+                    const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                    console.log(`🎬 Subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+
+                    // 자막 체크 및 표시
+                    window.subtitleManager.checkSubtitle('main', 'section-1', currentTag, frameIndex);
+                } else if (character.id === 'hit-rabbit') {
+                    // hit-rabbit 캐릭터도 태그 기반으로 자막 처리
+                    const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                    console.log(`🎬 Hit-rabbit subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                    window.subtitleManager.checkSubtitle('hit-rabbit', 'section', currentTag, frameIndex);
+                } else if (character.id === 'information') {
+                    // information 캐릭터도 태그 기반으로 자막 처리
+                    const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                    console.log(`🎬 Information subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                    window.subtitleManager.checkSubtitle('information', 'section', currentTag, frameIndex);
+                } else if (character.id === 'ending') {
+                    // ending 캐릭터도 태그 기반으로 자막 처리
+                    const currentTag = this.getCurrentFrameTag(character.spreadsheetData, frameIndex);
+                    console.log(`🎬 Ending subtitle check - Frame ${frameIndex}, Tag: ${currentTag}`);
+                    window.subtitleManager.checkSubtitle('ending', 'section', currentTag, frameIndex);
+                }
             }
 
             // 다음 프레임 스케줄링
@@ -1843,8 +1867,8 @@ class SimplePixelCharacterManager {
             return;
         }
 
-        // wreath 또는 information 애니메이션 중에는 상태 전환 무시
-        if (this.isWreathPlaying || this.isInformationPlaying) {
+        // Section-7에서 wreath 또는 information 애니메이션 중에는 상태 전환 무시
+        if (sectionIndex === 7 && (this.isWreathPlaying || this.isInformationPlaying)) {
             console.log(`🌿⏸️ Ignoring section movement during wreath/information animation (wreath: ${this.isWreathPlaying}, info: ${this.isInformationPlaying})`);
             return;
         }
@@ -3090,7 +3114,12 @@ class SimplePixelCharacterManager {
         // Location 전체 정보 표시는 애니메이션 완료 콜백에서 직접 호출됨
         // 통합 캐릭터 다시 보이기 (rabbit 방식과 동일)
         this.showUnifiedCharacter();
-        // 현재 스크롤 상태에 따라 적절한 애니메이션 시작 (rabbit 패턴과 동일)
+
+        // LeafsFlowerDouble 플래그 설정 (신부와 동일한 로직)
+        this.hasLeafsFlowerDouble = true;
+        console.log('🌸✨ LeafsFlowerDouble flag activated after information animation!');
+
+        // 현재 스크롤 상태에 따라 적절한 애니메이션 시작 (leafsflowerdouble 적용)
         const initialAnimation = this.isScrolling ? 'lee-run' : 'lee-idle';
         console.log(`🌿 Starting initial animation: ${initialAnimation}`);
         this.switchToState(initialAnimation);
@@ -3238,6 +3267,24 @@ class SimplePixelCharacterManager {
         if (this.currentToast) {
             this.hideToast(this.currentToast);
         }
+    }
+
+    // 자막 시스템용 헬퍼 함수: 현재 frameIndex가 어떤 frameTag에 속하는지 찾기
+    getCurrentFrameTag(spreadsheetData, frameIndex) {
+        if (!spreadsheetData || !spreadsheetData.metadata || !spreadsheetData.metadata.frameTags) {
+            return null;
+        }
+
+        const frameTags = spreadsheetData.metadata.frameTags;
+
+        // 각 태그의 from-to 범위와 현재 frameIndex 비교
+        for (const tag of frameTags) {
+            if (frameIndex >= tag.from && frameIndex <= tag.to) {
+                return tag.name;
+            }
+        }
+
+        return null; // 해당하는 태그 없음
     }
 
     // 현재 상태 정보

@@ -40,7 +40,6 @@ function playAudio() {
 
     bgm.volume = 0.7; // 직접 재생시에는 바로 볼륨 설정
     bgm.play().catch(e => {
-        console.log('Audio play failed:', e);
     });
 
     isPlaying = true;
@@ -74,19 +73,14 @@ function updatePlayerUI() {
 // BGM 페이드인 함수
 function fadeinBGM(duration = 3000) {
     if (!bgm) {
-        console.log('❌ BGM element not found');
         return;
     }
 
-    console.log('🔍 DEBUG fadeinBGM: userHasInteracted =', userHasInteracted);
 
     if (!userHasInteracted) {
-        console.log('⚠️ Cannot auto-play audio - user interaction required first');
-        console.log('🔍 Please click/tap anywhere on the page first');
         return;
     }
 
-    console.log('🎵 Starting BGM fadein...');
 
     // BGM 시작
     bgm.currentTime = 0;
@@ -95,7 +89,6 @@ function fadeinBGM(duration = 3000) {
     const playPromise = bgm.play();
     if (playPromise !== undefined) {
         playPromise.then(() => {
-            console.log('🎵 BGM started successfully');
             isPlaying = true;
 
             // 새로운 플레이어 UI 업데이트
@@ -116,14 +109,12 @@ function fadeinBGM(duration = 3000) {
                 if (progress < 1) {
                     requestAnimationFrame(fadeStep);
                 } else {
-                    console.log(`🎵 BGM fadein completed (${duration}ms)`);
                 }
             }
 
             requestAnimationFrame(fadeStep);
 
         }).catch(e => {
-            console.log('❌ BGM play failed:', e);
         });
     }
 }
@@ -134,7 +125,6 @@ function copyAddress(address) {
         navigator.clipboard.writeText(address).then(() => {
             showCopyFeedback('주소가 복사되었습니다!');
         }).catch(err => {
-            console.error('복사 실패:', err);
             fallbackCopyTextToClipboard(address, '주소가 복사되었습니다!');
         });
     } else {
@@ -148,7 +138,6 @@ function copyAccount(accountNumber) {
         navigator.clipboard.writeText(accountNumber).then(() => {
             showCopyFeedback();
         }).catch(err => {
-            console.error('복사 실패:', err);
             fallbackCopyTextToClipboard(accountNumber);
         });
     } else {
@@ -171,7 +160,6 @@ function fallbackCopyTextToClipboard(text, message = '계좌번호가 복사되�
         document.execCommand('copy');
         showCopyFeedback(message);
     } catch (err) {
-        console.error('Copy failed:', err);
         showCopyError();
     }
 
@@ -307,7 +295,6 @@ function initKakaoMap() {
         infowindow.open(map, marker);
 
     } catch (error) {
-        console.error('카카오맵 초기화 실패:', error);
         showDemoMap();
     }
 }
@@ -366,7 +353,6 @@ function smoothScroll(target) {
 // 모든 애니메이션이 직접 제어됨
 function initScrollAnimations() {
     // 수동 스크롤 시스템에서는 필요없음
-    console.log('📢 Scroll animations handled by manual scroll system');
 }
 
 // Image lazy loading (for browsers that don't support native lazy loading)
@@ -397,7 +383,6 @@ import('./manualScroll.js').then(module => {
     window.manualScrollManager = new ManualScrollManager();
     window.manualScrollManager.init();
 }).catch(err => {
-    console.log('Manual scroll system not available:', err);
 });
 
 // 간소화된 픽셀 캐릭터 시스템
@@ -405,29 +390,23 @@ import('./simplePixelCharacter.js').then(async module => {
     const SimplePixelCharacterManager = module.default;
     window.pixelCharacterManager = new SimplePixelCharacterManager();
     await window.pixelCharacterManager.init();
-    console.log('✅ Pixel character system ready with spreadsheet data');
 }).catch(err => {
-    console.log('Simple pixel character system not available:', err);
 });
 
 // 자막 시스템 import
 import('./subtitleManager.js').then(module => {
     const SubtitleManager = module.default;
     window.subtitleManager = new SubtitleManager();
-    console.log('✅ Subtitle system ready');
 }).catch(err => {
-    console.log('Subtitle system not available:', err);
 });
 
 // 픽셀 캐릭터 초기화 (간소화됨)
 function initPixelCharacters() {
     // 새로운 시스템에서는 자동으로 초기화됨
-    console.log('✅ Simple pixel character system ready');
 }
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🎉 Wedding invitation app with manual scroll system initialized');
 
     // 기본 기능들 초기화
     initAudioControl();
@@ -449,7 +428,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const enableAudioContext = () => {
         if (!userHasInteracted) {
             userHasInteracted = true;
-            console.log('✅ User interaction detected - audio context enabled');
 
             // BGM을 미리 로드하고 준비상태로 만들기
             if (bgm) {
@@ -460,9 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     playPromise.then(() => {
                         bgm.pause();
                         bgm.currentTime = 0;
-                        console.log('🎵 Audio context prepared for auto-play');
                     }).catch(e => {
-                        console.log('Audio context preparation failed:', e);
                     });
                 }
             }
@@ -480,13 +456,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize gallery popup
     galleryPopup = new GalleryPopup();
     galleryPopup.init();
-    console.log('🖼️ Gallery popup system initialized');
 
     // 시스템 준비 확인
     setTimeout(() => {
         if (window.manualScrollManager && window.pixelCharacterManager) {
-            console.log('✅ All systems ready!');
-            console.log('📱 Use scroll wheel, swipe, or arrow keys to navigate');
 
         }
     }, 1000);
@@ -686,7 +659,6 @@ document.addEventListener('visibilitychange', function() {
     if (document.hidden && isPlaying) {
         bgm.pause();
     } else if (!document.hidden && isPlaying) {
-        bgm.play().catch(e => console.log('Resume play failed:', e));
     }
 });
 
@@ -792,10 +764,6 @@ function getGalleryImagePosition() {
 function logGalleryImagePosition() {
     const position = getGalleryImagePosition();
     if (position) {
-        console.log('🖼️ Gallery Image Position:', position);
-        console.log(`📍 Image Top: ${position.imageArea.top}px (${(position.imageArea.top / position.viewport.height * 100).toFixed(1)}%)`);
-        console.log(`📍 Image Bottom: ${position.imageArea.bottom}px (${(position.imageArea.bottom / position.viewport.height * 100).toFixed(1)}%)`);
-        console.log(`📏 Image Height: ${position.imageArea.height}px`);
     }
     return position;
 }
@@ -955,7 +923,6 @@ class GalleryPopup {
         };
 
         preloadImg.onerror = () => {
-            console.error('Failed to load image:', newSrc);
             this.loading.style.display = 'none';
             this.image.style.opacity = '1';
             this.isLoading = false;

@@ -25,7 +25,6 @@ class SubtitleManager {
      * 초기화
      */
     init() {
-        console.log('🎬 SubtitleManager: Initializing...');
 
         // DOM 요소 찾기
         this.container = document.getElementById('subtitleContainer');
@@ -33,11 +32,9 @@ class SubtitleManager {
         this.dialogText = document.getElementById('dialogText');
 
         if (!this.container || !this.box || !this.dialogText) {
-            console.error('❌ SubtitleManager: Required DOM elements not found');
             return;
         }
 
-        console.log('✅ SubtitleManager: Initialized successfully');
 
         // 자막 데이터 로드
         this.loadSubtitleData();
@@ -101,17 +98,17 @@ class SubtitleManager {
                 'section': {
                     'Touch': { text: '너도 토끼 만났어?', style: 'normal' },
                     'Adjust': { text: '너도 토끼 만났어?', style: 'normal' },
-                    'Touch2': { text: '나는 액괴 만났는데?', style: 'normal' },
-                    'Propose': { text: '결혼 고?', style: 'normal' },
-                    'Tag': { text: '으으으으음~', style: 'normal' },
+                    'Touch2': { text: '저는 액괴 만났는데용?', style: 'normal' },
+                    'Touch3': { text: '저는 액괴 만났는데용?', style: 'normal' },
+                    'Propose': { text: '그나저나 결혼 고?', style: 'normal' },
+                    'Tag1': { text: '으으으으음~', style: 'normal' },
+                    'Tag2': { text: '흐으으으음~ ㅋㅋㅋ', style: 'normal' },
                     'GGoduck': { text: '고', style: 'normal' },
                     'jump': { text: '끼얏후', style: 'normal' },
-                    'Idle': { text: '행복해...', style: 'normal' }
                 }
             }
         };
 
-        console.log('📝 SubtitleManager: Subtitle data loaded', this.subtitles);
     }
 
     /**
@@ -139,14 +136,12 @@ class SubtitleManager {
             const previousSectionId = previousState[1] || null;
             const previousTag = previousState[2] || null;
 
-            console.log(`🔄 SubtitleManager: State changed from ${previousCharacterId}/${previousSectionId}/${previousTag} to ${characterId}/${sectionId}/${currentTag} - hiding previous subtitle`);
             this.hideSubtitle();
         }
 
         this.lastCheckedStateKey = currentStateKey;
         this.lastCheckedState = fullCurrentState;
 
-        console.log(`🔍 SubtitleManager: Checking subtitle for ${characterId}/${sectionId}/${currentTag}/${currentFrame}`);
 
         // 해당 캐릭터와 섹션의 자막 데이터 찾기
         const characterData = this.subtitles[characterId];
@@ -177,7 +172,6 @@ class SubtitleManager {
     showSubtitle(subtitleData) {
         if (!this.container || !this.box) return;
 
-        console.log('🎬 SubtitleManager: Showing subtitle', subtitleData);
 
         // 이미 같은 자막이 표시 중이면 스킵
         if (this.currentSubtitle &&
@@ -197,7 +191,6 @@ class SubtitleManager {
         this.container.style.display = 'block';
         this.isVisible = true;
 
-        console.log('✅ SubtitleManager: Subtitle displayed successfully');
     }
 
     /**
@@ -206,7 +199,6 @@ class SubtitleManager {
     hideSubtitle() {
         if (!this.isVisible || !this.container || !this.box) return;
 
-        console.log('🚫 SubtitleManager: Hiding subtitle');
 
         this.box.classList.remove('visible');
         this.currentSubtitle = null;
@@ -224,7 +216,6 @@ class SubtitleManager {
      * 강제로 모든 자막 클리어 (섹션 전환 시 사용)
      */
     clearAllSubtitles() {
-        console.log('🧹 SubtitleManager: Clearing all subtitles');
         this.lastCheckedState = null;
         this.lastCheckedStateKey = null;
         this.hideSubtitle();
@@ -246,14 +237,12 @@ class SubtitleManager {
         }
 
         this.subtitles[characterId][sectionId][tag] = subtitleData;
-        console.log(`➕ SubtitleManager: Added subtitle for ${characterId}/${sectionId}/${tag}`, subtitleData);
     }
 
     /**
      * 테스트용 메서드 - 자막 강제 표시
      */
     testSubtitle() {
-        console.log('🧪 SubtitleManager: Testing subtitle display');
         this.showSubtitle({
             text: '테스트 자막입니다!',
             style: 'normal'
@@ -269,7 +258,6 @@ class SubtitleManager {
      * Idle 태그 테스트용 메서드
      */
     testIdleSubtitle() {
-        console.log('🧪 SubtitleManager: Testing Idle subtitle');
         this.checkSubtitle('section1', 'section', 'Idle', 0);
     }
 
@@ -277,7 +265,6 @@ class SubtitleManager {
      * Swipe 태그 테스트용 메서드
      */
     testSwipeSubtitle() {
-        console.log('🧪 SubtitleManager: Testing Swipe subtitle');
         this.checkSubtitle('section1', 'section', 'Swipe', 0);
     }
 }

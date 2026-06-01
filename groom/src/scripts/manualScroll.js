@@ -634,11 +634,11 @@ class ManualScrollManager {
 
     // 모든 섹션에서 캐릭터 Y축 이동 처리
     handleCharacterMovement(delta, currentSectionIndex) {
-        // Section-7에서 wreath 애니메이션 중에는 캐릭터 움직임 차단
+        // Section-7에서 wreath 또는 information 애니메이션 중에는 캐릭터 움직임 차단
         if (currentSectionIndex === 7 &&
             window.pixelCharacterManager &&
-            window.pixelCharacterManager.isWreathPlaying) {
-            console.log('🌿🚫 Blocking character movement during wreath animation');
+            (window.pixelCharacterManager.isWreathPlaying || window.pixelCharacterManager.isInformationPlaying)) {
+            console.log('🌿🚫 Blocking character movement during wreath or information animation');
             return;
         }
 
@@ -652,11 +652,16 @@ class ManualScrollManager {
         this[sectionKey] += delta * 0.002; // 0.002 → 0.0005 (4배 감소)
         this[sectionKey] = Math.max(-0.3, Math.min(1.5, this[sectionKey])); // -0.3~1.5 범위 (위로도 이동 가능)
 
-        console.log(`🏃 Section-${currentSectionIndex} Character Y progress: ${(this[sectionKey] * 100).toFixed(1)}%`);
+        // Section-7만 특별히 로그 추가
+        if (currentSectionIndex === 7) {
+            console.log(`🟡 Section-7 progress: ${this[sectionKey].toFixed(3)} (${(this[sectionKey] * 100).toFixed(1)}%)`);
+        }
 
         // 포털 시스템: 아래로 1.5 이상이면 다음 섹션으로, 위로 -0.2 이하면 이전 섹션으로
         if (this[sectionKey] >= 1.5) {
-            console.log(`🚪 Character reached bottom portal (150%) - moving to Section-${currentSectionIndex + 1}`);
+            if (currentSectionIndex === 7) {
+                console.log(`🚪 Section-7 portal triggered at ${this[sectionKey].toFixed(3)} (${(this[sectionKey] * 100).toFixed(1)}%)`);
+            }
             this.triggerPortalTransition(currentSectionIndex, 'down');
             return;
         } else if (this[sectionKey] <= -0.2 && currentSectionIndex >= 1) {

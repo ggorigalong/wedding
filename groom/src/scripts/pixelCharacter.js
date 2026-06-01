@@ -41,7 +41,6 @@ class PixelCharacterManager {
         this.setupScrollBlocking();
         this.isInitialized = true;
 
-        console.log('Pixel Character System initialized');
     }
 
     // Create main container for characters
@@ -132,11 +131,9 @@ class PixelCharacterManager {
 
         // Handle image loading
         gif.onload = () => {
-            console.log(`Character ${character.id} loaded: ${gif.naturalWidth}x${gif.naturalHeight}`);
         };
 
         gif.onerror = () => {
-            console.error(`Failed to load character: ${gif.src}`);
         };
 
         element.appendChild(gif);
@@ -155,7 +152,6 @@ class PixelCharacterManager {
 
             // Debug logging for initial scroll detection
             if (!this.hasAnimationPlayed && scrollY > 0) {
-                console.log(`📊 Scroll detected: ${scrollY}px (Animation played: ${this.hasAnimationPlayed}, Playing: ${this.isAnimationPlaying})`);
             }
 
             if (!this.scrollBlocked) {
@@ -224,7 +220,6 @@ class PixelCharacterManager {
         const triggerPoint = 5; // Just 5px scroll triggers animation
 
         if (scrollY > triggerPoint && !this.isAnimationPlaying && !this.hasAnimationPlayed) {
-            console.log(`🎬 Section transition triggered at scrollY: ${scrollY}px`);
             this.startSectionTransition();
         }
     }
@@ -235,7 +230,6 @@ class PixelCharacterManager {
         const significantScroll = 100; // 100px scroll threshold
 
         if (scrollY > significantScroll && !this.hasAnimationPlayed && !this.isAnimationPlaying) {
-            console.log(`🚨 Force triggering section1 animation - scrollY: ${scrollY}px`);
             this.startSectionTransition();
         }
     }
@@ -248,7 +242,6 @@ class PixelCharacterManager {
         // Mark animation as played to prevent re-triggering
         this.hasAnimationPlayed = true;
 
-        console.log('🎮 Starting immediate section transition and pixel animation');
 
         // Immediately hide section 0 (no transition)
         section0.style.transition = 'none';
@@ -370,14 +363,12 @@ class PixelCharacterManager {
     blockScroll() {
         this.scrollBlocked = true;
         document.body.style.overflow = 'hidden';
-        console.log('🚫 Scroll blocked');
     }
 
     // Unblock scrolling after animation
     unblockScroll() {
         this.scrollBlocked = false;
         document.body.style.overflow = '';
-        console.log('✅ Scroll unblocked');
     }
 
     // Start pixel animation sequence
@@ -395,7 +386,6 @@ class PixelCharacterManager {
             mainCharacter.element.style.zIndex = '1000'; // Above other content during animation
             mainCharacter.isActive = true;
 
-            console.log('🎮 Pixel animation started');
 
             // Track when animation starts
             this.animationStartTime = Date.now();
@@ -408,7 +398,6 @@ class PixelCharacterManager {
                 };
 
                 const sequenceDuration = this.playPngSequence(mainCharacter, false);
-                console.log(`📊 PNG sequence duration: ${sequenceDuration}ms`);
 
                 // Backup timer in case of issues
                 this.animationTimer = setTimeout(() => {
@@ -418,7 +407,6 @@ class PixelCharacterManager {
             } else {
                 // GIF - analyze duration
                 this.getGifDuration(mainCharacter.src).then(duration => {
-                    console.log(`📊 GIF actual duration: ${duration}ms`);
 
                     const bufferTime = 500;
                     const animationDuration = duration + bufferTime;
@@ -427,7 +415,6 @@ class PixelCharacterManager {
                         this.endPixelAnimation();
                     }, animationDuration);
                 }).catch(error => {
-                    console.warn('Could not get GIF duration, using fallback:', error);
                     const animationDuration = 5000;
                     this.animationTimer = setTimeout(() => {
                         this.endPixelAnimation();
@@ -543,7 +530,6 @@ class PixelCharacterManager {
             // Update image source
             if (character.gif) {
                 character.gif.src = frameSrc;
-                console.log(`🖼️ Loading frame: ${frameSrc}`);
             }
 
             currentFrame++;
@@ -558,7 +544,6 @@ class PixelCharacterManager {
                     if (character.onSequenceComplete) {
                         character.onSequenceComplete();
                     }
-                    console.log(`🎮 PNG sequence completed for ${character.id}`);
                     return;
                 }
             } else {
@@ -566,7 +551,6 @@ class PixelCharacterManager {
             }
         };
 
-        console.log(`🎮 Starting PNG sequence for ${character.id} (${character.frameCount} frames at ${character.frameRate} FPS)`);
         playFrame();
 
         // Return total duration for timing purposes
@@ -595,7 +579,6 @@ class PixelCharacterManager {
             mainCharacter.element.style.zIndex = this.config.zIndex; // Back to background
             mainCharacter.isActive = false;
 
-            console.log('🎮 Pixel animation ended immediately');
 
             // Start idle animation after main animation ends
             this.startIdleAnimation();
@@ -611,7 +594,6 @@ class PixelCharacterManager {
             // Transition to Section 1 map-style
             this.transitionToSection1();
 
-            console.log('🗺️ Map transition to Section 1 completed');
         }, remainingTime + 500);
     }
 
@@ -639,7 +621,6 @@ class PixelCharacterManager {
         // Set current map to Section 1
         this.currentMap = 'section-1';
 
-        console.log('🗺️ Entered Section 1 map');
     }
 
     // Handle idle/run animation transition based on scroll - NEW PORTAL SYSTEM
@@ -716,7 +697,6 @@ class PixelCharacterManager {
             this.checkPortalCollision(runChar);
         }
 
-        console.log(`📍 Character position: ${scrollPercent.toFixed(1)}% (scroll: ${scrollY}px / ${effectiveScrollHeight}px)`);
     }
 
     // NEW: Check if character has reached the portal (transition zone)
@@ -727,7 +707,6 @@ class PixelCharacterManager {
         const portalY = 120;
 
         if (currentY >= portalY) {
-            console.log(`🌀 Character reached portal at ${currentY.toFixed(1)}% - triggering transition`);
             this.triggerPortalTransition();
         }
     }
@@ -739,7 +718,6 @@ class PixelCharacterManager {
         this.isTransitioning = true;
 
         const nextMap = this.getNextMap();
-        console.log(`🚪 Portal transition: ${this.currentMap} → ${nextMap}`);
 
         // Transition to next map immediately
         this.transitionToMap(nextMap, this.characters.get('idle'));
@@ -780,20 +758,17 @@ class PixelCharacterManager {
     updateRunPosition() {
         // This method is now handled by updateCharacterPositionByScroll in the new portal system
         // Keeping for compatibility but functionality moved to direct scroll mapping
-        console.log('📢 updateRunPosition called - this should be handled by updateCharacterPositionByScroll');
     }
 
     // DEPRECATED: Old screen exit detection (replaced by portal system)
     hasCharacterExitedScreen(character) {
         // This method is deprecated in favor of portal-based collision detection
-        console.log('📢 hasCharacterExitedScreen called - replaced by portal collision system');
         return false; // Disabled
     }
 
     // DEPRECATED: Old screen exit handler (replaced by portal system)
     handleCharacterScreenExit() {
         // This method is deprecated in favor of triggerPortalTransition
-        console.log('📢 handleCharacterScreenExit called - replaced by portal transition system');
     }
 
     // Get next map based on current map
@@ -841,7 +816,6 @@ class PixelCharacterManager {
         // Show character at top of new map
         this.smoothTeleportToTop(character, 0);
 
-        console.log(`🗺️ Successfully transitioned to ${mapId}`);
     }
 
     // Smoothly teleport character to top of screen
@@ -876,7 +850,6 @@ class PixelCharacterManager {
             }
         }, 800);
 
-        console.log(`✨ Character teleported to top (${targetY}%) and switched to idle mode`);
     }
 
     // Switch to run animation
@@ -895,7 +868,6 @@ class PixelCharacterManager {
             this.showCharacterAnimation(runChar, true); // true for loop
             this.currentActiveAnimation = 'run';
 
-            console.log(`🏃 Switched to run animation at Y: ${this.currentCharacterY}%`);
         }
     }
 
@@ -915,7 +887,6 @@ class PixelCharacterManager {
             this.showCharacterAnimation(idleChar, true); // true for loop
             this.currentActiveAnimation = 'idle';
 
-            console.log(`😴 Switched to idle animation at Y: ${this.currentCharacterY}%`);
         }
     }
 
@@ -956,7 +927,6 @@ class PixelCharacterManager {
             // Set initial idle position
             idleCharacter.y = this.currentCharacterY + '%';
             this.showCharacterAnimation(idleCharacter, true); // true for loop
-            console.log('🎮 Idle state activated at center - scroll to switch to run');
         }
     }
 
@@ -982,7 +952,6 @@ class PixelCharacterManager {
             this.scrollTimer = null;
         }
 
-        console.log('🎮 Idle/Run system stopped');
     }
 
     // Destroy the system

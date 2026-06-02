@@ -11,6 +11,7 @@ class SimplePixelCharacterManager {
         this.currentToast = null; // 현재 표시된 토스트 추적
         this.wreathNoticeShown = false; // 화환 안내 토스트 표시 여부 추적
         this.parkingNoticeShown = false; // 주차 안내 토스트 표시 여부 추적
+        this.scrollGuideToastShown = false; // 스크롤 안내 토스트 표시 여부 추적
         this.isScrolling = false;
         this.scrollTimeout = null;
         this.mainAnimationCallback = null; // 메인 애니메이션 완료 콜백
@@ -1013,7 +1014,6 @@ class SimplePixelCharacterManager {
             } else {
                 // DOM에서 직접 제거
                 this.hideDirectLoadingMessage();
-                this.showDirectScrollGuide();
             }
 
             // Console log removed
@@ -1040,7 +1040,6 @@ class SimplePixelCharacterManager {
             } else {
                 // DOM에서 직접 제거
                 this.hideDirectLoadingMessage();
-                this.showDirectScrollGuide();
             }
         }
     }
@@ -1533,56 +1532,6 @@ class SimplePixelCharacterManager {
         }
     }
 
-    // 직접 스크롤 가이드 표시
-    showDirectScrollGuide() {
-        setTimeout(() => {
-            const existing = document.getElementById('scroll-guide');
-            if (existing) existing.remove();
-
-            const guideDiv = document.createElement('div');
-            guideDiv.id = 'scroll-guide';
-            guideDiv.innerHTML = `
-                <div style="
-                    position: fixed;
-                    bottom: 30px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: rgba(255,255,255,0.9);
-                    color: #333;
-                    padding: 15px 25px;
-                    border-radius: 25px;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                    font-size: 14px;
-                    z-index: 9999;
-                    text-align: center;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    animation: bounceIn 0.8s ease-out, fadeOut 3s ease-in 2s forwards;
-                ">
-                    <div style="margin-bottom: 5px;">↓</div>
-                    <div>스크롤해주세요</div>
-                </div>
-                <style>
-                    @keyframes bounceIn {
-                        0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
-                        50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
-                        70% { transform: translateX(-50%) scale(0.9); }
-                        100% { transform: translateX(-50%) scale(1); }
-                    }
-                    @keyframes fadeOut {
-                        0% { opacity: 1; }
-                        100% { opacity: 0; visibility: hidden; }
-                    }
-                </style>
-            `;
-            document.body.appendChild(guideDiv);
-
-            setTimeout(() => {
-                if (guideDiv.parentNode) {
-                    guideDiv.remove();
-                }
-            }, 5000);
-        }, 500);
-    }
 
     addCharacter(id, options) {
         const character = {
@@ -1752,6 +1701,9 @@ class SimplePixelCharacterManager {
                 if (character.id === 'main' && this.mainAnimationCallback) {
                     this.mainAnimationCallback();
                     this.mainAnimationCallback = null;
+
+                    // 스크롤 안내 토스트 표시
+                    this.showScrollGuideToast();
                 } else if (character.id === 'ending') {
                     this.onEndingAnimationComplete();
                 } else if (character.id === 'hit-rabbit') {
@@ -3765,6 +3717,64 @@ class SimplePixelCharacterManager {
     //     this.parkingNoticeShown = true;
     //     this.showToast('parking-notice-toast');
     // }
+
+    // 스크롤 안내 토스트 표시
+    showScrollGuideToast() {
+        if (this.scrollGuideToastShown) return;
+
+        this.scrollGuideToastShown = true;
+        this.showToast('scroll-notice-toast');
+
+        // 스크롤 감지 리스너 설정
+        this.setupScrollDetection();
+
+        // 10초 후 자동 숨김 (백업)
+        setTimeout(() => {
+            this.hideScrollGuideToast();
+        }, 10000);
+    }
+
+    setupScrollDetection() {
+        this.scrollListener = () => {
+            this.hideScrollGuideToast();
+        };
+
+        // 다양한 스크롤 이벤트 감지
+        window.addEventListener('scroll', this.scrollListener);
+        window.addEventListener('wheel', this.scrollListener);
+        window.addEventListener('touchstart', this.scrollListener);
+        window.addEventListener('touchmove', this.scrollListener);
+
+        // 키보드 이벤트도 감지
+        window.addEventListener('keydown', (e) => {
+            if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
+                this.hideScrollGuideToast();
+            }
+        });
+    }
+
+    // 스크롤 안내 토스트 숨기기
+    hideScrollGuideToast() {
+        if (!this.scrollGuideToastShown) return;
+
+        this.hideToast('scroll-notice-toast');
+        this.scrollGuideToastShown = false;
+
+        // 스크롤 리스너 제거
+        if (this.scrollListener) {
+            window.removeEventListener('scroll', this.scrollListener);
+            window.removeEventListener('wheel', this.scrollListener);
+            window.removeEventListener('touchstart', this.scrollListener);
+            window.removeEventListener('touchmove', this.scrollListener);
+            this.scrollListener = null;
+        }
+
+        // 키보드 리스너 제거
+        if (this.keyboardListener) {
+            window.removeEventListener('keydown', this.keyboardListener);
+            this.keyboardListener = null;
+        }
+    }
 
     // Information 애니메이션 후 상태 복원
     restoreAfterInformation() {

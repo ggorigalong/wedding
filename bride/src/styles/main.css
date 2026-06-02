@@ -17,7 +17,7 @@ body {
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f9fbec;
+    background-color: #dee0d3;
 }
 
 /* 로딩 중일 때 스크롤 차단 */
@@ -1561,10 +1561,9 @@ body:has(#initial-loading) {
 
     .dialog-text {
         font-size: 36px;
+        -webkit-text-stroke: 0.3px #000;
         font-weight: bold;
-
         -webkit-text-fill-color: #FFFFFF;
-        -webkit-text-stroke: 0.2px #000;
     }
 
     .subtitle-text {
@@ -1583,10 +1582,68 @@ body:has(#initial-loading) {
         font-weight: bold;
 
         -webkit-text-fill-color: #FFFFFF;
-        -webkit-text-stroke: 0.2px #000;
+        -webkit-text-stroke: 0.3px #000;
     }
 
     .subtitle-text {
         font-size: 13px;
     }
+}
+
+/* Toast Message System */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    z-index: 2000;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 90%;
+    width: auto;
+    min-width: 280px;
+}
+
+.toast-message.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-message.hide {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px);
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.info-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.info-text {
+    flex: 1;
+}
+
+.info-type {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.info-details {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
 }

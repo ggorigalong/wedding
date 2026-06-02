@@ -490,60 +490,6 @@ class ManualScrollManager {
         }
     }
 
-    // 스크롤 가이드 표시
-    showScrollGuide() {
-        setTimeout(() => {
-            // 기존 가이드 제거
-            const existing = document.getElementById('scroll-guide');
-            if (existing) existing.remove();
-
-            const guideDiv = document.createElement('div');
-            guideDiv.id = 'scroll-guide';
-            guideDiv.innerHTML = `
-                <div style="
-                    position: fixed;
-                    bottom: 30px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: rgba(255,255,255,0.9);
-                    color: #333;
-                    padding: 15px 25px;
-                    border-radius: 25px;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                    font-size: 14px;
-                    z-index: 9999;
-                    text-align: center;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    animation: bounceIn 0.8s ease-out, fadeOut 3s ease-in 2s forwards;
-                ">
-                    <div style="margin-bottom: 5px;">↓</div>
-                    <div>스크롤해주세요</div>
-                </div>
-                <style>
-                    @keyframes bounceIn {
-                        0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
-                        50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
-                        70% { transform: translateX(-50%) scale(0.9); }
-                        100% { transform: translateX(-50%) scale(1); }
-                    }
-                    @keyframes fadeOut {
-                        0% { opacity: 1; }
-                        100% { opacity: 0; visibility: hidden; }
-                    }
-                </style>
-            `;
-            document.body.appendChild(guideDiv);
-
-            // 5초 후 제거
-            setTimeout(() => {
-                if (guideDiv.parentNode) {
-                    guideDiv.remove();
-                }
-            }, 5000);
-        }, 500);
-    }
-
-
     // 캐릭터 위치 업데이트 (현재 섹션 내에서의 미세한 움직임)
     updateCharacterPosition() {
         // 픽셀 캐릭터 매니저와 연동
@@ -566,9 +512,43 @@ class ManualScrollManager {
         }
     }
 
+    // Section1 진입 시 모든 애니메이션 이미지들 미리 로드
+    preloadSection1SpecialAnimations() {
+        if (!window.pixelCharacterManager) return;
+
+        // 모든 animationStates 기반 애니메이션들 (critical 제외)
+        const animationStatesAnimations = [
+            'lee-idle-wow', 'lee-idle-wow-normal', 'lee-idle-flower', 'lee-run-flower',
+            'hit-idle', 'hit-slime', 'lee-idle-leafs', 'lee-run-leafsflower',
+            'lee-idle-leafsflowerdouble', 'lee-run-leafsflowerdouble',
+            'information', 'information-idle', 'ending'
+        ];
+
+        // addCharacter 기반 애니메이션들
+        const addCharacterAnimations = [
+            'rabbit-idle', 'rabbit-run', 'hit-rabbit', 'leafs', 'lee-back',
+            'wreath', 'wreath-idle', 'rabbit-hurt', 'slime-idle', 'slime-run'
+        ];
+
+        // animationStates 기반 애니메이션 프리로드 (background preload 강제 실행)
+        if (window.pixelCharacterManager.preloadBackgroundAnimations) {
+            window.pixelCharacterManager.preloadBackgroundAnimations();
+        }
+
+        // addCharacter 기반 애니메이션 프리로드 (강제 실행)
+        if (window.pixelCharacterManager.preloadAddCharacterAssets) {
+            window.pixelCharacterManager.preloadAddCharacterAssets();
+        }
+
+        // Console log removed
+    }
+
     // Section-0에서 Section-1으로의 특별 전환
     triggerSection1Transition() {
         // Console log removed
+
+        // Section1 진입 시 특별 애니메이션 이미지들을 미리 로드
+        this.preloadSection1SpecialAnimations();
 
         // 섹션 이동
         this.goToSection(1);

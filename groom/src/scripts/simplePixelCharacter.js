@@ -35,6 +35,8 @@ class SimplePixelCharacterManager {
         this.isLoadingSection1Data = false; // section1.json 로딩 중 여부
         this.isLoadingCriticalAssets = false; // 중요 애셋 로딩 중 여부
         this.isFullyInitialized = false; // 완전 초기화 여부
+        this.scrollGuideToastShown = false; // 스크롤 가이드 토스트 표시 여부
+        this.scrollListener = null; // 스크롤 리스너 참조
 
         // 통합 캐릭터 컨테이너
         this.mainCharacter = null;
@@ -124,7 +126,8 @@ class SimplePixelCharacterManager {
         this.backgroundAnimations = [
             'lee-idle-wow', 'lee-idle-wow-normal', 'lee-idle-flower', 'lee-run-flower',
             'hit-idle', 'hit-slime', 'lee-idle-leafs', 'lee-run-leafsflower',
-            'lee-idle-leafsflowerdouble', 'lee-run-leafsflowerdouble'
+            'lee-idle-leafsflowerdouble', 'lee-run-leafsflowerdouble',
+            'information', 'information-idle', 'ending'
         ]; // 나중에 필요한 것들
 
         // 애니메이션 상태들 먼저 정의
@@ -948,7 +951,6 @@ class SimplePixelCharacterManager {
             } else {
                 // DOM에서 직접 제거
                 this.hideDirectLoadingMessage();
-                this.showDirectScrollGuide();
             }
 
             // Console log removed
@@ -975,7 +977,6 @@ class SimplePixelCharacterManager {
             } else {
                 // DOM에서 직접 제거
                 this.hideDirectLoadingMessage();
-                this.showDirectScrollGuide();
             }
         }
     }
@@ -1123,56 +1124,6 @@ class SimplePixelCharacterManager {
         }
     }
 
-    // 직접 스크롤 가이드 표시
-    showDirectScrollGuide() {
-        setTimeout(() => {
-            const existing = document.getElementById('scroll-guide');
-            if (existing) existing.remove();
-
-            const guideDiv = document.createElement('div');
-            guideDiv.id = 'scroll-guide';
-            guideDiv.innerHTML = `
-                <div style="
-                    position: fixed;
-                    bottom: 30px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: rgba(255,255,255,0.9);
-                    color: #333;
-                    padding: 15px 25px;
-                    border-radius: 25px;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                    font-size: 14px;
-                    z-index: 9999;
-                    text-align: center;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    animation: bounceIn 0.8s ease-out, fadeOut 3s ease-in 2s forwards;
-                ">
-                    <div style="margin-bottom: 5px;">↓</div>
-                    <div>스크롤해주세요</div>
-                </div>
-                <style>
-                    @keyframes bounceIn {
-                        0% { transform: translateX(-50%) scale(0.3); opacity: 0; }
-                        50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
-                        70% { transform: translateX(-50%) scale(0.9); }
-                        100% { transform: translateX(-50%) scale(1); }
-                    }
-                    @keyframes fadeOut {
-                        0% { opacity: 1; }
-                        100% { opacity: 0; visibility: hidden; }
-                    }
-                </style>
-            `;
-            document.body.appendChild(guideDiv);
-
-            setTimeout(() => {
-                if (guideDiv.parentNode) {
-                    guideDiv.remove();
-                }
-            }, 5000);
-        }, 500);
-    }
 
     addCharacter(id, options) {
         const character = {
@@ -1347,6 +1298,9 @@ class SimplePixelCharacterManager {
                 if (character.id === 'main' && this.mainAnimationCallback) {
                     this.mainAnimationCallback();
                     this.mainAnimationCallback = null;
+
+                    // 스크롤 안내 토스트 표시
+                    this.showScrollGuideToast();
                 } else if (character.id === 'ending') {
                     this.onEndingAnimationComplete();
                 } else if (character.id === 'information') {
@@ -3225,6 +3179,61 @@ class SimplePixelCharacterManager {
         // 활성 토스트 숨기기
         if (this.currentToast) {
             this.hideToast(this.currentToast);
+        }
+    }
+
+    // 스크롤 안내 토스트 표시
+    showScrollGuideToast() {
+        if (this.scrollGuideToastShown) return;
+
+        this.scrollGuideToastShown = true;
+        this.showToast('scroll-notice-toast');
+
+        // 스크롤 감지 리스너 설정
+        this.setupScrollDetection();
+
+        // 10초 후 자동 숨김 (백업)
+        setTimeout(() => {
+            this.hideScrollGuideToast();
+        }, 10000);
+    }
+
+    // 스크롤 감지 설정
+    setupScrollDetection() {
+        if (this.scrollListener) return; // 이미 설정된 경우 중복 방지
+
+        this.scrollListener = () => {
+            // 스크롤이 감지되면 토스트 숨기기
+            this.hideScrollGuideToast();
+        };
+
+        // 다양한 스크롤 이벤트 감지
+        window.addEventListener('scroll', this.scrollListener, { passive: true });
+        window.addEventListener('wheel', this.scrollListener, { passive: true });
+        window.addEventListener('touchstart', this.scrollListener, { passive: true });
+        window.addEventListener('touchmove', this.scrollListener, { passive: true });
+        window.addEventListener('keydown', (e) => {
+            // 스크롤 관련 키 감지 (화살표, 스페이스바, Page Up/Down 등)
+            if ([32, 33, 34, 35, 36, 37, 38, 39, 40].includes(e.keyCode)) {
+                this.hideScrollGuideToast();
+            }
+        });
+    }
+
+    // 스크롤 안내 토스트 숨기기
+    hideScrollGuideToast() {
+        if (!this.scrollGuideToastShown) return;
+
+        this.hideToast('scroll-notice-toast');
+        this.scrollGuideToastShown = false;
+
+        // 스크롤 리스너 제거
+        if (this.scrollListener) {
+            window.removeEventListener('scroll', this.scrollListener);
+            window.removeEventListener('wheel', this.scrollListener);
+            window.removeEventListener('touchstart', this.scrollListener);
+            window.removeEventListener('touchmove', this.scrollListener);
+            this.scrollListener = null;
         }
     }
 

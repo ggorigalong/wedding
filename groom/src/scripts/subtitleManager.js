@@ -46,8 +46,8 @@ class SubtitleManager {
     loadSubtitleData() {
         // 신랑편 자막 데이터 (애니메이션 태그 기반)
         this.subtitles = {
-            'section1': {
-                'section': {
+            'main': {
+                'section-1': {
                     'Question': {
                         text: '엥',
                         style: 'normal'
@@ -61,7 +61,7 @@ class SubtitleManager {
                         style: 'normal'
                     },
                     'Empty2': {
-                        text: '는 쏭이도 없어졌넹?',
+                        text: '는 쏭이도 없어졌죠?',
                         style: 'normal'
                     },
                     'EmptyWave': {
@@ -81,7 +81,7 @@ class SubtitleManager {
                         style: 'normal'
                     },
                     'howl': {
-                        text: '크랔릌랄카ㅡ크를라랔ㅏ...',
+                        text: '크르ㅏ카르ㅡ크를라카ㅏ...',
                         style: 'normal'
                     },
                     'howl2': {
@@ -100,10 +100,10 @@ class SubtitleManager {
                     'Adjust': { text: '너도 토끼 만났어?', style: 'normal' },
                     'Touch2': { text: '저는 액괴 만났는데용?', style: 'normal' },
                     'Touch3': { text: '저는 액괴 만났는데용?', style: 'normal' },
-                    'Propose': { text: '그나저나 결혼 고?', style: 'normal' },
+                    'Propose': { text: '그나저나 결혼 할꺼죵?', style: 'normal' },
                     'Tag1': { text: '으으으으음~', style: 'normal' },
                     'Tag2': { text: '흐으으으음~ ㅋㅋㅋ', style: 'normal' },
-                    'GGoduck': { text: '고', style: 'normal' },
+                    'GGoduck': { text: '그랭', style: 'normal' },
                     'jump': { text: '끼얏후', style: 'normal' },
                 }
             }
@@ -113,8 +113,8 @@ class SubtitleManager {
 
     /**
      * 애니메이션 상태에 따른 자막 체크
-     * @param {string} characterId - 캐릭터 ID (section1, ending 등)
-     * @param {string} sectionId - 섹션 ID (section)
+     * @param {string} characterId - 캐릭터 ID (main, ending 등)
+     * @param {string} sectionId - 섹션 ID (section-1 등)
      * @param {string} currentTag - 현재 애니메이션 태그 (Idle, Swipe 등)
      * @param {number} currentFrame - 현재 프레임 번호
      */
@@ -258,14 +258,14 @@ class SubtitleManager {
      * Idle 태그 테스트용 메서드
      */
     testIdleSubtitle() {
-        this.checkSubtitle('section1', 'section', 'Idle', 0);
+        this.checkSubtitle('main', 'section-1', 'Idle', 0);
     }
 
     /**
      * Swipe 태그 테스트용 메서드
      */
     testSwipeSubtitle() {
-        this.checkSubtitle('section1', 'section', 'Swipe', 0);
+        this.checkSubtitle('main', 'section-1', 'Swipe', 0);
     }
 }
 

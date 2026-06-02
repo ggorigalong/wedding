@@ -133,7 +133,7 @@
    "trimmed": false,
    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 128 },
    "sourceSize": { "w": 100, "h": 128 },
-   "duration": 1000
+   "duration": 100
   },
   "wedding 17.aseprite": {
    "frame": { "x": 1700, "y": 0, "w": 100, "h": 128 },
@@ -157,7 +157,7 @@
    "trimmed": false,
    "spriteSourceSize": { "x": 0, "y": 0, "w": 100, "h": 128 },
    "sourceSize": { "w": 100, "h": 128 },
-   "duration": 100
+   "duration": 1000
   },
   "wedding 20.aseprite": {
    "frame": { "x": 2000, "y": 0, "w": 100, "h": 128 },

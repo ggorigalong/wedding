@@ -57,10 +57,6 @@ class SubtitleManager {
                         text: '내 말 들었어?',
                         style: 'normal'
                     },
-                    'Mong': {
-                        text: '오...',
-                        style: 'normal'
-                    }
                 }
             },
             'hit-rabbit': {
@@ -125,10 +121,10 @@ class SubtitleManager {
                     'Adjust': { text: '너도 토끼 만났어?', style: 'normal' },
                     'Touch2': { text: '저는 액괴 만났는데용?', style: 'normal' },
                     'Touch3': { text: '저는 액괴 만났는데용?', style: 'normal' },
-                    'Propose': { text: '그나저나 결혼 고?', style: 'normal' },
+                    'Propose': { text: '그나저나 결혼 할꺼죵?', style: 'normal' },
                     'Tag1': { text: '으으으으음~', style: 'normal' },
                     'Tag2': { text: '흐으으으음~ ㅋㅋㅋ', style: 'normal' },
-                    'GGoduck': { text: '고', style: 'normal' },
+                    'GGoduck': { text: '그랭', style: 'normal' },
                     'jump': { text: '끼얏후', style: 'normal' },
                 }
             }

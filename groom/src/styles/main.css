@@ -1483,7 +1483,7 @@ body:has(#initial-loading) {
         font-weight: bold;
 
         -webkit-text-fill-color: #FFFFFF;
-        -webkit-text-stroke: 0.1px #000;
+        -webkit-text-stroke: 0.3px #000;
     }
 }
 
@@ -1494,7 +1494,7 @@ body:has(#initial-loading) {
 
     .dialog-text {
         font-size: 36;
-        -webkit-text-stroke: 0.1px #000;
+        -webkit-text-stroke: 0.3px #000;
         font-weight: bold;
         -webkit-text-fill-color: #FFFFFF;
     }

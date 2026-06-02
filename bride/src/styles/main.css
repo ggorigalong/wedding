@@ -1564,7 +1564,7 @@ body:has(#initial-loading) {
         font-weight: bold;
 
         -webkit-text-fill-color: #FFFFFF;
-        -webkit-text-stroke: 0.1px #000;
+        -webkit-text-stroke: 0.2px #000;
     }
 
     .subtitle-text {
@@ -1583,7 +1583,7 @@ body:has(#initial-loading) {
         font-weight: bold;
 
         -webkit-text-fill-color: #FFFFFF;
-        -webkit-text-stroke: 0.1px #000;
+        -webkit-text-stroke: 0.2px #000;
     }
 
     .subtitle-text {

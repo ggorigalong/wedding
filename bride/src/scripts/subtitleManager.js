@@ -106,12 +106,16 @@ class SubtitleManager {
                     style: 'normal'
                },
                'takeoff-gun': {
-                        text: '주차장 만차임요.',
+                        text: '주차장 자리 없어요.',
                     style: 'normal'
                },
                'Blank': {
                     text: '넵! 알겠슴다!',
                     style: 'normal'
+               },
+               "CarCrash": {
+                                        text: '으아악!',
+                        style: 'normal'
                }
                 }
             },

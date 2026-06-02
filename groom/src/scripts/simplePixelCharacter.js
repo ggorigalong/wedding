@@ -576,8 +576,8 @@ class SimplePixelCharacterManager {
             frameCount: 10, // ha-idle1~ha-idle14
             frameRate: 8,  // 8fps로 천천히
             scale: 2,
-            x: '50%',
-            y: '60%', // information과 동일한 위치
+            x: '0',
+            y: '0', // information과 동일한 위치
             visible: false,
             loop: true // 무한 반복
         });

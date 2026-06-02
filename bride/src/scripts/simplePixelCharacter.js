@@ -244,12 +244,8 @@ class SimplePixelCharacterManager {
                 const img = document.createElement('img');
                 const imagePath = `${config.framePrefix}${i}.png`;
 
-                // IMG 태그 스타일 설정 (중앙정렬 + 원본 이미지 크기)
+                // IMG 태그 스타일 설정 (부모 div가 centering 담당)
                 img.style.cssText = `
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
                     visibility: hidden;
                     pointer-events: none;
                     image-rendering: pixelated;
@@ -438,11 +434,12 @@ class SimplePixelCharacterManager {
             framePrefix: 'bride/animation/ha-idleidle',
             frameCount: 2,
             frameRate: 4,
-            
+
             scale: 2,
             x: '50%',
             y: '50%',
-            visible: false
+            visible: false,
+            useVisibilityMethod: true
         });
 
         // Ha 런 애니메이션 (Section-2에서 스크롤 시)
@@ -483,10 +480,11 @@ class SimplePixelCharacterManager {
             scale: 4,
             x: '50%',
             y: '70%', // 70vh 위치에 고정
-            visible: false
+            visible: false,
+            useVisibilityMethod: true  // 새로운 visibility 방식으로 테스트
         });
 
-        // Information idle 애니메이션 (information 완료 후 사용)
+        // Information idle 애니메이션 (information 완료 후 사용) - visibility 방식으로 변경
         this.addCharacter('information-idle', {
             isPngSequence: true,
             framePrefix: 'bride/animation/information-idle/information-idle',
@@ -494,13 +492,14 @@ class SimplePixelCharacterManager {
             frameRate: 8,  // 8fps로 천천히
 
             scale: 2,
-            x: '50%',
-            y: '60%', // information과 동일한 위치
+            x: '0',
+            y: '0', // information과 동일한 위치
             visible: false,
-            loop: true // 무한 반복
+            loop: true, // 무한 반복
+            useVisibilityMethod: true  // 새로운 visibility 방식
         });
 
-        // Wreath 애니메이션 (1회 재생)
+        // Wreath 애니메이션 (1회 재생) - visibility 방식으로 변경
         this.addCharacter('wreath', {
             isPngSequence: true,
             framePrefix: 'animation/wreath/wreath',
@@ -511,6 +510,7 @@ class SimplePixelCharacterManager {
             y: '20%',
             visible: false,
             loop: false,  // 1회만 재생
+            useVisibilityMethod: true,  // 새로운 visibility 방식
             onComplete: () => {
                 // Console log removed
                 this.onWreathAnimationComplete();
@@ -528,7 +528,8 @@ class SimplePixelCharacterManager {
             x: '50%',
             y: '20%',
             visible: false,
-            loop: true  // 무한 반복
+            loop: true,  // 무한 반복
+            useVisibilityMethod: true  // 새로운 visibility 방식
         });
 
         // 토끼 hurt 애니메이션 (hit-rabbit 7프레임에서 반복 실행)
@@ -542,7 +543,8 @@ class SimplePixelCharacterManager {
             x: '56%',
             y: '60%', // 70vh 위치에 고정
             visible: false,
-            loop: true // 반복 재생
+            loop: true, // 반복 재생
+            useVisibilityMethod: true  // 새로운 visibility 방식으로 테스트
         });
 
         // Hit 토끼 애니메이션 (메인 캐릭터가 60vh 도달시 실행)
@@ -1540,7 +1542,9 @@ class SimplePixelCharacterManager {
             element: null,
             currentFrame: 0,
             animationInterval: null,
-            isActive: false
+            isActive: false,
+            // 새로운 애니메이션 방식 플래그 추가
+            useVisibilityMethod: options.useVisibilityMethod || false  // true: visibility 방식, false: src 방경(기본)
         };
 
         // 캐릭터 엘리먼트 생성
@@ -1560,20 +1564,42 @@ class SimplePixelCharacterManager {
             /* transition 제거 - 즉시 이동 */
         `;
 
-        // 이미지 엘리먼트 생성
-        const img = document.createElement('img');
-        img.style.cssText = `
-            display: block;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
-            -webkit-user-drag: none;
-            -webkit-user-select: none;
-            user-select: none;
-        `;
-
-        character.element.appendChild(img);
-        character.img = img;
+        if (character.useVisibilityMethod && character.isPngSequence) {
+            // 새로운 visibility 방식: 모든 프레임을 개별 IMG로 생성 (slime 방식)
+            character.frameImages = [];
+            for (let i = 1; i <= character.frameCount; i++) {
+                const img = document.createElement('img');
+                const framePath = `${character.framePrefix}${i}.png`;
+                img.src = framePath;
+                img.style.cssText = `
+                    display: block;
+                    visibility: hidden;
+                    opacity: 0;
+                    image-rendering: pixelated;
+                    image-rendering: -moz-crisp-edges;
+                    image-rendering: crisp-edges;
+                    -webkit-user-drag: none;
+                    -webkit-user-select: none;
+                    user-select: none;
+                `;
+                character.element.appendChild(img);
+                character.frameImages.push(img);
+            }
+        } else {
+            // 기존 src 방식: 하나의 IMG만 생성 (rabbit 방식)
+            const img = document.createElement('img');
+            img.style.cssText = `
+                display: block;
+                image-rendering: pixelated;
+                image-rendering: -moz-crisp-edges;
+                image-rendering: crisp-edges;
+                -webkit-user-drag: none;
+                -webkit-user-select: none;
+                user-select: none;
+            `;
+            character.element.appendChild(img);
+            character.img = img;
+        }
 
         this.container.appendChild(character.element);
         this.characters.set(id, character);
@@ -1806,18 +1832,44 @@ class SimplePixelCharacterManager {
             return;
         }
 
-        if (!character.img) {
-            // Console error removed
-            return;
+        if (character.useVisibilityMethod) {
+            // 새로운 visibility 방식 (slime 방식)
+            if (!character.frameImages || character.frameImages.length === 0) {
+                // Console error removed
+                return;
+            }
+
+            // 모든 프레임 숨기기
+            character.frameImages.forEach(img => {
+                img.style.visibility = 'hidden';
+                img.style.opacity = '0';
+                img.style.display = 'none';
+            });
+
+            // 현재 프레임만 보이기
+            const currentImg = character.frameImages[character.currentFrame];
+            if (currentImg) {
+                currentImg.style.visibility = 'visible';
+                currentImg.style.opacity = '1';
+                currentImg.style.display = 'block';
+            }
+
+            character.currentFrame = (character.currentFrame + 1) % character.frameCount;
+        } else {
+            // 기존 src 방식 (rabbit 방식)
+            if (!character.img) {
+                // Console error removed
+                return;
+            }
+
+            const frameNumber = character.currentFrame + 1; // 1부터 시작
+            const framePath = `${character.framePrefix}${frameNumber}.png`;
+
+            // Console log removed
+            character.img.src = framePath;
+
+            character.currentFrame = (character.currentFrame + 1) % character.frameCount;
         }
-
-        const frameNumber = character.currentFrame + 1; // 1부터 시작
-        const framePath = `${character.framePrefix}${frameNumber}.png`;
-
-        // Console log removed
-        character.img.src = framePath;
-
-        character.currentFrame = (character.currentFrame + 1) % character.frameCount;
     }
 
     // Loop 처리 없이 프레임 업데이트 (새로운 startAnimation에서 사용)
@@ -1827,18 +1879,44 @@ class SimplePixelCharacterManager {
             return;
         }
 
-        if (!character.img) {
-            // Console error removed
-            return;
+        if (character.useVisibilityMethod) {
+            // 새로운 visibility 방식 (slime 방식)
+            if (!character.frameImages || character.frameImages.length === 0) {
+                // Console error removed
+                return;
+            }
+
+            // 모든 프레임 숨기기
+            character.frameImages.forEach(img => {
+                img.style.visibility = 'hidden';
+                img.style.opacity = '0';
+                img.style.display = 'none';
+            });
+
+            // 현재 프레임만 보이기
+            const currentImg = character.frameImages[character.currentFrame];
+            if (currentImg) {
+                currentImg.style.visibility = 'visible';
+                currentImg.style.opacity = '1';
+                currentImg.style.display = 'block';
+            }
+
+            character.currentFrame++; // 프레임 증가 (startAnimation에서 frameCount도 별도 증가)
+        } else {
+            // 기존 src 방식 (rabbit 방식)
+            if (!character.img) {
+                // Console error removed
+                return;
+            }
+
+            const frameNumber = character.currentFrame + 1; // 1부터 시작
+            const framePath = `${character.framePrefix}${frameNumber}.png`;
+
+            // Console log removed
+            character.img.src = framePath;
+
+            character.currentFrame++; // 프레임 증가 (startAnimation에서 frameCount도 별도 증가)
         }
-
-        const frameNumber = character.currentFrame + 1; // 1부터 시작
-        const framePath = `${character.framePrefix}${frameNumber}.png`;
-
-        // Console log removed
-        character.img.src = framePath;
-
-        character.currentFrame++; // 프레임 증가 (startAnimation에서 frameCount도 별도 증가)
     }
 
     stopAnimation(character) {
@@ -2939,6 +3017,7 @@ class SimplePixelCharacterManager {
         const wreathIdleChar = this.characters.get('wreath-idle');
         if (wreathIdleChar) {
             wreathIdleChar.element.style.opacity = '1';
+            wreathIdleChar.element.style.left = '50%';
             wreathIdleChar.isActive = true;
             this.startAnimation(wreathIdleChar);
             // Console log removed
@@ -2991,6 +3070,7 @@ class SimplePixelCharacterManager {
             // Wreath character config logged
 
             wreathChar.element.style.opacity = '1';
+            wreathChar.element.style.left = '50%';
             wreathChar.isActive = true;
             this.startAnimation(wreathChar);
             // Console log removed
@@ -3024,8 +3104,8 @@ class SimplePixelCharacterManager {
             rabbitHurtChar.element.style.display = 'block';
             rabbitHurtChar.element.style.visibility = 'visible';
 
-            // addCharacter에서 설정한 초기 위치로 복원
-            rabbitHurtChar.element.style.left = rabbitHurtChar.x;
+            // 중앙정렬 보정된 위치 설정
+            rabbitHurtChar.element.style.left = '50%';
             rabbitHurtChar.element.style.top = rabbitHurtChar.y;
             rabbitHurtChar.element.style.position = 'absolute';
             rabbitHurtChar.element.style.transform = `translate(-50%, -50%) scale(${rabbitHurtChar.scale})`;
@@ -3540,8 +3620,6 @@ class SimplePixelCharacterManager {
         const informationChar = this.characters.get('information');
         if (informationChar) {
             informationChar.element.style.opacity = '1';
-            informationChar.element.style.top = '50%';
-            informationChar.element.style.left = '50%';
             informationChar.element.style.transform = 'translate(-50%, -50%) scale(2)';
             informationChar.isActive = true;
 

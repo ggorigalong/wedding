@@ -4,13 +4,10 @@ let audioToggle = null;
 let isPlaying = false;
 let userHasInteracted = false;
 
-// Map functionality
-let map;
+// Location information
 const weddingLocation = {
     name: "웨딩홀 이름",
-    address: "서울 용산구 용산동6가 168-6",
-    lat: 37.5324, // 용산역 좌표
-    lng: 126.9644
+    address: "서울 용산구 용산동6가 168-6"
 };
 
 
@@ -241,92 +238,6 @@ function showCopyError() {
     }, 3000);
 }
 
-// Map functionality - Kakao Map
-function initKakaoMap() {
-    const container = document.getElementById('map');
-    if (!container) return;
-
-    // 카카오 지도 API 로딩 대기
-    if (typeof kakao === 'undefined' || !kakao.maps) {
-        setTimeout(() => initKakaoMap(), 100);
-        return;
-    }
-
-    try {
-        const options = {
-            center: new kakao.maps.LatLng(weddingLocation.lat, weddingLocation.lng),
-            level: 3
-        };
-
-        const map = new kakao.maps.Map(container, options);
-
-        // 마커 추가
-        const markerPosition = new kakao.maps.LatLng(weddingLocation.lat, weddingLocation.lng);
-        const marker = new kakao.maps.Marker({
-            position: markerPosition
-        });
-        marker.setMap(map);
-
-        // 정보창 추가
-        const infowindow = new kakao.maps.InfoWindow({
-            content: `
-                <div style="
-                    padding: 15px;
-                    text-align: center;
-                    font-family: 'Noto Sans KR', sans-serif;
-                    min-width: 200px;
-                ">
-                    <div style="font-weight: bold; font-size: 14px; color: #333; margin-bottom: 5px;">
-                        ${weddingLocation.name}
-                    </div>
-                    <div style="font-size: 12px; color: #666; line-height: 1.4;">
-                        ${weddingLocation.address}
-                    </div>
-                </div>
-            `
-        });
-
-        // 마커 클릭 시 정보창 열기
-        kakao.maps.event.addListener(marker, 'click', function() {
-            infowindow.open(map, marker);
-        });
-
-        // 기본적으로 정보창 열어놓기
-        infowindow.open(map, marker);
-
-    } catch (error) {
-        showDemoMap();
-    }
-}
-
-function showDemoMap() {
-    const mapContainer = document.getElementById('map');
-    if (!mapContainer) return;
-
-    mapContainer.innerHTML = `
-        <div style="
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-            border-radius: 10px;
-        ">
-            <div style="font-size: 2rem; margin-bottom: 10px;">📍</div>
-            <div style="font-weight: bold; margin-bottom: 5px;">${weddingLocation.name}</div>
-            <div style="font-size: 0.9rem; line-height: 1.4;">
-                ${weddingLocation.address}<br>
-                <small style="color: #999;">카카오맵 API 연결중...</small>
-            </div>
-        </div>
-    `;
-}
 
 function openKakaoMap() {
     const url = `https://map.kakao.com/link/search/${encodeURIComponent(weddingLocation.address)}`;
@@ -410,7 +321,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 기본 기능들 초기화
     initAudioControl();
-    initKakaoMap();
     initLazyLoading();
 
     // BGM 관련 함수와 변수들을 전역에서 접근 가능하도록 설정

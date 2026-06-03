@@ -448,11 +448,12 @@ class SimplePixelCharacterManager {
             framePrefix: 'bride/animation/ha-runrun',
             frameCount: 7,
             frameRate: 14,
-            
+
             scale: 4,
             x: '50%',
             y: '50%',
-            visible: false
+            visible: false,
+            useVisibilityMethod: true
         });
 
         // Ha idle-wow 애니메이션 (Section-9에서 20vh 도달 시)
@@ -461,12 +462,13 @@ class SimplePixelCharacterManager {
             framePrefix: 'bride/animation/idle-wow/idle-wow',
             frameCount: 15,
             frameRate: 10,
-            
+
             scale: 2,
             x: '50%',
             y: '50%',
             visible: false,
             loop: false,  // 한 번만 재생
+            useVisibilityMethod: true,
             zIndex: 1000
         });
 
@@ -564,12 +566,13 @@ class SimplePixelCharacterManager {
             framePrefix: 'bride/animation/hit-idle/hit-idle',
             frameCount: 5, // hit-idle1.png ~ hit-idle5.png
             frameRate: 8, // idle 속도
-            
+
             scale: 2,
             x: '50%',
             y: '50%', // hit-rabbit과 동일한 위치
             visible: false,
-            loop: true // 반복 실행
+            loop: true, // 반복 실행
+            useVisibilityMethod: true
         });
 
         // Information 애니메이션 (Section-7 충돌 감지시)
@@ -593,7 +596,8 @@ class SimplePixelCharacterManager {
             x: '50%',
             y: '60%',
             visible: false,
-            loop: true
+            loop: true,
+            useVisibilityMethod: true
         });
 
         // Ha run-flower 애니메이션 (꽃 아이템 획득 후)
@@ -606,7 +610,8 @@ class SimplePixelCharacterManager {
             x: '50%',
             y: '60%',
             visible: false,
-            loop: true
+            loop: true,
+            useVisibilityMethod: true
         });
 
         // Leafs 애니메이션 (갤러리 하단에서 트리거)
@@ -615,12 +620,13 @@ class SimplePixelCharacterManager {
             framePrefix: 'bride/animation/leafs/leafs',
             frameCount: 7, // leafs1.png ~ leafs7.png
             frameRate: 8,
-            
+
             scale: 2,
             x: '50%',
             y: '50%',
             visible: false,
             loop: false, // 한 번만 재생
+            useVisibilityMethod: true,
             zIndex: 500 // 갤러리 이미지(z-index: 200)보다 높게 설정
         });
 
@@ -637,6 +643,7 @@ class SimplePixelCharacterManager {
             y: '120%', // 화면 아래 바깥
             visible: false,
             loop: true,
+            useVisibilityMethod: true,
             zIndex: 1000,
             currentAnimation: 'lee-idle-back', // 현재 상태 추적
             onComplete: () => {

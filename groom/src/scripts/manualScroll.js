@@ -258,7 +258,6 @@ class ManualScrollManager {
     handleScrollDelta(delta, inputType = 'unknown') {
         // 애니메이션 재생 중에는 스크롤 차단
         if (this.isAnimationLocked) {
-            // Console log removed
             return;
         }
 
@@ -275,7 +274,6 @@ class ManualScrollManager {
                           criticalAssetsLoading ? 'critical assets loading' :
                           pixelNotInitialized ? 'system initializing' :
                           `locked (${this.lockReason})`;
-            // Console log removed
             return;
         }
 
@@ -611,6 +609,14 @@ class ManualScrollManager {
             window.pixelCharacterManager &&
             (window.pixelCharacterManager.isWreathPlaying || window.pixelCharacterManager.isInformationPlaying)) {
             // Console log removed
+            return;
+        }
+
+        // Section-5에서 hit-slime 애니메이션 중에는 캐릭터 움직임 차단
+        if (currentSectionIndex === 5 &&
+            window.pixelCharacterManager &&
+            window.pixelCharacterManager.isHitSlimePlaying) {
+            console.log('🐸🚫 Blocking character movement during hit-slime animation');
             return;
         }
 

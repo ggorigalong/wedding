@@ -503,6 +503,7 @@ class SimplePixelCharacterManager {
         // Hit 슬라임 애니메이션 (메인 캐릭터가 60vh 도달시 실행)
         this.addCharacter('hit-slime', {
             isPngSequence: true,
+            isSpreadsheetBased: true, // 스프레드시트 기반 애니메이션
             framePrefix: 'groom/animation/hit-slime/hit-slime',
             frameCount: 21, // hit-slime 파일 개수 확인 후 조정 필요
             frameRate: 12, // 적당한 속도
@@ -1240,26 +1241,27 @@ class SimplePixelCharacterManager {
 
     // 스프레드시트 기반 애니메이션 시작
     startSpreadsheetAnimation(character) {
-        // Console log removed
+        console.log('🎭 startSpreadsheetAnimation called for:', character.id, character);
 
         if (!character.spreadsheetData || !character.spreadsheetData.frames) {
-            // Console error removed
+            console.error('❌ No spreadsheet data or frames for:', character.id);
             return;
         }
 
-        // Spreadsheet data found and loaded
+        console.log('📊 Spreadsheet data found:', character.spreadsheetData);
 
         // 스프라이트시트 이미지 미리 로드
         const spritesheetImg = new Image();
         const firstFrame = character.spreadsheetData.frames[0];
+        console.log('🖼️ Loading image:', firstFrame.image);
 
         spritesheetImg.onload = () => {
-            // Console log removed
+            console.log('✅ Spritesheet image loaded successfully');
             this.playSpritesheetFrames(character, spritesheetImg);
         };
 
         spritesheetImg.onerror = () => {
-            // Console error removed
+            console.error('❌ Failed to load spritesheet image:', firstFrame.image);
         };
 
         spritesheetImg.src = firstFrame.image;
@@ -1267,29 +1269,32 @@ class SimplePixelCharacterManager {
 
     // 스프라이트시트 프레임 재생 (애니메이션 시퀀스 기반)
     playSpritesheetFrames(character, spritesheetImg) {
+        console.log('🎬 playSpritesheetFrames started for:', character.id);
+
         // 캔버스를 사용하여 개별 프레임 추출
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
         // 애니메이션 시퀀스 가져오기
         const animationSequence = character.spreadsheetData.animationSequence || [];
+        console.log('📝 Animation sequence:', animationSequence);
 
         if (animationSequence.length === 0) {
-            // Console error removed
+            console.error('❌ No animation sequence for:', character.id);
             return;
         }
 
-        // Console log removed
+        console.log('🚀 Starting frame playback for:', character.id);
 
         const playNextFrame = (sequenceIndex) => {
             // 시퀀스 완료 확인
             if (sequenceIndex >= animationSequence.length) {
                 // 애니메이션 완료
+                console.log('🏁 Animation sequence completed for:', character.id);
                 character.isActive = false;
-                // Console log removed
 
                 // 자막이 있는 캐릭터 애니메이션 완료 시 자막 숨기기
-                if (window.subtitleManager && (character.id === 'main' || character.id === 'hit-rabbit' || character.id === 'information' || character.id === 'ending')) {
+                if (window.subtitleManager && (character.id === 'main' || character.id === 'hit-rabbit' || character.id === 'hit-slime' || character.id === 'information' || character.id === 'ending')) {
                     // Console log removed
                     window.subtitleManager.clearAllSubtitles();
                 }
@@ -1303,6 +1308,9 @@ class SimplePixelCharacterManager {
                     this.showScrollGuideToast();
                 } else if (character.id === 'ending') {
                     this.onEndingAnimationComplete();
+                } else if (character.id === 'hit-slime') {
+                    console.log('🎯 Hit-slime animation completed, calling callback');
+                    this.onHitSlimeAnimationComplete();
                 } else if (character.id === 'information') {
                     this.onInformationAnimationComplete();
                 }
@@ -1444,17 +1452,20 @@ class SimplePixelCharacterManager {
 
     // 스프레드시트 데이터 로드
     async loadSpreadsheetData(characterId, spreadsheetData) {
+        console.log('📋 loadSpreadsheetData called for:', characterId);
         const character = this.characters.get(characterId);
         if (!character) {
-            // Console error removed
+            console.error('❌ Character not found:', characterId);
             return;
         }
 
+        console.log('🔍 Character found:', characterId, 'isSpreadsheetBased:', character.isSpreadsheetBased);
         if (!character.isSpreadsheetBased) {
-            // Console error removed
+            console.error('❌ Character is not spreadsheet-based:', characterId);
             return;
         }
 
+        console.log('✅ Setting spreadsheet data on character:', characterId);
         character.spreadsheetData = spreadsheetData;
         // Console log removed
 
@@ -2250,8 +2261,131 @@ class SimplePixelCharacterManager {
         // Console log removed
     }
 
+    // Hit-slime 애니메이션 스프레드시트 데이터 로드
+    async loadHitSlimeSpreadsheetData() {
+        try {
+            console.log('🚀 loadHitSlimeSpreadsheetData started');
+
+            // 여러 경로로 시도 (정확한 경로)
+            const jsonPaths = [
+                'groom/animation/hit-slime/hit-slime.json',
+                './groom/animation/hit-slime/hit-slime.json',
+                'animation/hit-slime/hit-slime.json'
+            ];
+            console.log('📁 Trying JSON paths:', jsonPaths);
+
+            let response = null;
+            let loadedPath = null;
+
+            for (const path of jsonPaths) {
+                try {
+                    console.log('🔍 Trying path:', path);
+                    response = await fetch(path);
+                    if (response.ok) {
+                        loadedPath = path;
+                        console.log('✅ JSON loaded from:', path);
+                        break;
+                    } else {
+                        console.log('❌ Failed to load from:', path, 'Status:', response.status);
+                    }
+                } catch (e) {
+                    console.log('❌ Error loading from:', path, e);
+                    continue;
+                }
+            }
+
+            if (!response || !response.ok) {
+                throw new Error('Could not load hit-slime.json from any path');
+            }
+
+            const jsonData = await response.json();
+            console.log('📄 JSON data loaded:', jsonData);
+
+            // JSON 데이터를 스프레드시트 형태로 변환
+            const frames = [];
+            const frameKeys = Object.keys(jsonData.frames);
+
+            for (let i = 0; i < frameKeys.length; i++) {
+                const key = frameKeys[i];
+                const frameInfo = jsonData.frames[key];
+
+                frames.push({
+                    image: `groom/animation/hit-slime/${jsonData.meta.image}`, // 정확한 경로
+                    duration: frameInfo.duration,
+                    spriteX: frameInfo.frame.x,
+                    spriteY: frameInfo.frame.y,
+                    spriteWidth: frameInfo.frame.w,
+                    spriteHeight: frameInfo.frame.h
+                });
+            }
+
+            // frameTags를 이용한 애니메이션 시퀀스 생성
+            const frameTags = jsonData.meta.frameTags || [];
+            // Console log removed
+
+            // 전체 프레임 범위 확인
+            const totalFrames = frames.length;
+            // Console log removed
+
+            // 애니메이션 시퀀스 계산 - 순차적으로 처리
+            const animationSequence = [];
+
+            if (frameTags.length > 0) {
+                // 태그별 프레임 정보를 구간별로 저장
+                const taggedSegments = [];
+
+                frameTags.forEach(tag => {
+                    const from = tag.from;
+                    const to = tag.to;
+                    const repeatCount = parseInt(tag.repeat) || 1;
+
+                    // Console log removed
+
+                    taggedSegments.push({
+                        from: from,
+                        to: to,
+                        repeat: repeatCount
+                    });
+                });
+
+                // 각 구간을 반복 횟수만큼 추가
+                taggedSegments.forEach(segment => {
+                    for (let r = 0; r < segment.repeat; r++) {
+                        for (let frameIdx = segment.from; frameIdx <= segment.to; frameIdx++) {
+                            animationSequence.push(frameIdx);
+                        }
+                    }
+                });
+            } else {
+                // 태그가 없으면 순차 재생
+                for (let i = 0; i < totalFrames; i++) {
+                    animationSequence.push(i);
+                }
+            }
+
+            const spreadsheetData = {
+                frames: frames,
+                animationSequence: animationSequence,
+                totalFrames: totalFrames,
+                metadata: jsonData.meta
+            };
+
+            // Console log removed
+            // Console log removed
+
+            // Hit-slime 캐릭터에 데이터 설정
+            console.log('💾 Setting spreadsheet data for hit-slime:', spreadsheetData);
+            await this.loadSpreadsheetData('hit-slime', spreadsheetData);
+            console.log('✨ Hit-slime spreadsheet data setup complete');
+
+        } catch (error) {
+            console.error('💥 loadHitSlimeSpreadsheetData error:', error);
+            throw error;
+        }
+    }
+
     // Hit-slime 애니메이션 실행
-    triggerHitSlimeAnimation() {
+    async triggerHitSlimeAnimation() {
         this.hitSlimeTriggered = true;
         this.isHitSlimePlaying = true;
 
@@ -2264,18 +2398,35 @@ class SimplePixelCharacterManager {
         this.hideUnifiedCharacter();
         // Console log removed
 
-        // 슬라임은 6번째 프레임까지 계속 보임 (여기서 숨기지 않음)
+        // slime-idle 숨기기 (hit-slime 시작 시)
+        this.hideSlimeCharacter();
 
         // Hit-slime 애니메이션 표시 및 실행
         const hitSlimeChar = this.characters.get('hit-slime');
         if (hitSlimeChar) {
             hitSlimeChar.element.style.opacity = '1';
-            hitSlimeChar.element.style.top = '50%'; // 20vh 높임
+            hitSlimeChar.element.style.top = '60%'; // 20vh 높임
             hitSlimeChar.element.style.left = '50%';
             hitSlimeChar.isActive = true;
 
             // 애니메이션 시작 (한 번만 재생)
-            this.startHitSlimeAnimation(hitSlimeChar);
+            // Load hit-slime spreadsheet data first
+            console.log('🔍 Hit-slime animation starting, spreadsheetData:', hitSlimeChar.spreadsheetData);
+            if (!hitSlimeChar.spreadsheetData) {
+                try {
+                    console.log('🔄 Loading hit-slime spreadsheet data...');
+                    await this.loadHitSlimeSpreadsheetData();
+                    console.log('✅ Hit-slime spreadsheet data loaded');
+                } catch (error) {
+                    console.error('❌ Hit-slime spreadsheet loading failed:', error);
+                    if (window.manualScrollManager) {
+                        window.manualScrollManager.unlockScroll("hit-slime animation failed");
+                    }
+                    return;
+                }
+            }
+            console.log('🎬 Starting hit-slime spreadsheet animation');
+            this.startSpreadsheetAnimation(hitSlimeChar);
         }
 
         // Console log removed
@@ -2384,11 +2535,10 @@ class SimplePixelCharacterManager {
             this.updateFrame(character);
             frameCount++;
 
-            // 6번째 프레임에서 slime을 slime-hurt로 전환
-            if (frameCount === 6) {
-                // Console log removed
-                this.switchSlimeToHurt();
-            }
+            // 6번째 프레임에서 slime을 slime-hurt로 전환 (제거됨 - 완료 시에만 호출)
+            // if (frameCount === 6) {
+            //     this.switchSlimeToHurt();
+            // }
 
             // 모든 프레임 재생 완료
             if (frameCount >= character.frameCount) {
@@ -2412,7 +2562,6 @@ class SimplePixelCharacterManager {
     // Hit-slime 애니메이션 완료 처리
     onHitSlimeAnimationComplete() {
         // Console log removed
-
         this.isHitSlimePlaying = false;
 
         // Hit-slime 애니메이션 숨기기
@@ -2423,11 +2572,17 @@ class SimplePixelCharacterManager {
             this.stopAnimation(hitSlimeChar);
         }
 
-        // hit-idle 애니메이션 시작 (통합 시스템)
-        this.isHitIdlePlaying = true;
-        this.characterY = 65; // 10vh 아래로 이동 (50 -> 60)
+        // slime-hurt 애니메이션 시작 (개별 캐릭터) - 제거됨 (불필요한 중복 호출)
+        // this.switchSlimeToHurt();
 
-        // 기존 개별 캐릭터들 숨기기
+        // 꽃 애니메이션 모드 활성화 (rabbit의 방식과 동일)
+        this.isHitIdlePlaying = true;
+        this.characterY = 60; // rabbit과 동일한 값
+
+        // 통합 캐릭터 위치 DOM에 실제 적용
+        this.updateUnifiedCharacterPosition();
+
+        // 기존 개별 캐릭터들 숨기기 (슬라임 제외)
         this.characters.forEach((char, id) => {
             if (id.startsWith('slime-')) return; // 슬라임은 별도 관리
             this.stopAnimation(char);
@@ -2438,13 +2593,15 @@ class SimplePixelCharacterManager {
         this.showUnifiedCharacter();
         // Console log removed
 
-        // 통합 캐릭터로 hit-idle 시작
-        this.switchUnifiedAnimation('hit-idle');
-        this.updateUnifiedCharacterPosition();
+        // 꽃 모드 플래그 설정
+        this.hasLeafsFlowerDouble = true;
         // Console log removed
 
-        // 슬라임은 더 이상 표시하지 않음 (제거됨)
+        // 현재 스크롤 상태에 따라 적절한 애니메이션 직접 호출 (rabbit 패턴)
+        const initialFlowerAnimation = this.isScrolling ? 'lee-run-leafsflower' : 'lee-idle-leafs';
         // Console log removed
+        this.switchUnifiedAnimation(initialFlowerAnimation);
+        this.updateUnifiedCharacterPosition();
 
         // 스크롤 잠금 해제
         if (window.manualScrollManager) {

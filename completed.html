@@ -72,9 +72,6 @@
         }
 
         /* Remove opacity 0 elements */
-        .gallery-overlay {
-            display: none !important;
-        }
 
         #groom-text > div {
             opacity: 1 !important;
@@ -779,6 +776,7 @@
                 currentImageIndex = index;
                 showGalleryImage(index);
                 galleryOverlay.style.display = 'flex';
+                galleryOverlay.classList.add('active');
             });
         });
 
@@ -795,7 +793,10 @@
         }
 
         galleryClose.addEventListener('click', () => {
-            galleryOverlay.style.display = 'none';
+            galleryOverlay.classList.remove('active');
+            setTimeout(() => {
+                galleryOverlay.style.display = 'none';
+            }, 300);
         });
 
         galleryPrev.addEventListener('click', () => {
@@ -810,7 +811,10 @@
 
         galleryOverlay.addEventListener('click', (e) => {
             if (e.target === galleryOverlay) {
-                galleryOverlay.style.display = 'none';
+                galleryOverlay.classList.remove('active');
+                setTimeout(() => {
+                    galleryOverlay.style.display = 'none';
+                }, 300);
             }
         });
 

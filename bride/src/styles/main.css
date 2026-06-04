@@ -209,14 +209,9 @@ body:has(#initial-loading) {
     border-radius: 15px;
     backdrop-filter: blur(10px);
 }
-
-.couple-names {
-    font-size: 2.5rem;
-    font-weight: 300;
+.couple-names{
     margin-bottom: 20px;
-    color: var(--text-dark);
 }
-
 .couple-names .divider {
     color: var(--primary-orange);
     margin: 0 20px;
@@ -1204,10 +1199,6 @@ body:has(#initial-loading) {
         padding: 0 15px;
     }
 
-    .couple-names {
-        font-size: 2rem;
-    }
-
     .couple-names .divider {
         margin: 0 10px;
     }
@@ -1229,10 +1220,6 @@ body:has(#initial-loading) {
 }
 
 @media (max-width: 360px) {
-    .couple-names {
-        font-size: 1.8rem;
-    }
-
     .hero-content {
         padding: 15px;
     }

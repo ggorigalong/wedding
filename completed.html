@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이태인 ♥ 하송이 - 결혼합니다</title>
+    <meta name="description" content="이태인과 하송이의 결혼식에 초대합니다">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="이태인 ♥ 하송이 - 결혼합니다">
+    <meta property="og:description" content="2026년 9월 12일 오전 11:00, 저희 결혼합니다">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="images/gallery/IMG_5688.jpg">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="font/Pretendard.subset.woff" as="font" type="font/woff" crossorigin>
+    <link rel="preload" href="sounds/HaSong-i, Bouquet, Outlaw.mp3.mp3" as="audio">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Main styles - 기존과 동일한 CSS 사용 -->
+    <link rel="stylesheet" href="groom/src/styles/main.css">
+
+    <!-- Block layout override -->
+    <style>
+        /* Block 기반 레이아웃으로 오버라이드 */
+        body {
+            overflow-y: auto !important; /* 네이티브 스크롤 허용 */
+            overflow-x: hidden;
+        }
+
+        /* 섹션들을 block 레이아웃으로 */
+        .hero,
+        .invitation,
+        .empty-section,
+        .introduction,
+        .slime-section,
+        .gallery,
+        .location,
+        .account,
+        .song-section {
+            position: relative !important; /* absolute에서 relative로 변경 */
+            transform: none !important; /* transform 제거 */
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 캐릭터 컨테이너는 숨김 */
+        #pixel-character-container {
+            display: none !important;
+        }
+
+        /* 자막 컨테이너도 숨김 */
+        .subtitle-container {
+            display: none !important;
+        }
+
+        /* 스크롤 가이드 숨김 */
+        .toast-message {
+            display: none !important;
+        }
+
+        /* Remove opacity 0 elements */
+        .gallery-overlay {
+            display: none !important;
+        }
+
+        #groom-text > div {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        .char {
+            display: none !important;
+        }
+
+        #wreath-notice, #parking-notice {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        .subtitle-box {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        #location-header, #location-main {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        /* Set all sections to display block */
+        section {
+            display: block !important;
+        }
+
+        /* Remove section-3 background */
+        #section-3 {
+            background: none !important;
+        }
+
+        /* Wedding day countdown styles - refined design */
+        .wedding-countdown {
+            text-align: center;
+            color: #333;
+            font-family: 'Pretendard', sans-serif;
+            padding: 3rem 2rem;
+            max-width: 500px;
+        }
+
+        .wedding-title {
+            font-size: 2.2rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            letter-spacing: 3px;
+            color: #2c2c2c;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .wedding-date {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .wedding-date div:first-child {
+            font-weight: 500;
+            color: #2c2c2c;
+            margin-bottom: 0.3rem;
+        }
+
+        .wedding-date div:last-child {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .calendar {
+            background: transparent;
+            border-radius: 0;
+            padding: 1.5rem 0;
+            margin: 20px auto;
+            max-width: 400px;
+            color: #333;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .calendar-header div:first-child {
+            color: #ff6b6b; /* 일요일 */
+        }
+
+        .calendar-header div:last-child {
+            color: #4dabf7; /* 토요일 */
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            padding: 12px 8px;
+            text-align: center;
+            border-radius: 50%;
+            color: #333;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-day.highlight {
+            background: #ffa245;
+            color: white;
+            font-weight: 600;
+            transform: scale(1.1);
+        }
+
+        .calendar-day.sunday {
+            color: #ff6b6b;
+        }
+
+        .calendar-day.saturday {
+            color: #4dabf7;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 20px 0;
+        }
+
+        .countdown-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            min-width: 80px;
+        }
+
+        .countdown-number {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c2c2c;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown-label {
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .couple-names {
+            font-size: 14px;
+            margin-top: 40px;
+            color: #2c2c2c;
+            font-weight: 500;
+        }
+
+        .wedding-text {
+            font-size: 1rem;
+            margin-top: 0.5rem;
+            color: #555;
+            font-weight: 400;
+        }
+
+        .wedding-text span {
+            color: #2c2c2c;
+            font-weight: 600;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Background Audio -->
+    <audio id="bgm" loop>
+        <source src="sounds/HaSong-i, Bouquet, Outlaw.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Audio Control -->
+    <div class="music-player" id="musicPlayer">
+        <div class="music-info">
+            <div class="soundwave" id="soundwave">
+                <svg width="16" height="16" viewBox="0 0 20 16" fill="none">
+                    <rect class="bar bar1" x="2" y="4" width="2" height="8" fill="white" rx="1"/>
+                    <rect class="bar bar2" x="6" y="2" width="2" height="12" fill="white" rx="1"/>
+                    <rect class="bar bar3" x="10" y="6" width="2" height="4" fill="white" rx="1"/>
+                    <rect class="bar bar4" x="14" y="1" width="2" height="14" fill="white" rx="1"/>
+                    <rect class="bar bar5" x="18" y="3" width="2" height="10" fill="white" rx="1"/>
+                </svg>
+            </div>
+            <span class="song-title">HaSong-i, Bouquet, Outlaw.mp3</span>
+        </div>
+        <button class="play-btn" id="playBtn" aria-label="재생">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+        </button>
+        <button class="pause-btn" id="pauseBtn" aria-label="일시정지" style="display: none;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Main Hero Section -->
+    <section id="section-0" class="hero">
+        <img src="images/gallery/hero-text.png" alt="웨딩 텍스트" class="hero-text-overlay" style="position: inherit;" loading="eager">
+        <div class="hero-image">
+            <img src="images/gallery/hero-main.png" alt="이태인과 하송이의 웨딩 사진" loading="eager">
+        </div>
+        <div class="hero-info" style="position: absolute; bottom: 8vh; letter-spacing: 1.5px; left: 50%; transform: translateX(-50%); text-align: center; color: white; font-family: 'Pretendard', sans-serif;">
+            <div style="font-size: 20px; margin-bottom: 5px;">용산가족공원 야외예식장</div>
+            <div style="font-size: 16px;">2026.09.12 11:00AM</div>
+        </div>
+    </section>
+
+    <!-- Wedding Day Section -->
+    <section id="section-3" class="introduction">
+        <div class="container">
+            <div class="wedding-countdown" style="padding-top: 80px;">
+                <div class="section-subtitle">Wedding Day</div>
+                <h2 class="section-title">예식일 안내</h2>
+
+                <div class="wedding-date">
+                    <div >2026년 9월 12일 토요일 | 오전 11시</div>
+                    <div style="font-size: 14px; opacity: 0.7;">Saturday, September 12, 2026 | AM 11:00</div>
+                </div>
+
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                    </div>
+                    <div class="calendar-grid" style="">
+                        <div class="calendar-day" style=""></div>
+                        <div class="calendar-day"></div>
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day saturday">5</div>
+                        <div class="calendar-day sunday">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day saturday highlight" style="color: white;">12</div>
+                        <div class="calendar-day sunday">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day saturday">19</div>
+                        <div class="calendar-day sunday">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day saturday">26</div>
+                        <div class="calendar-day sunday">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day"></div>
+                        <div class="calendar-day"></div>
+                    </div>
+                </div>
+
+                <div class="countdown">
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="days">100</div>
+                        <div class="countdown-label">days</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="hours">0</div>
+                        <div class="countdown-label">hours</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="minutes">15</div>
+                        <div class="countdown-label">minutes</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="seconds">31</div>
+                        <div class="countdown-label">seconds</div>
+                    </div>
+                </div>
+
+                <div class="couple-names">
+                    <div>태인 ♥ 송이 결혼식이</div>
+                    <span id="daysRemaining" style="color: #ffa245;">N일</span> 남았습니다
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photo Gallery Section -->
+    <section id="section-6" class="gallery">
+        <div class="container">
+            <div class="section-subtitle">Gallery</div>
+            <h2 class="section-title">갤러리</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-7.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-7.jpg" alt="웨딩 사진 1" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-1.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-1.jpg" alt="웨딩 사진 5" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-12.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-12.jpg" alt="웨딩 사진 7" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-14.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-14.jpg" alt="웨딩 사진 11" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-9.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-9.jpg" alt="웨딩 사진 9" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-8.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-8.jpg" alt="웨딩 사진 8" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-2.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-2.jpg" alt="웨딩 사진 2" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-3.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-3.jpg" alt="웨딩 사진 3" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-4.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-4.jpg" alt="웨딩 사진 4" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-5.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-5.jpg" alt="웨딩 사진 5" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-6.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-6.jpg" alt="웨딩 사진 6" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-10.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-10.jpg" alt="웨딩 사진 10" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-11.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-11.jpg" alt="웨딩 사진 11" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-13.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-13.jpg" alt="웨딩 사진 13" loading="lazy">
+                    </picture>
+                </div>
+                <div class="gallery-item">
+                    <picture style="cursor: pointer;">
+                        <source srcset="/images/gallery/gallery-15.webp" type="image/webp">
+                        <img src="/images/gallery/gallery-15.jpg" alt="웨딩 사진 15" loading="lazy">
+                    </picture>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location Section -->
+    <section id="section-7" class="location">
+        <div class="container" id="location-container">
+            <div class="location-header" id="location-header">
+                <div class="section-subtitle">Location</div>
+                <h2 class="section-title">오시는길</h2>
+            </div>
+            <div class="location-main" id="location-main">
+                <div class="location-info">
+                    <h3 class="venue-name">용산가족공원 야외예식장</h3>
+                    <div class="address-container">
+                <address class="address">용산동6가 68-89</address>
+                <button class="copy-address-btn" onclick="copyAddress('용산동6가 68-89')" aria-label="주소 복사">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                </button>
+                </div>
+
+                <div class="map-container">
+                    <div class="map-buttons">
+                        <button class="map-btn" onclick="openKakaoMap()" aria-label="카카오맵에서 보기">
+                            <img src="/icons/kakao-map.png" alt="카카오맵" />
+                            카카오맵
+                        </button>
+                        <button class="map-btn" onclick="openNaverMap()" aria-label="네이버지도에서 보기">
+                            <img src="/icons/naver-map.webp" alt="네이버지도" />
+                            네이버지도
+                        </button>
+                    </div>
+                </div>
+
+                <div class="transportation">
+                    <div class="transport-item">
+                        <svg class="transport-icon" viewBox="0 0 24 24" fill="#ffc671" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 16c0 .88.39 1.67 1 2.22V20a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+                        </svg>
+                        <div class="transport-info">
+                            <div class="transport-type">버스</div>
+                            <div class="transport-details">400번, 502번 국립중앙박물관역 도보 9분</div>
+                        </div>
+                    </div>
+
+                    <div class="transport-item">
+                        <img class="transport-icon" src="/icons/subway-svgrepo-com.svg" alt="지하철" style="filter: hue-rotate(30deg) saturate(1.5);">
+                        <div class="transport-info">
+                            <div class="transport-type">지하철</div>
+                            <div class="transport-details">4호선/경의중앙선 이촌역 2번출구 도보 10분</div>
+                        </div>
+                    </div>
+
+                    <div class="transport-item">
+                        <svg class="transport-icon" viewBox="0 0 24 24" fill="#ffa245" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                        </svg>
+                        <div class="transport-info">
+                            <div class="transport-type">근처 주차장</div>
+                            <div class="transport-details">동작대교 공영주차장</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+                    <!-- Information Notices -->
+                    <div class="information-section" id="wreath-notice">
+                        <div class="info-item">
+                            <svg class="info-icon" viewBox="0 0 24 24" fill="#ff6b6b" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                            </svg>
+                            <div class="info-text">
+                                <div class="info-type">화환 안내</div>
+                                <div class="info-details">공원 내 야외 예식 특성상 화환 반입이 제한됩니다.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="information-section" id="parking-notice">
+                        <div class="info-item">
+                            <svg class="info-icon" viewBox="0 0 24 24" fill="#ffc671" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                            </svg>
+                            <div class="info-text">
+                                <div class="info-type">주차 안내</div>
+                                <div class="info-details">공원 내 주차 공간이 매우 협소하오니, 가급적 대중교통을 이용해 주시면 감사하겠습니다.</div>
+                            </div>
+                        </div>
+                    </div>
+    </div>
+    </section>
+
+    <!-- Account Section -->
+    <section id="section-8" class="account">
+        <div class="container">
+            <div class="section-subtitle">Account</div>
+            <h2 class="section-title">마음 전하는 곳</h2>
+            <p class="account-message">참석이 어려우신 분들을 위해 기재했습니다.<br>너그러운 마음으로 양해 부탁드립니다.</p>
+            <div class="account-info groom-account">
+                <h4>신랑측</h4>
+                <div class="account-card">
+                    <span class="account-name">이태인</span>
+                    <div class="account-right-group">
+                        <div class="account-details">
+                            <span class="account-bank">하나은행</span>
+                            <span class="account-number">176-910582-37807</span>
+                        </div>
+                        <button class="copy-icon-btn" onclick="copyAccount('176-910582-37807')" aria-label="신랑측 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="account-info groom-mother-account">
+                <h4>신랑 어머니</h4>
+                <div class="account-card">
+                    <span class="account-name">강경미</span>
+                    <div class="account-right-group">
+                        <div class="account-details">
+                            <span class="account-bank">기업은행</span>
+                            <span class="account-number">110-359-691007</span>
+                        </div>
+                        <button class="copy-icon-btn" onclick="copyAccount('110-359-691007')" aria-label="신랑모 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="account-info bride-account">
+                <h4>신부측</h4>
+                <div class="account-card">
+                    <span class="account-name">하송이</span>
+                    <div class="account-right-group">
+                        <div class="account-details">
+                            <span class="account-bank">카카오뱅크</span>
+                            <span class="account-number">3333-12-7983155</span>
+                        </div>
+                        <button class="copy-icon-btn" onclick="copyAccount('3333-12-7983155')" aria-label="신부측 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="account-info bride-father-account">
+                <h4>신부 아버지</h4>
+                <div class="account-card">
+                    <span class="account-name">하근철</span>
+                    <div class="account-right-group">
+                        <div class="account-details">
+                            <span class="account-bank">기업은행</span>
+                            <span class="account-number">114-017613-03-026</span>
+                        </div>
+                        <button class="copy-icon-btn" onclick="copyAccount('114-017613-03-026')" aria-label="신부부 계좌번호 복사">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 9 - Ending -->
+    <section id="section-9" class="song-section" style="margin: 0; padding: 0; border: none;">
+        <img src="/images/gallery/ending.png" alt="웨딩 엔딩 이미지" style="width: 100%; height: 100vh; object-fit: cover; display: block; margin: 0; padding: 0; border: none;">
+    </section>
+
+    <!-- Gallery Popup Modal -->
+    <div id="galleryOverlay" class="gallery-overlay">
+        <div class="gallery-wrapper">
+            <div class="gallery-image-container">
+                <img id="galleryImage" src="" alt="갤러리 이미지" loading="lazy">
+                <div class="gallery-loading" id="galleryLoading">로딩 중...</div>
+            </div>
+            <button class="gallery-nav gallery-prev" id="galleryPrev" aria-label="이전 이미지">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1">
+                    <path d="M15 3l-9 9 9 9"></path>
+                </svg>
+            </button>
+            <button class="gallery-nav gallery-next" id="galleryNext" aria-label="다음 이미지">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1">
+                    <path d="M9 3l9 9-9 9"></path>
+                </svg>
+            </button>
+            <button class="gallery-close" id="galleryClose" aria-label="닫기">
+                <svg viewBox="0 0 24 24" role="img" tabindex="-1" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 20L4 4m16 0L4 20"></path>
+                </svg>
+            </button>
+            <div class="gallery-counter" id="galleryCounter">1 / 15</div>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePage();
+        });
+
+        function initializePage() {
+            // 엔딩에서 전환된 경우 맨 아래(엔딩 이미지)로 스크롤
+            if (sessionStorage.getItem('startFromEnding') === 'true') {
+                // 플래그 제거
+                sessionStorage.removeItem('startFromEnding');
+
+                // 즉시 맨 아래로 스크롤 (부드럽지 않게, 사용자가 눈치채지 못하도록)
+                window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'instant' // 즉시 이동
+                });
+
+                // BGM 상태 복원
+                const bgmWasPlaying = sessionStorage.getItem('bgmPlaying') === 'true';
+                const bgmCurrentTime = parseFloat(sessionStorage.getItem('bgmCurrentTime') || '0');
+
+                if (bgmWasPlaying) {
+                    const bgm = document.getElementById('bgm');
+                    if (bgm) {
+                        bgm.currentTime = bgmCurrentTime;
+                        bgm.play().then(() => {
+                            // BGM 재생 성공 시 UI 업데이트
+                            document.getElementById('playBtn').style.display = 'none';
+                            document.getElementById('pauseBtn').style.display = 'flex';
+                            document.getElementById('soundwave').style.display = 'block';
+                        }).catch(console.error);
+                    }
+                }
+
+                // 세션 스토리지 정리
+                sessionStorage.removeItem('bgmPlaying');
+                sessionStorage.removeItem('bgmCurrentTime');
+            }
+        }
+
+        // 음악 플레이어 기능
+        const bgm = document.getElementById('bgm');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const soundwave = document.getElementById('soundwave');
+
+        playBtn.addEventListener('click', () => {
+            bgm.play();
+            playBtn.style.display = 'none';
+            pauseBtn.style.display = 'flex';
+            soundwave.style.display = 'block';
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            bgm.pause();
+            pauseBtn.style.display = 'none';
+            playBtn.style.display = 'flex';
+            soundwave.style.display = 'none';
+        });
+
+        // 갤러리 기능
+        const galleryItems = document.querySelectorAll('.gallery-item img');
+        const galleryOverlay = document.getElementById('galleryOverlay');
+        const galleryImage = document.getElementById('galleryImage');
+        const galleryLoading = document.getElementById('galleryLoading');
+        const galleryCounter = document.getElementById('galleryCounter');
+        const galleryClose = document.getElementById('galleryClose');
+        const galleryPrev = document.getElementById('galleryPrev');
+        const galleryNext = document.getElementById('galleryNext');
+
+        let currentImageIndex = 0;
+        // WebP 이미지 지원 확인 후 적절한 이미지 소스 선택
+        const images = Array.from(galleryItems).map(img => {
+            const picture = img.parentElement;
+            if (picture.tagName === 'PICTURE') {
+                const webpSource = picture.querySelector('source[type="image/webp"]');
+                // WebP를 지원하는 브라우저면 WebP 사용, 아니면 fallback img src 사용
+                return webpSource && supportsWebP() ? webpSource.srcset : img.src;
+            }
+            return img.src;
+        });
+
+        // WebP 지원 확인 함수
+        function supportsWebP() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+        }
+
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                currentImageIndex = index;
+                showGalleryImage(index);
+                galleryOverlay.style.display = 'flex';
+            });
+        });
+
+        function showGalleryImage(index) {
+            galleryLoading.style.display = 'block';
+            galleryImage.style.display = 'none';
+            galleryImage.src = images[index];
+            galleryCounter.textContent = `${index + 1} / ${images.length}`;
+
+            galleryImage.onload = () => {
+                galleryLoading.style.display = 'none';
+                galleryImage.style.display = 'block';
+            };
+        }
+
+        galleryClose.addEventListener('click', () => {
+            galleryOverlay.style.display = 'none';
+        });
+
+        galleryPrev.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            showGalleryImage(currentImageIndex);
+        });
+
+        galleryNext.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            showGalleryImage(currentImageIndex);
+        });
+
+        galleryOverlay.addEventListener('click', (e) => {
+            if (e.target === galleryOverlay) {
+                galleryOverlay.style.display = 'none';
+            }
+        });
+
+        // 카운트다운 타이머
+        function updateCountdown() {
+            const weddingDate = new Date('2026-09-12T11:00:00');
+            const now = new Date();
+            const timeDiff = weddingDate.getTime() - now.getTime();
+
+            if (timeDiff > 0) {
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = days;
+                document.getElementById('hours').textContent = hours;
+                document.getElementById('minutes').textContent = minutes;
+                document.getElementById('seconds').textContent = seconds;
+
+                // Update the main text as well
+                const daysRemaining = document.getElementById('daysRemaining');
+                if (daysRemaining) {
+                    daysRemaining.textContent = `${days}일`;
+                }
+            }
+        }
+
+        // Update countdown every second
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+
+        // 유틸리티 함수들
+        function copyAddress(address) {
+            navigator.clipboard.writeText(address).then(() => {
+                alert('주소가 복사되었습니다: ' + address);
+            });
+        }
+
+        function copyAccount(accountNumber) {
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                alert('계좌번호가 복사되었습니다: ' + accountNumber);
+            });
+        }
+
+        function openKakaoMap() {
+            window.open('https://map.kakao.com/link/to/용산가족공원,37.5135,126.9787', '_blank');
+        }
+
+        function openNaverMap() {
+            window.open('https://map.naver.com/v5/search/용산가족공원', '_blank');
+        }
+    </script>
+</body>
+</html>

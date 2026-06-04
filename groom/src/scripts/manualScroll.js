@@ -303,6 +303,13 @@ class ManualScrollManager {
         const normalizedDelta = scrollDirection === 'down' ? speed : -speed;
         const scrollMagnitude = Math.abs(normalizedDelta);
 
+        // 엔딩 이미지 표시 중 위로 스크롤 시 completed.html로 seamless 전환
+        const endingImage = document.getElementById('ending-cover-image');
+        if (endingImage && scrollDirection === 'up') {
+            this.transitionToCompletedPage();
+            return;
+        }
+
         // Console log removed
 
         // 섹션별 특별 처리
@@ -826,6 +833,22 @@ class ManualScrollManager {
         this.scrollLocked = false;
         this.lockReason = '';
         // Console log removed
+    }
+
+    // completed.html로 seamless 전환
+    transitionToCompletedPage() {
+        // 전환 완료 플래그 설정 (completed.html에서 엔딩 이미지부터 시작하도록)
+        sessionStorage.setItem('startFromEnding', 'true');
+
+        // 현재 BGM 상태 저장
+        const bgm = document.getElementById('bgm');
+        if (bgm && !bgm.paused) {
+            sessionStorage.setItem('bgmPlaying', 'true');
+            sessionStorage.setItem('bgmCurrentTime', bgm.currentTime.toString());
+        }
+
+        // 페이지 전환 (replace 사용으로 히스토리에 남지 않음)
+        window.location.replace('/completed.html');
     }
 }
 

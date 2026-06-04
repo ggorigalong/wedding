@@ -38,6 +38,10 @@ class SimplePixelCharacterManager {
         this.scrollGuideToastShown = false; // 스크롤 가이드 토스트 표시 여부
         this.scrollListener = null; // 스크롤 리스너 참조
 
+        // Skip 기능
+        this.skipButton = null;
+        this.currentSkippableAnimation = null;
+
         // 통합 캐릭터 컨테이너
         this.mainCharacter = null;
         this.animationStates = {};
@@ -61,6 +65,7 @@ class SimplePixelCharacterManager {
 
     async init() {
         this.createContainer();
+        this.setupSkipButton();
         await this.setupUnifiedCharacter();
         await this.setupCharacters();
 
@@ -91,6 +96,144 @@ class SimplePixelCharacterManager {
             overflow: hidden;
         `;
         document.body.appendChild(this.container);
+    }
+
+    setupSkipButton() {
+        this.skipButton = document.getElementById('skipButton');
+        if (this.skipButton) {
+            const skipBtn = document.getElementById('skipBtn');
+            skipBtn.addEventListener('click', () => {
+                this.skipCurrentAnimation();
+            });
+        }
+    }
+
+    showSkipButton(animationType) {
+        this.currentSkippableAnimation = animationType;
+        if (this.skipButton) {
+            this.skipButton.classList.add('show');
+        }
+    }
+
+    hideSkipButton() {
+        this.currentSkippableAnimation = null;
+        if (this.skipButton) {
+            this.skipButton.classList.remove('show');
+        }
+    }
+
+    skipCurrentAnimation() {
+        if (!this.currentSkippableAnimation) return;
+
+        console.log(`🏃‍♂️ Skipping ${this.currentSkippableAnimation} animation`);
+
+        switch (this.currentSkippableAnimation) {
+            case 'hit-slime':
+                this.skipHitSlimeAnimation();
+                break;
+            case 'main':
+                this.skipMainAnimation();
+                break;
+            case 'information':
+                this.skipInformationAnimation();
+                break;
+            case 'ending':
+                this.skipEndingAnimation();
+                break;
+            default:
+                console.log(`⚠️ Unknown animation type: ${this.currentSkippableAnimation}`);
+        }
+
+        this.hideSkipButton();
+    }
+
+    skipHitSlimeAnimation() {
+        if (!this.isHitSlimePlaying) return;
+
+        const hitSlimeChar = this.characters.get('hit-slime');
+        if (hitSlimeChar && hitSlimeChar.animationTimeout) {
+            clearTimeout(hitSlimeChar.animationTimeout);
+            hitSlimeChar.animationTimeout = null;
+        }
+
+        // 자막 즉시 클리어
+        if (window.subtitleManager) {
+            window.subtitleManager.clearAllSubtitles();
+        }
+
+        // 정상적인 완료 처리 함수 호출
+        this.onHitSlimeAnimationComplete();
+
+        console.log('✅ Hit-slime animation skipped');
+    }
+
+    skipMainAnimation() {
+        const mainChar = this.characters.get('main');
+        if (!mainChar || !mainChar.isActive) return;
+
+        // 자막 즉시 클리어
+        if (window.subtitleManager) {
+            window.subtitleManager.clearAllSubtitles();
+        }
+
+        // main 캐릭터 애니메이션 중단
+        if (mainChar.animationTimeout) {
+            clearTimeout(mainChar.animationTimeout);
+            mainChar.animationTimeout = null;
+        }
+
+        // main 캐릭터 숨기기
+        this.stopAnimation(mainChar);
+        mainChar.element.style.opacity = '0';
+        mainChar.isActive = false;
+
+        // 메인 애니메이션 완료 콜백 실행 (정상 완료와 동일한 처리)
+        if (this.mainAnimationCallback) {
+            this.mainAnimationCallback();
+            this.mainAnimationCallback = null;
+        }
+
+        console.log('✅ Main animation (section-1) skipped');
+    }
+
+    skipInformationAnimation() {
+        if (!this.isInformationPlaying) return;
+
+        const informationChar = this.characters.get('information');
+        if (informationChar && informationChar.animationTimeout) {
+            clearTimeout(informationChar.animationTimeout);
+            informationChar.animationTimeout = null;
+        }
+
+        // 자막 즉시 클리어
+        if (window.subtitleManager) {
+            window.subtitleManager.clearAllSubtitles();
+        }
+
+        // 정상적인 완료 처리 함수 호출
+        this.onInformationAnimationComplete();
+
+        console.log('✅ Information animation skipped');
+    }
+
+    skipEndingAnimation() {
+        if (!this.isEndingPlaying) return;
+
+        const endingChar = this.characters.get('ending');
+        if (endingChar && endingChar.animationTimeout) {
+            clearTimeout(endingChar.animationTimeout);
+            endingChar.animationTimeout = null;
+        }
+
+        // 자막 즉시 클리어
+        if (window.subtitleManager) {
+            window.subtitleManager.clearAllSubtitles();
+        }
+
+        // 정상적인 완료 처리 함수 호출
+        this.onEndingAnimationComplete();
+
+        console.log('✅ Ending animation skipped');
     }
 
     // 통합 캐릭터 시스템 설정 (IMG 태그 방식)
@@ -1301,6 +1444,7 @@ class SimplePixelCharacterManager {
 
                 // 애니메이션 완료 콜백 호출
                 if (character.id === 'main' && this.mainAnimationCallback) {
+                    this.hideSkipButton();
                     this.mainAnimationCallback();
                     this.mainAnimationCallback = null;
 
@@ -1590,6 +1734,7 @@ class SimplePixelCharacterManager {
         }
 
         this.mainAnimationCallback = callback;
+        this.showSkipButton('main');
 
         // 통합 캐릭터 숨기기 (main 애니메이션 중에는 숨김)
         this.hideUnifiedCharacter();
@@ -1625,6 +1770,7 @@ class SimplePixelCharacterManager {
             setTimeout(() => {
                 // Console log removed
                 if (this.mainAnimationCallback) {
+                    this.hideSkipButton();
                     this.mainAnimationCallback();
                     this.mainAnimationCallback = null;
                 }
@@ -2112,6 +2258,7 @@ class SimplePixelCharacterManager {
     triggerEndingAnimation() {
         this.endingTriggered = true;
         this.isEndingPlaying = true;
+        this.showSkipButton('ending');
 
         // 스크롤 잠금
         if (window.manualScrollManager) {
@@ -2208,6 +2355,7 @@ class SimplePixelCharacterManager {
         // Console log removed
 
         this.isEndingPlaying = false;
+        this.hideSkipButton();
 
         // Ending 캐릭터를 마지막 프레임에 계속 표시 (숨기지 않음)
         const endingChar = this.characters.get('ending');
@@ -2404,6 +2552,7 @@ class SimplePixelCharacterManager {
     async triggerHitSlimeAnimation() {
         this.hitSlimeTriggered = true;
         this.isHitSlimePlaying = true;
+        this.showSkipButton('hit-slime');
 
         // 스크롤 잠금
         if (window.manualScrollManager) {
@@ -2579,6 +2728,7 @@ class SimplePixelCharacterManager {
     onHitSlimeAnimationComplete() {
         // Console log removed
         this.isHitSlimePlaying = false;
+        this.hideSkipButton();
 
         // Hit-slime 애니메이션 숨기기
         const hitSlimeChar = this.characters.get('hit-slime');
@@ -3038,6 +3188,7 @@ class SimplePixelCharacterManager {
     async triggerInformationAnimation() {
         this.informationTriggered = true;
         this.isInformationPlaying = true;
+        this.showSkipButton('information');
         // 토스트 플래그 리셋
         this.wreathNoticeShown = false;
         this.parkingNoticeShown = false;
@@ -3198,6 +3349,7 @@ class SimplePixelCharacterManager {
     onInformationAnimationComplete() {
         // Console log removed
         this.isInformationPlaying = false;
+        this.hideSkipButton();
         // Information 캐릭터 숨기기
         const informationChar = this.characters.get('information');
         if (informationChar) {

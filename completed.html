@@ -14,7 +14,7 @@
 
     <!-- Preload critical resources -->
     <link rel="preload" href="font/Pretendard.subset.woff" as="font" type="font/woff" crossorigin>
-    <link rel="preload" href="sounds/HaSong-i, Bouquet, Outlaw.mp3.mp3" as="audio">
+    <link rel="preload" href="sounds/ending.mp3" as="audio">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -48,7 +48,7 @@
             position: inherit !important; /* absolute에서 relative로 변경 */
             transform: none !important; /* transform 제거 */
             width: 100%;
-            height: auto;
+            height: fit-content;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -112,7 +112,6 @@
             text-align: center;
             color: #333;
             font-family: 'Pretendard', sans-serif;
-            padding: 3rem 2rem;
             max-width: 500px;
         }
 
@@ -203,7 +202,7 @@
         .countdown {
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
+            gap: 10px;
             margin: 20px 0;
         }
 
@@ -255,7 +254,7 @@
 <body>
     <!-- Background Audio -->
     <audio id="bgm" loop>
-        <source src="sounds/HaSong-i, Bouquet, Outlaw.mp3" type="audio/mpeg">
+        <source src="sounds/ending.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Audio Control -->
@@ -270,7 +269,7 @@
                     <rect class="bar bar5" x="18" y="3" width="2" height="10" fill="white" rx="1"/>
                 </svg>
             </div>
-            <span class="song-title">HaSong-i, Bouquet, Outlaw.mp3</span>
+            <span class="song-title">See you Our Wedding Day.mp3</span>
         </div>
         <button class="play-btn" id="playBtn" aria-label="재생">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">

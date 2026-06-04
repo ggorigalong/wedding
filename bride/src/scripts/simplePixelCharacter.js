@@ -3154,6 +3154,7 @@ class SimplePixelCharacterManager {
     onHitRabbitAnimationComplete() {
         // Console log removed
         this.isHitRabbitPlaying = false;
+        this.hideSkipButton();
 
         // Hit-rabbit 애니메이션 숨기기
         const hitRabbitChar = this.characters.get('hit-rabbit');

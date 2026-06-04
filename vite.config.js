@@ -12,7 +12,8 @@ export default defineConfig({
       input: {
         main: 'index.html',
         bride: 'bride.html',
-        groom: 'groom.html'
+        groom: 'groom.html',
+        completed: 'completed.html'
       }
     },
     // Ensure all public assets are copied

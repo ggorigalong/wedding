@@ -52,6 +52,8 @@ class ManualScrollManager {
         this.autoScrollSpeed = 8; // 자동 스크롤 속도 (픽셀/프레임)
         this.autoScrollAnimationId = null; // 자동 스크롤 애니메이션 ID
         this.userInputBlocked = false; // 사용자 입력 차단 여부
+        this.autoScrollCharacterMultiplier = 0.0005; // 자동 스크롤시 캐릭터 움직임 배율
+        this.manualScrollCharacterMultiplier = 0.002; // 수동 스크롤시 캐릭터 움직임 배율
     }
 
     init() {
@@ -327,17 +329,17 @@ class ManualScrollManager {
         } else if (this.currentSection === 1) {
             // Section-1: 아래로만 캐릭터 이동, 위로는 직접 전환 (애니메이션 재실행 방지)
             if (scrollDirection === 'down') {
-                this.handleCharacterMovement(normalizedDelta, this.currentSection);
+                this.handleCharacterMovement(normalizedDelta, this.currentSection, inputType);
             } else {
                 // 위로는 바로 Section-0로 전환
                 this.goToSection(0);
             }
         } else if (this.currentSection === 5) {
             // Section-5: 슬라임 애니메이션 (lee-idle/lee-run 정책 적용)
-            this.handleCharacterMovement(normalizedDelta, this.currentSection);
+            this.handleCharacterMovement(normalizedDelta, this.currentSection, inputType);
         } else if (this.currentSection >= 2) {
             // Section-2부터는 모든 섹션에서 캐릭터 Y축 이동 (Section-5 제외)
-            this.handleCharacterMovement(normalizedDelta, this.currentSection);
+            this.handleCharacterMovement(normalizedDelta, this.currentSection, inputType);
         } else {
             // 기타 섹션들은 일반적인 섹션 전환
             const targetSection = scrollDirection === 'down' ?
@@ -520,6 +522,22 @@ class ManualScrollManager {
                 window.pixelCharacterManager.handleSectionTransition(this.currentSection);
             }
         }
+
+        // Section 7 진입 시 자동 스크롤 시작
+        if (this.currentSection === 7) {
+            console.log('🎯 Section 7 reached - Starting auto scroll');
+            this.setAutoScrollCharacterMultiplier(0.001); // 캐릭터 움직임 속도 설
+
+            this.startAutoScroll(6); // 화환 섹션에서는 느린 속도로
+        }
+
+        // Section 9 진입 시 자동 스크롤 시작
+        if (this.currentSection === 9) {
+            console.log('🎯 Section 9 reached - Starting auto scroll');
+            this.setAutoScrollCharacterMultiplier(0.001); // 캐릭터 움직임 속도 설
+
+            this.startAutoScroll(2); // 마지막 섹션에서는 적당한 속도로
+        }
     }
 
     // Section1 진입 시 모든 애니메이션 이미지들 미리 로드
@@ -615,7 +633,7 @@ class ManualScrollManager {
     }
 
     // 모든 섹션에서 캐릭터 Y축 이동 처리
-    handleCharacterMovement(delta, currentSectionIndex) {
+    handleCharacterMovement(delta, currentSectionIndex, inputType = 'unknown') {
         // Section-7에서 wreath 또는 information 애니메이션 중에는 캐릭터 움직임 차단
         if (currentSectionIndex === 7 &&
             window.pixelCharacterManager &&
@@ -646,8 +664,9 @@ class ManualScrollManager {
             this[sectionKey] = 0;
         }
 
-        // 스크롤 방향에 따라 해당 섹션의 Y축 진행도 업데이트 (4배 더 느리게)
-        this[sectionKey] += delta * 0.002; // 0.002 → 0.0005 (4배 감소)
+        // 스크롤 방향에 따라 해당 섹션의 Y축 진행도 업데이트 (자동/수동 스크롤별 다른 배율)
+        const multiplier = inputType === 'auto' ? this.autoScrollCharacterMultiplier : this.manualScrollCharacterMultiplier;
+        this[sectionKey] += delta * multiplier;
         this[sectionKey] = Math.max(-0.3, Math.min(1.5, this[sectionKey])); // -0.3~1.5 범위 (위로도 이동 가능)
 
         // Section-7만 특별히 로그 추가
@@ -873,6 +892,11 @@ class ManualScrollManager {
         this.autoScrollEnabled = true;
         this.userInputBlocked = true; // 사용자 입력 차단
 
+        // 자동 스크롤 중에는 run 애니메이션이 나오도록 isScrolling 상태 설정
+        if (window.pixelCharacterManager) {
+            window.pixelCharacterManager.isScrolling = true;
+        }
+
         console.log(`🤖 Starting auto scroll with speed: ${this.autoScrollSpeed}`);
 
         // 자동 스크롤 애니메이션 시작
@@ -887,6 +911,11 @@ class ManualScrollManager {
 
         this.autoScrollEnabled = false;
         this.userInputBlocked = false; // 사용자 입력 복원
+
+        // 자동 스크롤 중지시 isScrolling 상태도 복원
+        if (window.pixelCharacterManager) {
+            window.pixelCharacterManager.isScrolling = false;
+        }
 
         // 진행 중인 애니메이션 중단
         if (this.autoScrollAnimationId) {
@@ -938,8 +967,22 @@ class ManualScrollManager {
             enabled: this.autoScrollEnabled,
             speed: this.autoScrollSpeed,
             userInputBlocked: this.userInputBlocked,
-            animationId: this.autoScrollAnimationId
+            animationId: this.autoScrollAnimationId,
+            autoCharacterMultiplier: this.autoScrollCharacterMultiplier,
+            manualCharacterMultiplier: this.manualScrollCharacterMultiplier
         };
+    }
+
+    // 자동 스크롤시 캐릭터 움직임 배율 설정
+    setAutoScrollCharacterMultiplier(multiplier) {
+        this.autoScrollCharacterMultiplier = multiplier;
+        console.log(`🎭 Auto scroll character multiplier set to: ${multiplier}`);
+    }
+
+    // 수동 스크롤시 캐릭터 움직임 배율 설정
+    setManualScrollCharacterMultiplier(multiplier) {
+        this.manualScrollCharacterMultiplier = multiplier;
+        console.log(`👤 Manual scroll character multiplier set to: ${multiplier}`);
     }
 }
 

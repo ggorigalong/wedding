@@ -46,6 +46,12 @@ class ManualScrollManager {
         this.scrollLocked = false; // 스크롤 잠금 상태
         this.lockReason = ''; // 잠금 이유
         this.isLoading = false; // 로딩 중 여부
+
+        // 자동 스크롤 관련
+        this.autoScrollEnabled = false; // 자동 스크롤 활성화 여부
+        this.autoScrollSpeed = 8; // 자동 스크롤 속도 (픽셀/프레임)
+        this.autoScrollAnimationId = null; // 자동 스크롤 애니메이션 ID
+        this.userInputBlocked = false; // 사용자 입력 차단 여부
     }
 
     init() {
@@ -256,6 +262,11 @@ class ManualScrollManager {
 
     // 스크롤 델타 처리 (공통 로직)
     handleScrollDelta(delta, inputType = 'unknown') {
+        // 자동 스크롤 모드에서 사용자 입력 차단 (자동 스크롤 자체는 허용)
+        if (this.userInputBlocked && inputType !== 'auto') {
+            return;
+        }
+
         // 애니메이션 재생 중에는 스크롤 차단
         if (this.isAnimationLocked) {
             return;
@@ -843,6 +854,92 @@ class ManualScrollManager {
 
         // 페이지 전환 (replace 사용으로 히스토리에 남지 않음)
         window.location.replace('/completed.html');
+    }
+
+    // ===== 자동 스크롤 관련 메서드들 =====
+
+    // 자동 스크롤 시작 (아래 방향으로)
+    startAutoScroll(speed = null) {
+        if (this.autoScrollEnabled) {
+            console.log('⚠️ Auto scroll already running');
+            return;
+        }
+
+        // 속도 설정 (기본값 또는 매개변수)
+        if (speed !== null) {
+            this.autoScrollSpeed = speed;
+        }
+
+        this.autoScrollEnabled = true;
+        this.userInputBlocked = true; // 사용자 입력 차단
+
+        console.log(`🤖 Starting auto scroll with speed: ${this.autoScrollSpeed}`);
+
+        // 자동 스크롤 애니메이션 시작
+        this.autoScrollAnimation();
+    }
+
+    // 자동 스크롤 중지
+    stopAutoScroll() {
+        if (!this.autoScrollEnabled) {
+            return;
+        }
+
+        this.autoScrollEnabled = false;
+        this.userInputBlocked = false; // 사용자 입력 복원
+
+        // 진행 중인 애니메이션 중단
+        if (this.autoScrollAnimationId) {
+            cancelAnimationFrame(this.autoScrollAnimationId);
+            this.autoScrollAnimationId = null;
+        }
+
+        console.log('🛑 Auto scroll stopped, user input restored');
+    }
+
+    // 자동 스크롤 토글
+    toggleAutoScroll(speed = null) {
+        if (this.autoScrollEnabled) {
+            this.stopAutoScroll();
+        } else {
+            this.startAutoScroll(speed);
+        }
+    }
+
+    // 자동 스크롤 애니메이션 루프
+    autoScrollAnimation() {
+        if (!this.autoScrollEnabled) {
+            return;
+        }
+
+        // 자연스러운 아래 방향 스크롤 시뮬레이션
+        this.handleScrollDelta(this.autoScrollSpeed, 'auto');
+
+        // 다음 프레임 예약
+        this.autoScrollAnimationId = requestAnimationFrame(() => {
+            this.autoScrollAnimation();
+        });
+    }
+
+    // 자동 스크롤 속도 조절
+    setAutoScrollSpeed(speed) {
+        this.autoScrollSpeed = speed;
+        console.log(`🚀 Auto scroll speed changed to: ${speed}`);
+    }
+
+    // 자동 스크롤 상태 확인
+    isAutoScrolling() {
+        return this.autoScrollEnabled;
+    }
+
+    // 자동 스크롤 상태 정보
+    getAutoScrollState() {
+        return {
+            enabled: this.autoScrollEnabled,
+            speed: this.autoScrollSpeed,
+            userInputBlocked: this.userInputBlocked,
+            animationId: this.autoScrollAnimationId
+        };
     }
 }
 

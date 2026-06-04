@@ -3374,9 +3374,10 @@ class SimplePixelCharacterManager {
         const initialAnimation = this.isScrolling ? 'lee-run' : 'lee-idle';
         // Console log removed
         this.switchToState(initialAnimation);
-        // 스크롤 잠금 해제 (rabbit 방식과 동일)
+        // 스크롤 잠금 해제 및 자동 스크롤 중지 (rabbit 방식과 동일)
         if (window.manualScrollManager) {
             window.manualScrollManager.unlockScroll('information animation complete');
+            window.manualScrollManager.stopAutoScroll(); // 자동 스크롤 해제
         }
         // Console log removed
         // Location 정보 표시 (애니메이션 완료 후)

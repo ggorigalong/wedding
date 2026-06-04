@@ -802,7 +802,7 @@ class SimplePixelCharacterManager {
         });
 
 
-        // Lee-back 통합 캐릭터 (하나의 컨테이너에서 idle/run 전환)
+        // Lee-back 통합 캐릭터 (하나의 컨테이너에서 idle/run 전환) - URL 변경 방식으로 변경
         this.addCharacter('lee-back', {
             isPngSequence: true,
             framePrefix: 'bride/animation/lee-idle-back/lee-idle-back', // 기본은 idle
@@ -814,7 +814,7 @@ class SimplePixelCharacterManager {
             y: '120%', // 화면 아래 바깥
             visible: false,
             loop: true,
-            useVisibilityMethod: true,
+            // useVisibilityMethod: true,  // 제거 - URL 변경 방식 사용
             zIndex: 1000,
             currentAnimation: 'lee-idle-back', // 현재 상태 추적
             onComplete: () => {
@@ -3881,9 +3881,10 @@ class SimplePixelCharacterManager {
         // Console log removed
         this.switchToState(initialAnimation);
 
-        // 스크롤 잠금 해제 (rabbit 방식과 동일)
+        // 스크롤 잠금 해제 및 자동 스크롤 중지 (rabbit 방식과 동일)
         if (window.manualScrollManager) {
             window.manualScrollManager.unlockScroll('information animation complete');
+            window.manualScrollManager.stopAutoScroll(); // 자동 스크롤 해제
         }
 
         // Console log removed

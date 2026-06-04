@@ -781,15 +781,10 @@
         });
 
         function showGalleryImage(index) {
-            galleryLoading.style.display = 'block';
-            galleryImage.style.display = 'none';
+            galleryLoading.style.display = 'none';
+            galleryImage.style.display = 'block';
             galleryImage.src = images[index];
             galleryCounter.textContent = `${index + 1} / ${images.length}`;
-
-            galleryImage.onload = () => {
-                galleryLoading.style.display = 'none';
-                galleryImage.style.display = 'block';
-            };
         }
 
         galleryClose.addEventListener('click', () => {

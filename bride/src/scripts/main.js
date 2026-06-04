@@ -814,31 +814,13 @@ class GalleryPopup {
     showImage() {
         if (!this.images[this.currentIndex]) return;
 
-        this.isLoading = true;
-        this.loading.style.display = 'block';
-        this.image.style.opacity = '0.5';
+        this.loading.style.display = 'none';
+        this.image.style.opacity = '1';
 
         const currentImage = this.images[this.currentIndex];
-        const newSrc = currentImage.src;
-
-        // Preload image for smooth transition
-        const preloadImg = new Image();
-        preloadImg.onload = () => {
-            this.image.src = newSrc;
-            this.image.alt = currentImage.alt;
-            this.loading.style.display = 'none';
-            this.image.style.opacity = '1';
-            this.isLoading = false;
-            this.updateCounter();
-        };
-
-        preloadImg.onerror = () => {
-            this.loading.style.display = 'none';
-            this.image.style.opacity = '1';
-            this.isLoading = false;
-        };
-
-        preloadImg.src = newSrc;
+        this.image.src = currentImage.src;
+        this.image.alt = currentImage.alt;
+        this.updateCounter();
 
         // Preload next and previous images for performance
         this.preloadAdjacentImages();

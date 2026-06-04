@@ -303,12 +303,6 @@ class ManualScrollManager {
         const normalizedDelta = scrollDirection === 'down' ? speed : -speed;
         const scrollMagnitude = Math.abs(normalizedDelta);
 
-        // 엔딩 이미지 표시 중 위로 스크롤 시 completed.html로 seamless 전환
-        const endingImage = document.getElementById('ending-cover-image');
-        if (endingImage && scrollDirection === 'up') {
-            this.transitionToCompletedPage();
-            return;
-        }
 
         // Console log removed
 

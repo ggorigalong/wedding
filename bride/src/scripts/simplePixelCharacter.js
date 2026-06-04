@@ -2760,6 +2760,22 @@ class SimplePixelCharacterManager {
         // body에 추가 (최상위 레이어)
         document.body.appendChild(endingImg);
 
+        // 엔딩 이미지 표시 후 즉시 completed.html로 전환
+        setTimeout(() => {
+            // 전환 완료 플래그 설정
+            sessionStorage.setItem('startFromEnding', 'true');
+
+            // 현재 BGM 상태 저장
+            const bgm = document.getElementById('bgm');
+            if (bgm && !bgm.paused) {
+                sessionStorage.setItem('bgmPlaying', 'true');
+                sessionStorage.setItem('bgmCurrentTime', bgm.currentTime.toString());
+            }
+
+            // 페이지 전환
+            window.location.replace('/completed.html');
+        }, 100); // 엔딩 이미지가 완전히 렌더링된 후 전환
+
         // Console log removed
     }
 

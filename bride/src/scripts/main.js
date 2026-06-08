@@ -1,3 +1,4 @@
+
 // Audio control functionality
 let bgm = null;
 let audioToggle = null;

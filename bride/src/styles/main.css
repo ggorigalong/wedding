@@ -239,10 +239,6 @@ body:has(#initial-loading) {
     width: 100%;
     opacity: 1;
     background: rgba(248, 249, 250, 0.3); /* Light gray with transparency */
-    background-image: url('../../../images/gallery/hero-animation.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     z-index: 1;
     transform: translateY(100vh); /* Y축 직접 제어로 초기에 화면 아래 숨김 */
     /* transition 제거 - 즉시 이동 */
@@ -1246,10 +1242,6 @@ body:has(#initial-loading) {
     top: 0;
     left: 0;
     width: 100%;
-    background-image: url('../../../images/gallery/hero-animation.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     z-index: 1;
     /* 캐릭터 애니메이션이 표시될 투명한 섹션 */
 }
@@ -1681,4 +1673,22 @@ body:has(#initial-loading) {
     font-size: 0.85rem;
     color: var(--text-secondary);
     line-height: 1.4;
+}
+
+/* Background image with picture tag */
+.invitation-bg, .empty-section-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.invitation-bg img, .empty-section-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }

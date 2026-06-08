@@ -2936,21 +2936,39 @@ class SimplePixelCharacterManager {
         // body에 추가 (최상위 레이어)
         document.body.appendChild(endingImg);
 
-        // 엔딩 이미지 표시 후 즉시 completed.html로 전환
+        // BGM 페이드아웃 시작 (1초 동안)
+        const bgm = document.getElementById('bgm');
+        if (bgm && !bgm.paused) {
+            const originalVolume = bgm.volume;
+            const fadeOutDuration = 1000; // 1초
+            const fadeSteps = 50;
+            const volumeStep = originalVolume / fadeSteps;
+            const stepInterval = fadeOutDuration / fadeSteps;
+
+            let currentStep = 0;
+            const fadeInterval = setInterval(() => {
+                currentStep++;
+                const newVolume = Math.max(0, originalVolume - (volumeStep * currentStep));
+                bgm.volume = newVolume;
+
+                if (currentStep >= fadeSteps || newVolume <= 0) {
+                    clearInterval(fadeInterval);
+                    bgm.volume = 0;
+                    bgm.pause(); // 완전히 정지
+                }
+            }, stepInterval);
+        }
+
+        // 페이드아웃 완료 후 completed.html로 전환
         setTimeout(() => {
-            // 전환 완료 플래그 설정
+            // 전환 완료 플래그 설정 (completed.html에서 새 음악 자동재생을 위해)
             sessionStorage.setItem('startFromEnding', 'true');
 
-            // 현재 BGM 상태 저장
-            const bgm = document.getElementById('bgm');
-            if (bgm && !bgm.paused) {
-                sessionStorage.setItem('bgmPlaying', 'true');
-                sessionStorage.setItem('bgmCurrentTime', bgm.currentTime.toString());
-            }
+            // BGM 상태 저장 로직 제거 - completed.html에서 새 음악을 처음부터 재생
 
             // 페이지 전환
             window.location.replace('/completed.html');
-        }, 100); // 엔딩 이미지가 완전히 렌더링된 후 전환
+        }, 1000); // 페이드아웃 완료 후 전환
 
         // Console log removed
     }

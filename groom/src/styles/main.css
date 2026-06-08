@@ -1544,7 +1544,7 @@ body:has(#initial-loading) {
 
 /* Information Section Styling */
 .information-section {
-    margin-top: 15px;
+    margin-top: 10px;
     background: white;
     padding: 15px;
     border-radius: 10px;

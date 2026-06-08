@@ -16,6 +16,7 @@ class ManualScrollManager {
         this.trackpadSpeed = 6; // 트랙패드 속도 (더 느리게)
         this.touchSpeed = 5; // 터치 속도 (두배로 감소)
         this.keyboardSpeed = 12.5; // 키보드 속도 (기존 유지)
+        this.wheelSpeed = 20; // 마우스 휠 속도 (더 빠르게)
 
         // 섹션 정보 (Section-4 제거됨)
         this.sections = [
@@ -156,7 +157,7 @@ class ManualScrollManager {
         if (this.isTransitioning) return;
 
         const delta = e.deltaY;
-        this.handleScrollDelta(delta, 'trackpad');
+        this.handleScrollDelta(delta, 'wheel');
     }
 
     // 터치 시작
@@ -288,6 +289,9 @@ class ManualScrollManager {
                 break;
             case 'keyboard':
                 speed = this.keyboardSpeed;
+                break;
+            case 'wheel':
+                speed = this.wheelSpeed;
                 break;
             default:
                 speed = this.trackpadSpeed; // 기본값은 트랙패드

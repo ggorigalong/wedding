@@ -14,7 +14,7 @@
 
     <!-- Preload critical resources -->
     <link rel="preload" href="font/Pretendard.subset.woff" as="font" type="font/woff" crossorigin>
-    <link rel="preload" href="sounds/ending.mp3" as="audio">
+    <link rel="preload" href="sounds/See you Our Wedding Day.mp3" as="audio">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -254,7 +254,7 @@
 <body>
     <!-- Background Audio -->
     <audio id="bgm" autoplay loop>
-        <source src="sounds/ending.mp3" type="audio/mpeg">
+        <source src="sounds/See you Our Wedding Day.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Audio Control -->
@@ -534,6 +534,7 @@
                         <div class="transport-info">
                             <div class="transport-type">근처 주차장</div>
                             <div class="transport-details">동작대교 공영주차장</div>
+                            <div class="transport-details">국립중앙박물관 주차장</div>
                         </div>
                     </div>
                 </div>
@@ -697,24 +698,40 @@
                     behavior: 'instant' // 즉시 이동
                 });
 
-                // BGM 상태 복원
-                const bgmWasPlaying = sessionStorage.getItem('bgmPlaying') === 'true';
-                const bgmCurrentTime = parseFloat(sessionStorage.getItem('bgmCurrentTime') || '0');
+                // 새 엔딩 음악을 페이드인으로 재생
+                const bgm = document.getElementById('bgm');
+                if (bgm) {
+                    bgm.currentTime = 0; // 처음부터 재생
+                    bgm.volume = 0; // 0에서 시작
 
-                if (bgmWasPlaying) {
-                    const bgm = document.getElementById('bgm');
-                    if (bgm) {
-                        bgm.currentTime = bgmCurrentTime;
-                        bgm.play().then(() => {
-                            // BGM 재생 성공 시 UI 업데이트
-                            document.getElementById('playBtn').style.display = 'none';
-                            document.getElementById('pauseBtn').style.display = 'flex';
-                            document.getElementById('soundwave').style.display = 'block';
-                        }).catch(console.error);
-                    }
+                    bgm.play().then(() => {
+                        // BGM 재생 성공 시 UI 업데이트
+                        document.getElementById('playBtn').style.display = 'none';
+                        document.getElementById('pauseBtn').style.display = 'flex';
+                        document.getElementById('soundwave').style.display = 'block';
+
+                        // 페이드인 시작 (1초 동안)
+                        const fadeInDuration = 1000; // 1초
+                        const fadeSteps = 50;
+                        const targetVolume = 1.0;
+                        const volumeStep = targetVolume / fadeSteps;
+                        const stepInterval = fadeInDuration / fadeSteps;
+
+                        let currentStep = 0;
+                        const fadeInterval = setInterval(() => {
+                            currentStep++;
+                            const newVolume = Math.min(targetVolume, volumeStep * currentStep);
+                            bgm.volume = newVolume;
+
+                            if (currentStep >= fadeSteps || newVolume >= targetVolume) {
+                                clearInterval(fadeInterval);
+                                bgm.volume = targetVolume; // 최종 볼륨 설정
+                            }
+                        }, stepInterval);
+                    }).catch(console.error);
                 }
 
-                // 세션 스토리지 정리
+                // 기존 BGM 관련 세션 스토리지 정리 (있다면)
                 sessionStorage.removeItem('bgmPlaying');
                 sessionStorage.removeItem('bgmCurrentTime');
             }

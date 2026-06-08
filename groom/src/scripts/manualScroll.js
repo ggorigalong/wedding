@@ -167,7 +167,23 @@ class ManualScrollManager {
         if (this.isTransitioning) return;
 
         const delta = e.deltaY;
-        this.handleScrollDelta(delta, 'wheel');
+
+        // 터치패드와 마우스휠 구분
+        let inputType = 'wheel'; // 기본값은 마우스휠
+
+        // 터치패드 감지 로직
+        if (e.deltaMode === 0 && Math.abs(e.deltaY) < 120) {
+            // deltaMode가 0 (픽셀 단위)이고 deltaY가 작으면 터치패드
+            inputType = 'trackpad';
+        } else if (Math.abs(e.deltaY) >= 120) {
+            // deltaY가 크면 마우스휠
+            inputType = 'wheel';
+        } else {
+            // 애매한 경우 기본값은 터치패드 (대부분의 현대적 디바이스)
+            inputType = 'trackpad';
+        }
+
+        this.handleScrollDelta(delta, inputType);
     }
 
     // 터치 시작

@@ -489,7 +489,7 @@ body:has(#initial-loading) {
 }
 
 .map-container {
-    margin: 15px 0;
+    margin: 10px 0;
 }
 
 .map {
@@ -1512,6 +1512,16 @@ body:has(#initial-loading) {
     display: flex;
     align-items: flex-start;
     gap: 12px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+
+.info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .info-icon {

@@ -609,7 +609,7 @@ body:has(#initial-loading) {
 }
 
 .transportation {
-    margin-top: 15px;
+    margin-top: 10px;
     text-align: left;
     background: white;
     padding: 10px;

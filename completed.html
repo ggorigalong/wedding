@@ -259,28 +259,39 @@
 
     <!-- Audio Control -->
     <div class="music-player" id="musicPlayer">
-        <div class="music-info">
-            <div class="soundwave" id="soundwave">
-                <svg width="16" height="16" viewBox="0 0 20 16" fill="none">
-                    <rect class="bar bar1" x="2" y="4" width="2" height="8" fill="white" rx="1"/>
-                    <rect class="bar bar2" x="6" y="2" width="2" height="12" fill="white" rx="1"/>
-                    <rect class="bar bar3" x="10" y="6" width="2" height="4" fill="white" rx="1"/>
-                    <rect class="bar bar4" x="14" y="1" width="2" height="14" fill="white" rx="1"/>
-                    <rect class="bar bar5" x="18" y="3" width="2" height="10" fill="white" rx="1"/>
-                </svg>
+        <div class="music-section">
+            <div class="music-info">
+                <div class="soundwave" id="soundwave">
+                    <svg width="16" height="16" viewBox="0 0 20 16" fill="none">
+                        <rect class="bar bar1" x="2" y="4" width="2" height="8" fill="white" rx="1"/>
+                        <rect class="bar bar2" x="6" y="2" width="2" height="12" fill="white" rx="1"/>
+                        <rect class="bar bar3" x="10" y="6" width="2" height="4" fill="white" rx="1"/>
+                        <rect class="bar bar4" x="14" y="1" width="2" height="14" fill="white" rx="1"/>
+                        <rect class="bar bar5" x="18" y="3" width="2" height="10" fill="white" rx="1"/>
+                    </svg>
+                </div>
+                <span class="song-title">See you Our Wedding Day.mp3</span>
             </div>
-            <span class="song-title">See you Our Wedding Day.mp3</span>
+            <button class="play-btn" id="playBtn" aria-label="재생">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+            <button class="pause-btn" id="pauseBtn" aria-label="일시정지" style="display: none;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+            </button>
         </div>
-        <button class="play-btn" id="playBtn" aria-label="재생">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z"/>
+
+        <div class="divider">|</div>
+
+        <div class="info-section" id="animationSection" style="display: flex;">
+            <span style="color: white" class="info-text" onclick="goToAnimationPage()">애니메이션 보기</span>
+            <svg class="info-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" onclick="goToAnimationPage()">
+                <path d="M9 18l6-6-6-6"/>
             </svg>
-        </button>
-        <button class="pause-btn" id="pauseBtn" aria-label="일시정지" style="display: none;">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-        </button>
+        </div>
     </div>
 
     <!-- Main Hero Section -->
@@ -554,8 +565,6 @@
                                 <div class="info-details">공원 내 야외 예식 특성상 화환 반입이 제한됩니다.</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="information-section" id="parking-notice">
                         <div class="info-item">
                             <svg class="info-icon" viewBox="0 0 24 24" fill="#ffc671" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
@@ -889,108 +898,5 @@
         }
     </script>
 
-    <!-- Floating Button for Animation -->
-    <div id="animationFloatingBtn" class="animation-floating-btn">
-        <button onclick="goToAnimationPage()">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            <span>애니메이션과 함께<br>예식정보 보기</span>
-        </button>
-    </div>
-
-    <style>
-        /* Floating Animation Button */
-        .animation-floating-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 10000;
-        }
-
-        .animation-floating-btn button {
-            width: 140px;
-            height: 140px;
-            background: linear-gradient(135deg, #ffc671, #ff8a80);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 30px rgba(255, 198, 113, 0.4);
-            transition: all 0.3s ease;
-            font-family: 'Noto Sans KR', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            line-height: 1.2;
-        }
-
-        .animation-floating-btn button:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 12px 40px rgba(255, 198, 113, 0.6);
-        }
-
-        .animation-floating-btn button:active {
-            transform: translateY(-2px) scale(1.02);
-        }
-
-        .animation-floating-btn svg {
-            width: 28px;
-            height: 28px;
-            margin-bottom: 8px;
-            animation: sparkle 2s ease-in-out infinite;
-        }
-
-        .animation-floating-btn span {
-            text-align: center;
-        }
-
-        @keyframes sparkle {
-            0%, 100% {
-                transform: rotate(0deg) scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: rotate(180deg) scale(1.1);
-                opacity: 0.8;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .animation-floating-btn {
-                bottom: 20px;
-                right: 20px;
-            }
-
-            .animation-floating-btn button {
-                width: 120px;
-                height: 120px;
-                font-size: 0.7rem;
-            }
-
-            .animation-floating-btn svg {
-                width: 24px;
-                height: 24px;
-                margin-bottom: 6px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .animation-floating-btn button {
-                width: 100px;
-                height: 100px;
-                font-size: 0.65rem;
-            }
-
-            .animation-floating-btn svg {
-                width: 20px;
-                height: 20px;
-                margin-bottom: 4px;
-            }
-        }
-    </style>
 </body>
 </html>

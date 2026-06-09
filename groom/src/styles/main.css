@@ -101,18 +101,75 @@ body:has(#initial-loading) {
     backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 0 20px;
     z-index: 1000;
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
 }
 
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+
+.info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.music-section {
+    display: flex;
+    align-items: center;
+    flex: 1 1 50%;
+    min-width: 0;
+    justify-content: space-between;
+
+}
+
+.divider {
+    color: white;
+    opacity: 0.5;
+    font-size: 14px;
+    margin: 0 15px;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    flex-shrink: 0;
+}
+
+.info-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 50%;
+    min-width: 0;
+    justify-content: flex-end;
+    cursor: pointer;
+}
+
+.info-text {
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+}
+
+.info-arrow {
+    width: 14px;
+    height: 14px;
+    color: white;
+    opacity: 0.9;
+}
+
 .music-info {
     display: flex;
     align-items: center;
-    flex-grow: 1;
     gap: 10px;
     overflow: hidden;
+    min-width: 0;
 }
 
 .soundwave {
@@ -1569,7 +1626,6 @@ body:has(#initial-loading) {
 
 .info-details {
     font-size: 0.85rem;
-    color: var(--text-secondary);
     line-height: 1.4;
 }
 

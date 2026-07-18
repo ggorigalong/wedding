@@ -507,6 +507,31 @@ class ManualScrollManager {
         document.body.appendChild(loadingDiv);
     }
 
+    // Section-0 스크롤 안내 토스트 표시
+    showScrollGuide() {
+        if (this.currentSection !== 0) return;
+
+        const tryShow = () => {
+            if (window.pixelCharacterManager) {
+                window.pixelCharacterManager.showScrollGuideToast();
+            }
+        };
+
+        const modal = document.getElementById('animationChoiceModal');
+        if (modal && getComputedStyle(modal).display !== 'none') {
+            const observer = new MutationObserver(() => {
+                if (getComputedStyle(modal).display === 'none') {
+                    observer.disconnect();
+                    tryShow();
+                }
+            });
+            observer.observe(modal, { attributes: true, attributeFilter: ['style'] });
+            return;
+        }
+
+        tryShow();
+    }
+
     // 로딩 메시지 숨기기
     hideLoadingMessage() {
         // HTML의 초기 로딩 스크린 제거

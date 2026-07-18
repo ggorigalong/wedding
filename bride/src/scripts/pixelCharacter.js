@@ -238,7 +238,7 @@ class PixelCharacterManager {
     startSectionTransition() {
         const section0 = document.getElementById('section-0');
         if (!section0) return;
-
+        
         // Mark animation as played to prevent re-triggering
         this.hasAnimationPlayed = true;
 

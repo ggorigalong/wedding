@@ -3535,11 +3535,6 @@ class SimplePixelCharacterManager {
 
         // 스크롤 감지 리스너 설정
         this.setupScrollDetection();
-
-        // 10초 후 자동 숨김 (백업)
-        setTimeout(() => {
-            this.hideScrollGuideToast();
-        }, 10000);
     }
 
     // 스크롤 감지 설정
@@ -3551,10 +3546,8 @@ class SimplePixelCharacterManager {
             this.hideScrollGuideToast();
         };
 
-        // 다양한 스크롤 이벤트 감지
-        window.addEventListener('scroll', this.scrollListener, { passive: true });
+        // 스크롤 이벤트 감지 (스크롤할 때만 토스트 숨김)
         window.addEventListener('wheel', this.scrollListener, { passive: true });
-        window.addEventListener('touchstart', this.scrollListener, { passive: true });
         window.addEventListener('touchmove', this.scrollListener, { passive: true });
         window.addEventListener('keydown', (e) => {
             // 스크롤 관련 키 감지 (화살표, 스페이스바, Page Up/Down 등)
@@ -3573,9 +3566,7 @@ class SimplePixelCharacterManager {
 
         // 스크롤 리스너 제거
         if (this.scrollListener) {
-            window.removeEventListener('scroll', this.scrollListener);
             window.removeEventListener('wheel', this.scrollListener);
-            window.removeEventListener('touchstart', this.scrollListener);
             window.removeEventListener('touchmove', this.scrollListener);
             this.scrollListener = null;
         }

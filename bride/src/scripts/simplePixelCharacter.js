@@ -1894,7 +1894,7 @@ class SimplePixelCharacterManager {
                 // 애니메이션 완료
                 character.isActive = false;
                 // Console log removed
-
+                
                 // 자막이 있는 캐릭터 애니메이션 완료 시 자막 숨기기
                 if (window.subtitleManager && (character.id === 'main' || character.id === 'hit-rabbit' || character.id === 'information' || character.id === 'ending')) {
                     // Console log removed
@@ -4027,23 +4027,18 @@ class SimplePixelCharacterManager {
 
         // 스크롤 감지 리스너 설정
         this.setupScrollDetection();
-
-        // 10초 후 자동 숨김 (백업)
-        setTimeout(() => {
-            this.hideScrollGuideToast();
-        }, 10000);
     }
 
     setupScrollDetection() {
+        if (this.scrollListener) return;
+
         this.scrollListener = () => {
             this.hideScrollGuideToast();
         };
 
-        // 다양한 스크롤 이벤트 감지
-        window.addEventListener('scroll', this.scrollListener);
-        window.addEventListener('wheel', this.scrollListener);
-        window.addEventListener('touchstart', this.scrollListener);
-        window.addEventListener('touchmove', this.scrollListener);
+        // 스크롤 이벤트 감지 (스크롤할 때만 토스트 숨김)
+        window.addEventListener('wheel', this.scrollListener, { passive: true });
+        window.addEventListener('touchmove', this.scrollListener, { passive: true });
 
         // 키보드 이벤트도 감지
         window.addEventListener('keydown', (e) => {
@@ -4062,9 +4057,7 @@ class SimplePixelCharacterManager {
 
         // 스크롤 리스너 제거
         if (this.scrollListener) {
-            window.removeEventListener('scroll', this.scrollListener);
             window.removeEventListener('wheel', this.scrollListener);
-            window.removeEventListener('touchstart', this.scrollListener);
             window.removeEventListener('touchmove', this.scrollListener);
             this.scrollListener = null;
         }
